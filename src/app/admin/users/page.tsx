@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { UI_TEXT } from "@/constants/ui-text";
 import { MOCK_USERS, MOCK_USER_STATS } from "@/lib/mock-data/admin";
 import { ROLES, ROLE_LABELS, ROLE_COLORS, type Role } from "@/constants/roles";
@@ -15,6 +16,7 @@ type SortOrder = "asc" | "desc";
 
 export default function UsersPage() {
     // State
+    const router = useRouter();
     const [users, setUsers] = useState<User[]>(MOCK_USERS);
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -382,6 +384,11 @@ export default function UsersPage() {
                                             <td className="py-4 px-6 text-right">
                                                 <DropdownMenu
                                                     items={[
+                                                        {
+                                                            label: "Xem chi tiết",
+                                                            icon: "visibility",
+                                                            onClick: () => router.push(`/admin/users/${user.id}`),
+                                                        },
                                                         {
                                                             label: "Chỉnh sửa",
                                                             icon: "edit",

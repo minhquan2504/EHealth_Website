@@ -228,8 +228,8 @@ export default function SchedulesPage() {
                                 </tr>
                             ) : (
                                 filteredSchedules.map((schedule) => {
-                                    const shiftInfo = SHIFTS[schedule.shift];
-                                    const statusInfo = STATUS_STYLES[schedule.status];
+                                    const shiftInfo = SHIFTS[schedule.shift] || { label: schedule.shift, time: "", color: "text-gray-600 bg-gray-50" };
+                                    const statusInfo = STATUS_STYLES[schedule.status] || { label: schedule.status, bg: "bg-gray-100", text: "text-gray-700" };
                                     return (
                                         <tr key={schedule.id} className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                             <td className="py-4 px-6">
@@ -247,7 +247,7 @@ export default function SchedulesPage() {
                                             <td className="py-4 px-6">
                                                 <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium ${shiftInfo.color}`}>
                                                     {shiftInfo.label}
-                                                    <span className="text-[10px] opacity-70">({shiftInfo.time})</span>
+                                                    {shiftInfo.time && <span className="text-[10px] opacity-70">({shiftInfo.time})</span>}
                                                 </span>
                                             </td>
                                             <td className="py-4 px-6">
