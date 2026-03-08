@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { UI_TEXT } from "@/constants/ui-text";
 import { ROUTES } from "@/constants/routes";
@@ -9,6 +10,7 @@ import { MOCK_PATIENT_QUEUE, MOCK_QUEUE_STATS } from "@/lib/mock-data/doctor";
 type QueueStatus = "all" | "waiting" | "examining" | "completed" | "cancelled";
 
 export default function QueuePage() {
+    const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState<QueueStatus>("all");
     const [queue, setQueue] = useState(MOCK_PATIENT_QUEUE);
@@ -79,6 +81,7 @@ export default function QueuePage() {
                 p.id === patientId ? { ...p, status: "examining" } : p
             )
         );
+        router.push(`${ROUTES.PORTAL.DOCTOR.EXAMINATION}?patient=${patientId}`);
     };
 
     return (
@@ -93,17 +96,6 @@ export default function QueuePage() {
                         <p className="text-sm text-[#687582] dark:text-gray-400">
                             {UI_TEXT.DOCTOR.QUEUE.SUBTITLE}
                         </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={ROUTES.PORTAL.DOCTOR.EXAMINATION}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all transform hover:-translate-y-0.5"
-                        >
-                            <span className="material-symbols-outlined text-[20px]">
-                                stethoscope
-                            </span>
-                            Vào phòng khám
-                        </Link>
                     </div>
                 </div>
 

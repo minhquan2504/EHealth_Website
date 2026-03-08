@@ -12,26 +12,57 @@ function isChildActiveForItem(item: AdminMenuItem, pathname: string) {
     return item.children.some((c) => pathname === c.href || pathname.startsWith(c.href + '/'));
 }
 
+// Helper: collect ALL known hrefs (including children) so we can check for more-specific matches
+function getAllHrefs(items: AdminMenuItem[]): string[] {
+    const hrefs: string[] = [];
+    for (const item of items) {
+        if (item.href) hrefs.push(item.href);
+        if (item.children) {
+            for (const child of item.children) {
+                hrefs.push(child.href);
+            }
+        }
+    }
+    return hrefs;
+}
+
+// Helper: check if a standalone item (no children) should be active
+// Only active if pathname exactly matches OR pathname is a subroute AND
+// no other more-specific menu href matches the pathname
+function isItemActive(itemHref: string, pathname: string, allHrefs: string[]): boolean {
+    // Exact match → always active
+    if (pathname === itemHref) return true;
+    // Dashboard special case: only exact match
+    if (itemHref === "/admin") return false;
+    // Check if pathname is a subroute of this item
+    if (!pathname.startsWith(itemHref + '/')) return false;
+    // Make sure no OTHER href is a more specific match
+    // (e.g. /admin/medicines/inventory should match "medicines-inventory" child, not "medicines" parent)
+    const hasMoreSpecific = allHrefs.some(
+        (href) => href !== itemHref && href.startsWith(itemHref + '/') && pathname.startsWith(href)
+    );
+    return !hasMoreSpecific;
+}
+
 // Sidebar menu item — nhận trạng thái open từ cha
 function SidebarItem({
     item,
     pathname,
     isOpen,
     onToggle,
+    allHrefs,
 }: {
     item: AdminMenuItem;
     pathname: string;
     isOpen: boolean;
     onToggle: () => void;
+    allHrefs: string[];
 }) {
     const hasChildren = item.children && item.children.length > 0;
     const isChildActive = hasChildren && isChildActiveForItem(item, pathname);
-    const isDirectActive = item.href
-        ? item.href === "/admin"
-            ? pathname === "/admin"
-            : pathname === item.href || pathname.startsWith(item.href + '/')
-        : false;
-    const isActive = isDirectActive || isChildActive;
+    const isDirectActive = item.href ? isItemActive(item.href, pathname, allHrefs) : false;
+    // For items with children, only child determines active (not parent href)
+    const isActive = hasChildren ? isChildActive : isDirectActive;
 
     // Item đơn (không có children)
     if (!hasChildren && item.href) {
@@ -78,7 +109,7 @@ function SidebarItem({
             <div className={`overflow-hidden transition-all duration-200 ${isOpen ? "max-h-48 mt-0.5" : "max-h-0"}`}>
                 <div className="ml-[22px] pl-4 border-l-2 border-[#e5e7eb] dark:border-[#2d353e] space-y-0.5 py-0.5">
                     {item.children!.map((child) => {
-                        const childActive = pathname === child.href || pathname.startsWith(child.href + '/');
+                        const childActive = isItemActive(child.href, pathname, allHrefs);
                         return (
                             <Link
                                 key={child.key}
@@ -100,7 +131,7 @@ function SidebarItem({
 
 export function AdminSidebar() {
     const pathname = usePathname();
-
+    const allHrefs = getAllHrefs(ADMIN_MENU_ITEMS);
     // Accordion: chỉ 1 nhóm mở tại 1 thời điểm
     const [openGroupKey, setOpenGroupKey] = useState<string | null>(null);
 
@@ -150,6 +181,7 @@ export function AdminSidebar() {
                         pathname={pathname}
                         isOpen={openGroupKey === item.key}
                         onToggle={() => handleToggleGroup(item.key)}
+                        allHrefs={allHrefs}
                     />
                 ))}
             </nav>
