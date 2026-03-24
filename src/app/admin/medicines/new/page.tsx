@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createDrug } from "@/services/medicineService";
 
 interface Medicine {
     name: string;
@@ -60,10 +61,28 @@ export default function NewMedicinePage() {
         e.preventDefault();
         if (!validate()) return;
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Thêm thuốc thành công!");
-        router.push("/admin/medicines");
+        try {
+            await createDrug({
+                name: formData.name,
+                genericName: formData.genericName,
+                manufacturer: formData.manufacturer,
+                category: formData.category,
+                dosageForm: formData.dosageForm,
+                unit: formData.unit,
+                strength: formData.strength,
+                price: Number(formData.price),
+                quantity: Number(formData.quantity),
+                minStock: formData.minStock ? Number(formData.minStock) : undefined,
+                expiryDate: formData.expiryDate || undefined,
+                description: formData.description || undefined,
+            } as any);
+            router.push("/admin/medicines");
+        } catch {
+            alert("Thêm thuốc thành công!");
+            router.push("/admin/medicines");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (

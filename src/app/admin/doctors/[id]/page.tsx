@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MOCK_DOCTORS } from "@/lib/mock-data/admin";
 import { DOCTOR_STATUS } from "@/constants/status";
 import type { Doctor } from "@/types";
+import { staffService } from "@/services/staffService";
 
 export default function DoctorDetailPage() {
     const router = useRouter();
@@ -15,8 +16,33 @@ export default function DoctorDetailPage() {
     const [doctor, setDoctor] = useState<Doctor | null>(null);
 
     useEffect(() => {
-        const found = MOCK_DOCTORS.find((d) => d.id === doctorId);
-        setDoctor(found || null);
+        if (!doctorId) return;
+        staffService.getById(doctorId)
+            .then((res: any) => {
+                const d = res?.data ?? res;
+                if (d) {
+                    setDoctor({
+                        ...MOCK_DOCTORS[0],
+                        id: d.id ?? doctorId,
+                        fullName: d.full_name ?? d.fullName ?? "",
+                        email: d.email ?? "",
+                        phone: d.phone_number ?? d.phone ?? "",
+                        code: d.staff_code ?? d.employee_code ?? d.code ?? doctorId,
+                        departmentName: d.department?.name ?? d.departmentName ?? "",
+                        specialization: d.specialization ?? "",
+                        status: d.status?.toLowerCase() === "active" ? DOCTOR_STATUS.ACTIVE : d.status ?? DOCTOR_STATUS.ACTIVE,
+                        rating: d.rating ?? 5,
+                        reviewCount: d.reviewCount ?? 0,
+                        experience: d.experience ?? 0,
+                        createdAt: d.created_at?.split("T")[0] ?? d.createdAt ?? "",
+                        workingSchedule: d.workingSchedule ?? [],
+                    } as Doctor);
+                }
+            })
+            .catch(() => {
+                const found = MOCK_DOCTORS.find((d) => d.id === doctorId);
+                setDoctor(found || null);
+            });
     }, [doctorId]);
 
     if (!doctor) {

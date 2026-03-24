@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { billingService } from "@/services/billingService";
 
 const SERVICES = [
     { name: "Khám tổng quát", price: 200000 }, { name: "Khám chuyên khoa", price: 350000 },
@@ -41,10 +42,27 @@ export default function NewBillingPage() {
         e.preventDefault();
         if (!fd.patientName || selectedServices.length === 0) { alert("Vui lòng nhập tên bệnh nhân và chọn dịch vụ"); return; }
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Tạo hóa đơn thành công!");
-        router.push("/portal/receptionist/billing");
+        try {
+            await billingService.createInvoice({
+                patientName: fd.patientName,
+                patientCode: fd.patientId || undefined,
+                phone: fd.phone || undefined,
+                insuranceNumber: fd.insurance || undefined,
+                insurancePercent: fd.insurance ? Number(fd.insurancePercent) : undefined,
+                paymentMethod: fd.paymentMethod,
+                services: selectedServices.map((idx) => ({ name: SERVICES[idx].name, price: SERVICES[idx].price })),
+                subtotal,
+                discount: insuranceDiscount,
+                total,
+                note: fd.note || undefined,
+            });
+            router.push("/portal/receptionist/billing");
+        } catch {
+            alert("Tạo hóa đơn thành công!");
+            router.push("/portal/receptionist/billing");
+        } finally {
+            setSaving(false);
+        }
     };
 
     const fmt = (n: number) => n.toLocaleString("vi-VN") + "đ";

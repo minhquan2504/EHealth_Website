@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getRoles } from "@/services/permissionService";
 
 // Mock data — Vai trò & Quyền hạn
 const INITIAL_ROLES = [
@@ -63,6 +64,25 @@ type Role = typeof INITIAL_ROLES[number];
 
 export default function RolesPage() {
     const [roles, setRoles] = useState(INITIAL_ROLES);
+
+    useEffect(() => {
+        getRoles()
+            .then((data) => {
+                if (Array.isArray(data) && data.length > 0) {
+                    setRoles(data.map((r) => ({
+                        ...INITIAL_ROLES[0],
+                        id: r.id ?? r.name,
+                        name: r.displayName ?? r.name ?? "",
+                        code: r.name ?? "",
+                        description: r.description ?? "",
+                        users: r.userCount ?? 0,
+                        status: r.isActive !== false ? "active" : "inactive",
+                        permissions: Array.isArray(r.permissions) ? r.permissions : [],
+                    })));
+                }
+            })
+            .catch(() => {/* keep mock */});
+    }, []);
     const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
     const [search, setSearch] = useState("");
     const [editedPermissions, setEditedPermissions] = useState<string[]>([]);

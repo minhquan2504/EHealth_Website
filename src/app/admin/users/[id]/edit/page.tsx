@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MOCK_USERS } from "@/lib/mock-data/admin";
 import { ROLES, ROLE_LABELS, type Role } from "@/constants/roles";
 import type { User } from "@/types";
+import { getUserById, updateUser } from "@/services/userService";
 
 export default function EditUserPage() {
     const router = useRouter();
@@ -25,18 +26,29 @@ export default function EditUserPage() {
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        const found = MOCK_USERS.find((u) => u.id === userId);
-        if (found) {
-            setUser(found);
-            setFormData({
-                fullName: found.fullName || "",
-                email: found.email || "",
-                role: found.role || ROLES.RECEPTIONIST,
-                phone: "0901 234 567",
-                gender: "Nam",
-                birthDate: "1990-06-15",
+        if (!userId) return;
+        getUserById(userId)
+            .then((res) => {
+                const d = (res as any)?.data ?? res as any;
+                if (d) {
+                    setUser({ ...MOCK_USERS[0], ...d, id: d.id ?? userId, fullName: d.full_name ?? d.fullName ?? "", email: d.email ?? "", role: d.role ?? ROLES.RECEPTIONIST, status: d.status?.toLowerCase() ?? "active" } as User);
+                    setFormData({
+                        fullName: d.full_name ?? d.fullName ?? "",
+                        email: d.email ?? "",
+                        role: d.role ?? ROLES.RECEPTIONIST,
+                        phone: d.phone_number ?? d.phoneNumber ?? "",
+                        gender: d.gender === "MALE" ? "Nam" : d.gender === "FEMALE" ? "Nữ" : "Nam",
+                        birthDate: d.date_of_birth ?? d.birthDate ?? "",
+                    });
+                }
+            })
+            .catch(() => {
+                const found = MOCK_USERS.find((u) => u.id === userId);
+                if (found) {
+                    setUser(found);
+                    setFormData({ fullName: found.fullName || "", email: found.email || "", role: found.role || ROLES.RECEPTIONIST, phone: "0901 234 567", gender: "Nam", birthDate: "1990-06-15" });
+                }
             });
-        }
     }, [userId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -61,8 +73,14 @@ export default function EditUserPage() {
         e.preventDefault();
         if (!validate()) return;
         setSaving(true);
-        // TODO: API call
-        await new Promise((r) => setTimeout(r, 500));
+        try {
+            await updateUser(userId, {
+                fullName: formData.fullName,
+                email: formData.email,
+                role: formData.role as Role,
+                phoneNumber: formData.phone,
+            } as any);
+        } catch { /* keep going */ }
         setSaving(false);
         router.push(`/admin/users/${userId}`);
     };

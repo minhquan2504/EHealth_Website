@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSlotConfig, updateSlotConfig } from "@/services/systemConfigService";
 
 interface TimeSlot {
     id: string;
@@ -37,12 +38,35 @@ export default function TimeSlotsPage() {
     const [slots, setSlots] = useState<TimeSlot[]>(MOCK_SLOTS);
     const [activeShift, setActiveShift] = useState("Sáng");
 
+    useEffect(() => {
+        getSlotConfig()
+            .then((res: any) => {
+                const items: any[] = res?.data?.slots ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    setSlots(items.map((s: any, i: number) => ({
+                        ...MOCK_SLOTS[i % MOCK_SLOTS.length],
+                        id: s.id ?? String(i + 1),
+                        shift: s.shift === "MORNING" ? "Sáng" : s.shift === "AFTERNOON" ? "Chiều" : s.shift === "NIGHT" ? "Tối" : s.shift ?? "Sáng",
+                        startTime: s.startTime ?? s.start_time ?? MOCK_SLOTS[i % MOCK_SLOTS.length].startTime,
+                        endTime: s.endTime ?? s.end_time ?? MOCK_SLOTS[i % MOCK_SLOTS.length].endTime,
+                        maxPatients: s.maxPatients ?? s.max_patients ?? MOCK_SLOTS[i % MOCK_SLOTS.length].maxPatients,
+                        status: s.isActive === false ? "inactive" : "active",
+                    })));
+                }
+            })
+            .catch(() => {/* keep mock */});
+    }, []);
+
     const filteredSlots = slots.filter((s) => s.shift === activeShift);
 
     const toggleSlot = (id: string) => {
         setSlots((prev) =>
             prev.map((s) => (s.id === id ? { ...s, status: s.status === "active" ? "inactive" : "active" } : s))
         );
+        const slot = slots.find((s) => s.id === id);
+        if (slot) {
+            updateSlotConfig({ slotId: id, isActive: slot.status !== "active" }).catch(() => {});
+        }
     };
 
     return (

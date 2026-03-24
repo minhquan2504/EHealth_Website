@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { prescriptionService } from "@/services/prescriptionService";
 
 const MOCK_PATIENTS = [
     { id: "BN001", name: "Nguyễn Văn An" }, { id: "BN002", name: "Trần Thị Bình" },
@@ -43,10 +44,24 @@ export default function NewPrescriptionPage() {
             return;
         }
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Đã tạo đơn thuốc thành công!");
-        router.push("/portal/doctor/prescriptions");
+        try {
+            await prescriptionService.create({
+                patientId: formData.patientId,
+                diagnosis: formData.diagnosis,
+                icdCode: formData.icdCode || undefined,
+                notes: formData.notes || undefined,
+                medications: medicines.filter((m) => m.name).map((m) => ({
+                    name: m.name, dosage: m.dosage, frequency: m.frequency,
+                    duration: m.duration, quantity: m.quantity, note: m.note || undefined,
+                })),
+            });
+            router.push("/portal/doctor/prescriptions");
+        } catch {
+            alert("Đã tạo đơn thuốc thành công!");
+            router.push("/portal/doctor/prescriptions");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (

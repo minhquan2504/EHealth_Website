@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { reportService } from "@/services/reportService";
 
 /* ──────────────────────────────────────────────────────────────
    MOCK DATA — Đầy đủ theo Tháng / Quý / Năm
@@ -108,11 +109,30 @@ const SUMMARY = {
    ────────────────────────────────────────────────────────────── */
 export default function RevenuePage() {
     const [period, setPeriod] = useState<Period>("month");
+    const [summary, setSummary] = useState(SUMMARY[period]);
+    const [deptData, setDeptData] = useState(REVENUE_BY_DEPT[period]);
 
-    const deptData = REVENUE_BY_DEPT[period];
+    useEffect(() => {
+        setSummary(SUMMARY[period]);
+        setDeptData(REVENUE_BY_DEPT[period]);
+        reportService.getRevenue({ period })
+            .then((res: any) => {
+                const d = res?.data ?? res;
+                if (d?.total !== undefined) setSummary((prev) => ({ ...prev, total: d.total ?? prev.total, totalChange: d.growth ?? prev.totalChange, totalPatients: d.totalPatients ?? prev.totalPatients, patientChange: d.patientGrowth ?? prev.patientChange }));
+                if (Array.isArray(d?.byDepartment) && d.byDepartment.length > 0) {
+                    setDeptData(d.byDepartment.map((x: any, i: number) => ({
+                        ...REVENUE_BY_DEPT[period][i] ?? REVENUE_BY_DEPT[period][0],
+                        dept: x.departmentName ?? x.dept ?? REVENUE_BY_DEPT[period][i]?.dept ?? "",
+                        revenue: x.revenue ?? x.amount ?? 0,
+                        patients: x.patientCount ?? x.patients ?? 0,
+                    })));
+                }
+            })
+            .catch(() => {/* keep mock */});
+    }, [period]);
+
     const comparison = COMPARISON_DATA[period];
     const doctors = TOP_DOCTORS[period];
-    const summary = SUMMARY[period];
 
     const maxDeptRevenue = Math.max(...deptData.map(d => d.revenue));
     const maxComparison = useMemo(() => Math.max(...comparison.map(q => Math.max(q.revenue, q.target))), [comparison]);

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { inventoryService } from "@/services/inventoryService";
 
 interface ExportRecord {
     id: string;
@@ -22,8 +23,30 @@ const MOCK_EXPORTS: ExportRecord[] = [
 ];
 
 export default function MedicineExportPage() {
-    const [records] = useState<ExportRecord[]>(MOCK_EXPORTS);
+    const [records, setRecords] = useState<ExportRecord[]>(MOCK_EXPORTS);
     const [searchQuery, setSearchQuery] = useState("");
+
+    useEffect(() => {
+        inventoryService.getStockOutList({ limit: 100 })
+            .then((res: any) => {
+                const items: any[] = res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    setRecords(items.map((x: any, i: number) => ({
+                        ...MOCK_EXPORTS[i % MOCK_EXPORTS.length],
+                        id: x.id ?? String(i + 1),
+                        code: x.code ?? x.order_code ?? `XK-${x.id}`,
+                        medicineName: x.drug?.name ?? x.drugName ?? x.medicineName ?? "",
+                        quantity: x.quantity ?? 0,
+                        destination: x.destination ?? x.department ?? x.to ?? "",
+                        reason: x.reason ?? x.note ?? "",
+                        date: (x.created_at ?? x.date ?? "").split("T")[0],
+                        status: x.status?.toLowerCase() === "completed" ? "completed" : x.status?.toLowerCase() === "cancelled" ? "cancelled" : "pending",
+                        approvedBy: x.approved_by_name ?? x.approvedBy ?? "—",
+                    })));
+                }
+            })
+            .catch(() => {/* keep mock */});
+    }, []);
 
     const filtered = records.filter((r) =>
         r.medicineName.toLowerCase().includes(searchQuery.toLowerCase()) ||

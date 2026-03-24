@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { inventoryService } from "@/services/inventoryService";
 
 interface ImportRecord {
     id: string;
@@ -24,8 +25,32 @@ const MOCK_IMPORTS: ImportRecord[] = [
 ];
 
 export default function MedicineImportPage() {
-    const [records] = useState<ImportRecord[]>(MOCK_IMPORTS);
+    const [records, setRecords] = useState<ImportRecord[]>(MOCK_IMPORTS);
     const [searchQuery, setSearchQuery] = useState("");
+
+    useEffect(() => {
+        inventoryService.getStockInList({ limit: 100 })
+            .then((res: any) => {
+                const items: any[] = res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    setRecords(items.map((x: any, i: number) => ({
+                        ...MOCK_IMPORTS[i % MOCK_IMPORTS.length],
+                        id: x.id ?? String(i + 1),
+                        code: x.code ?? x.order_code ?? `NK-${x.id}`,
+                        medicineName: x.drug?.name ?? x.drugName ?? x.medicineName ?? "",
+                        quantity: x.quantity ?? 0,
+                        unitPrice: x.unit_price ?? x.unitPrice ?? 0,
+                        supplier: x.supplier?.name ?? x.supplierName ?? x.supplier ?? "",
+                        date: (x.created_at ?? x.date ?? "").split("T")[0],
+                        batchNumber: x.batch_number ?? x.batchNumber ?? "",
+                        expiryDate: x.expiry_date ?? x.expiryDate ?? "",
+                        status: x.status?.toLowerCase() === "completed" || x.status?.toLowerCase() === "received" ? "completed" : x.status?.toLowerCase() === "cancelled" ? "cancelled" : "pending",
+                        createdBy: x.created_by_name ?? x.createdBy ?? "",
+                    })));
+                }
+            })
+            .catch(() => {/* keep mock */});
+    }, []);
 
     const filtered = records.filter((r) =>
         r.medicineName.toLowerCase().includes(searchQuery.toLowerCase()) ||

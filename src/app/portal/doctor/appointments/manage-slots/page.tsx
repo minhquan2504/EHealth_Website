@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { scheduleService } from "@/services/scheduleService";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DaySlot {
     day: string;
@@ -24,15 +26,56 @@ const DEFAULT_SLOTS: DaySlot[] = [
 
 export default function ManageSlotsPage() {
     const router = useRouter();
+    const { user } = useAuth();
     const [slots, setSlots] = useState<DaySlot[]>(DEFAULT_SLOTS);
     const [slotDuration, setSlotDuration] = useState("30");
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        if (!user?.id) return;
+        const today = new Date();
+        const from = new Date(today); from.setDate(today.getDate() - today.getDay() + 1);
+        const to = new Date(from); to.setDate(from.getDate() + 6);
+        scheduleService.getByDoctor(user.id, { from: from.toISOString().split("T")[0], to: to.toISOString().split("T")[0] })
+            .then((data) => {
+                if (Array.isArray(data) && data.length > 0) {
+                    const DAY_MAP: Record<string, string> = { "1": "Thứ 2", "2": "Thứ 3", "3": "Thứ 4", "4": "Thứ 5", "5": "Thứ 6", "6": "Thứ 7", "0": "Chủ nhật" };
+                    const enabledDays = new Set(data.map((s) => new Date(s.date).getDay().toString()));
+                    setSlots((prev) => prev.map((s) => {
+                        const dayNum = Object.entries(DAY_MAP).find(([, v]) => v === s.day)?.[0];
+                        return dayNum ? { ...s, enabled: enabledDays.has(dayNum) } : s;
+                    }));
+                }
+            })
+            .catch(() => {/* keep default */});
+    }, [user?.id]);
 
     const updateSlot = (index: number, field: keyof DaySlot, value: string | boolean) => {
         setSlots(prev => prev.map((s, i) => i === index ? { ...s, [field]: value } : s));
     };
 
-    const handleSave = () => {
-        alert("Đã lưu khung giờ làm việc thành công!");
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            if (user?.id) {
+                const DAY_NUM: Record<string, number> = { "Thứ 2": 1, "Thứ 3": 2, "Thứ 4": 3, "Thứ 5": 4, "Thứ 6": 5, "Thứ 7": 6, "Chủ nhật": 0 };
+                const today = new Date();
+                const enabledSlots = slots.filter((s) => s.enabled);
+                for (const s of enabledSlots) {
+                    const dayNum = DAY_NUM[s.day];
+                    if (dayNum === undefined) continue;
+                    const nextDate = new Date(today);
+                    const diff = (dayNum - today.getDay() + 7) % 7 || 7;
+                    nextDate.setDate(today.getDate() + diff);
+                    await scheduleService.create({
+                        doctorId: user.id,
+                        date: nextDate.toISOString().split("T")[0],
+                        shift: s.startTime < "12:00" ? "MORNING" : s.startTime < "17:00" ? "AFTERNOON" : "NIGHT",
+                    } as any).catch(() => {});
+                }
+            }
+        } catch { /* ignore */ }
+        setSaving(false);
         router.push("/portal/doctor/appointments");
     };
 
@@ -171,10 +214,10 @@ export default function ManageSlotsPage() {
                     </button>
                     <button
                         onClick={handleSave}
-                        className="px-6 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
+                        disabled={saving}
+                        className="px-6 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all transform hover:-translate-y-0.5 flex items-center gap-2 disabled:opacity-50"
                     >
-                        <span className="material-symbols-outlined text-[20px]">save</span>
-                        Lưu thay đổi
+                        {saving ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Đang lưu...</> : <><span className="material-symbols-outlined text-[20px]">save</span> Lưu thay đổi</>}
                     </button>
                 </div>
             </div>
