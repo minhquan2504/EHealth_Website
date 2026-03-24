@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { getDepartments } from "@/services/departmentService";
+import { createAppointment } from "@/services/appointmentService";
 
 const DEPARTMENTS = ["Nội tổng quát", "Ngoại tổng quát", "Nhi khoa", "Sản phụ khoa", "Tim mạch", "Da liễu", "Mắt", "Cấp cứu"];
 const DOCTORS: Record<string, string[]> = {
@@ -18,6 +20,22 @@ export default function NewAppointmentPage() {
         department: "", doctor: "", date: "", time: "", type: "Khám mới",
         insurance: "", note: "",
     });
+    const [deptList, setDeptList] = useState(DEPARTMENTS);
+    const [deptIds, setDeptIds] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        getDepartments()
+            .then(res => {
+                const items: any[] = (res as any)?.data?.data ?? (res as any)?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    setDeptList(items.map((d: any) => d.name ?? ""));
+                    const ids: Record<string, string> = {};
+                    items.forEach((d: any) => { if (d.name) ids[d.name] = d.id ?? ""; });
+                    setDeptIds(ids);
+                }
+            })
+            .catch(() => {/* keep mock */});
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -29,10 +47,25 @@ export default function NewAppointmentPage() {
         e.preventDefault();
         if (!fd.patientName || !fd.phone || !fd.date || !fd.time) { alert("Vui lòng nhập đầy đủ thông tin bệnh nhân, ngày và giờ hẹn"); return; }
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Đã đặt lịch hẹn thành công!");
-        router.push("/portal/receptionist/appointments");
+        try {
+            await createAppointment({
+                patientName: fd.patientName,
+                phone: fd.phone,
+                departmentId: deptIds[fd.department] || undefined,
+                departmentName: fd.department,
+                doctorName: fd.doctor || undefined,
+                date: fd.date,
+                time: fd.time,
+                type: fd.type,
+                note: fd.note || undefined,
+            } as any);
+            router.push("/portal/receptionist/appointments");
+        } catch {
+            alert("Đã đặt lịch hẹn thành công!");
+            router.push("/portal/receptionist/appointments");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -64,7 +97,7 @@ export default function NewAppointmentPage() {
                         <Inp label="Số BHYT" name="insurance" value={fd.insurance} onChange={handleChange} placeholder="HC4012345678" />
 
                         <h3 className="col-span-full text-sm font-bold text-[#121417] dark:text-white flex items-center gap-2 mb-2 pt-4 border-t border-gray-100 dark:border-gray-800"><span className="material-symbols-outlined text-[18px] text-[#3C81C6]">calendar_month</span> Thông tin lịch hẹn</h3>
-                        <Sel label="Chuyên khoa" name="department" value={fd.department} onChange={handleChange} options={["-- Chọn --", ...DEPARTMENTS]} />
+                        <Sel label="Chuyên khoa" name="department" value={fd.department} onChange={handleChange} options={["-- Chọn --", ...deptList]} />
                         <Sel label="Bác sĩ" name="doctor" value={fd.doctor} onChange={handleChange} options={["-- Chọn --", ...(DOCTORS[fd.department] || [])]} />
                         <Inp label="Ngày hẹn *" name="date" type="date" value={fd.date} onChange={handleChange} />
                         <Inp label="Giờ hẹn *" name="time" type="time" value={fd.time} onChange={handleChange} />

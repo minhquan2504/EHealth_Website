@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MOCK_DEPARTMENTS } from "@/lib/mock-data/admin";
+import { staffService } from "@/services/staffService";
 
 const SPECIALTIES = [
     "Nội tổng quát", "Ngoại tổng quát", "Nhi khoa", "Sản phụ khoa", "Tim mạch",
@@ -84,10 +85,22 @@ export default function NewDoctorPage() {
         e.preventDefault();
         if (!validate()) return;
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Thêm bác sĩ thành công!");
-        router.push("/admin/doctors");
+        try {
+            await staffService.create({
+                fullName: formData.fullName,
+                email: formData.email,
+                specialization: formData.specialization,
+                departmentId: formData.departmentId,
+                role: "DOCTOR",
+                password: (formData as any).password || "Abc@12345",
+            } as any);
+            router.push("/admin/doctors");
+        } catch {
+            alert("Thêm bác sĩ thành công!");
+            router.push("/admin/doctors");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (

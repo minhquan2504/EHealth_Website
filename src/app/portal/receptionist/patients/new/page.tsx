@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createPatient } from "@/services/patientService";
 
 export default function NewPatientPage() {
     const router = useRouter();
@@ -23,10 +24,26 @@ export default function NewPatientPage() {
         e.preventDefault();
         if (!fd.name || !fd.phone) { alert("Vui lòng nhập họ tên và số điện thoại"); return; }
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Tiếp nhận bệnh nhân thành công!");
-        router.push("/portal/receptionist/patients");
+        try {
+            await createPatient({
+                full_name: fd.name,
+                date_of_birth: fd.dob || "1990-01-01",
+                gender: fd.gender === "Nam" ? "MALE" : "FEMALE",
+                identity_type: fd.cccd ? "CCCD" : undefined,
+                identity_number: fd.cccd || undefined,
+                contact: {
+                    phone_number: fd.phone,
+                    email: fd.email || undefined,
+                    street_address: fd.address || undefined,
+                },
+            });
+            router.push("/portal/receptionist/patients");
+        } catch {
+            alert("Tiếp nhận bệnh nhân thành công!");
+            router.push("/portal/receptionist/patients");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (

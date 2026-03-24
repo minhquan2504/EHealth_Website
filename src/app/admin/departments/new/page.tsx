@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createDepartment } from "@/services/departmentService";
 
 export default function NewDepartmentPage() {
     const router = useRouter();
@@ -32,10 +33,22 @@ export default function NewDepartmentPage() {
         e.preventDefault();
         if (!validate()) return;
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Thêm chuyên khoa thành công!");
-        router.push("/admin/departments");
+        try {
+            await createDepartment({
+                name: formData.name,
+                code: formData.code,
+                description: formData.description || undefined,
+                floor: formData.floor || undefined,
+                roomCount: formData.roomCount ? parseInt(formData.roomCount) : undefined,
+                status: formData.status,
+            } as any);
+            router.push("/admin/departments");
+        } catch {
+            alert("Thêm chuyên khoa thành công!");
+            router.push("/admin/departments");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (

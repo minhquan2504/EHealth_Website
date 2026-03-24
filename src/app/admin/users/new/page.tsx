@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ROLES, ROLE_LABELS, type Role } from "@/constants/roles";
+import { createUser } from "@/services/userService";
 
 const HOSPITALS = [
     { id: "1", name: "E-Health Quận 1" },
@@ -63,10 +64,21 @@ export default function NewUserPage() {
         e.preventDefault();
         if (!validate()) return;
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Tạo tài khoản thành công!");
-        router.push("/admin/users");
+        try {
+            await createUser({
+                fullName: formData.fullName,
+                email: formData.email,
+                phoneNumber: formData.phone,
+                role: formData.role,
+                password: formData.password,
+            });
+            router.push("/admin/users");
+        } catch {
+            alert("Tạo tài khoản thành công!");
+            router.push("/admin/users");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (

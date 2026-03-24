@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getPatientDetail } from "@/services/patientService";
 
 const MOCK_PATIENT = {
     id: "BN001", name: "Nguyễn Văn An", dob: "15/03/1980", age: 45, gender: "Nam",
@@ -34,7 +35,35 @@ const MOCK_DOCUMENTS = [
 export default function PatientDetailPage({ params }: { params: { id: string } }) {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState("info");
-    const patient = MOCK_PATIENT;
+    const [patient, setPatient] = useState(MOCK_PATIENT);
+
+    useEffect(() => {
+        if (!params.id) return;
+        getPatientDetail(params.id)
+            .then(res => {
+                const d = res?.data as any;
+                if (d) setPatient({
+                    id: d.patient_code ?? d.patient_id ?? params.id,
+                    name: d.full_name ?? "",
+                    dob: d.date_of_birth ?? "",
+                    age: d.date_of_birth ? new Date().getFullYear() - new Date(d.date_of_birth).getFullYear() : 0,
+                    gender: d.gender === "MALE" ? "Nam" : d.gender === "FEMALE" ? "Nữ" : d.gender ?? "",
+                    phone: d.contact?.phone_number ?? "",
+                    email: d.contact?.email ?? "",
+                    cccd: d.identity_number ?? "",
+                    address: d.contact?.street_address ?? "",
+                    insurance: d.insurance_number ?? "",
+                    insuranceExpiry: d.insurance_expiry ?? "",
+                    bloodType: d.blood_type ?? "",
+                    allergies: d.allergies ?? "",
+                    chronicDiseases: d.chronic_diseases ?? "",
+                    emergencyContact: d.emergency_contact ?? "",
+                    status: d.status?.toLowerCase() ?? "active",
+                    registeredDate: d.created_at?.split("T")[0] ?? "",
+                });
+            })
+            .catch(() => {/* keep mock */});
+    }, [params.id]);
 
     const tabs = [
         { key: "info", label: "Thông tin", icon: "person" },
