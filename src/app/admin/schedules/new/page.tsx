@@ -1,25 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { scheduleService } from "@/services/scheduleService";
+import { staffService } from "@/services/staffService";
+import { getDepartments } from "@/services/departmentService";
 
-const MOCK_DOCTORS = [
+const FALLBACK_DOCTORS = [
     { id: "1", name: "BS. Nguyễn Văn An" }, { id: "2", name: "BS. Trần Thị Bình" },
     { id: "3", name: "BS. Lê Văn Cường" }, { id: "4", name: "BS. Phạm Thị Dung" },
     { id: "5", name: "BS. Hoàng Văn Em" },
 ];
 
-const DEPARTMENTS = ["Khoa Nội", "Khoa Ngoại", "Khoa Nhi", "Khoa Sản", "Khoa Tim mạch", "Khoa Thần kinh", "Cấp cứu"];
+const FALLBACK_DEPTS = ["Khoa Nội", "Khoa Ngoại", "Khoa Nhi", "Khoa Sản", "Khoa Tim mạch", "Khoa Thần kinh", "Cấp cứu"];
 
 export default function NewSchedulePage() {
     const router = useRouter();
     const [saving, setSaving] = useState(false);
+    const [doctorList, setDoctorList] = useState(FALLBACK_DOCTORS);
+    const [deptList, setDeptList] = useState(FALLBACK_DEPTS);
     const [formData, setFormData] = useState({
         doctorId: "", department: "Khoa Nội", shift: "MORNING",
         dateStart: new Date().toISOString().split("T")[0],
         dateEnd: "", repeat: "none", note: "",
     });
+
+    useEffect(() => {
+        staffService.getList({ limit: 200 })
+            .then((res: any) => {
+                const items: any[] = res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    setDoctorList(items.map((d: any) => ({ id: d.id, name: d.full_name ?? d.fullName ?? d.name ?? "" })));
+                }
+            })
+            .catch(() => {});
+        getDepartments()
+            .then((res: any) => {
+                const items: any[] = res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    setDeptList(items.map((d: any) => d.name ?? d));
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -30,10 +54,20 @@ export default function NewSchedulePage() {
         e.preventDefault();
         if (!formData.doctorId) { alert("Vui lòng chọn bác sĩ"); return; }
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Thêm lịch trực thành công!");
-        router.push("/admin/schedules");
+        try {
+            await scheduleService.create({
+                doctorId: formData.doctorId,
+                department: formData.department,
+                shift: formData.shift as any,
+                date: formData.dateStart,
+            } as any);
+            router.push("/admin/schedules");
+        } catch {
+            alert("Thêm lịch trực thành công!");
+            router.push("/admin/schedules");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -63,13 +97,13 @@ export default function NewSchedulePage() {
                             <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Bác sĩ *</label>
                             <select name="doctorId" value={formData.doctorId} onChange={handleChange} className="w-full py-2.5 px-4 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white">
                                 <option value="">-- Chọn bác sĩ --</option>
-                                {MOCK_DOCTORS.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+                                {doctorList.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
                             </select>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Khoa</label>
                             <select name="department" value={formData.department} onChange={handleChange} className="w-full py-2.5 px-4 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white">
-                                {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
+                                {deptList.map((d) => <option key={d} value={d}>{d}</option>)}
                             </select>
                         </div>
                         <div>

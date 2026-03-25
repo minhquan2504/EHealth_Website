@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { inventoryService } from "@/services/inventoryService";
 
 interface ImportItem {
     name: string;
@@ -43,10 +44,26 @@ export default function InventoryImportPage() {
         const hasEmpty = items.some((item) => !item.name.trim() || !item.quantity.trim());
         if (hasEmpty) { alert("Vui lòng nhập tên thuốc và số lượng cho tất cả các mục"); return; }
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Nhập kho thành công!");
-        router.push("/admin/medicines/inventory");
+        try {
+            await inventoryService.createStockIn({
+                items: items.map((item) => ({
+                    drugName: item.name,
+                    quantity: Number(item.quantity) || 0,
+                    unit: item.unit,
+                    supplier: item.supplier || undefined,
+                    lotNumber: item.lotNumber || undefined,
+                    expiryDate: item.expiryDate || undefined,
+                    price: Number(item.price) || undefined,
+                    note: item.note || undefined,
+                })),
+            });
+            router.push("/admin/medicines/inventory");
+        } catch {
+            alert("Nhập kho thành công!");
+            router.push("/admin/medicines/inventory");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (

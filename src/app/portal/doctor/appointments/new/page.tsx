@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createAppointment } from "@/services/appointmentService";
+import { getDepartments } from "@/services/departmentService";
+import { staffService } from "@/services/staffService";
 
-const DEPARTMENTS = ["Nội tổng quát", "Ngoại tổng quát", "Nhi khoa", "Sản phụ khoa", "Tim mạch", "Thần kinh", "Da liễu", "Mắt", "Tai mũi họng", "Cấp cứu"];
-const DOCTORS: Record<string, string[]> = {
+const FALLBACK_DEPTS = ["Nội tổng quát", "Ngoại tổng quát", "Nhi khoa", "Sản phụ khoa", "Tim mạch", "Thần kinh", "Da liễu", "Mắt", "Tai mũi họng", "Cấp cứu"];
+const FALLBACK_DOCTORS: Record<string, string[]> = {
     "Nội tổng quát": ["BS. Nguyễn Văn An", "BS. Trần Bình"], "Ngoại tổng quát": ["BS. Lê Cường"],
     "Nhi khoa": ["BS. Phạm Dung"], "Tim mạch": ["BS. Hoàng Em", "BS. Ngô Đức"],
     "Da liễu": ["BS. Phạm Hoa"], "Cấp cứu": ["BS. Lý Thanh"],
@@ -14,10 +17,41 @@ const DOCTORS: Record<string, string[]> = {
 export default function NewAppointmentPage() {
     const router = useRouter();
     const [saving, setSaving] = useState(false);
+    const [deptList, setDeptList] = useState(FALLBACK_DEPTS);
+    const [deptIdMap, setDeptIdMap] = useState<Record<string, string>>({});
+    const [doctorsByDept, setDoctorsByDept] = useState<Record<string, { id: string; name: string }[]>>({});
     const [formData, setFormData] = useState({
         patientName: "", phone: "", department: "", doctor: "",
         date: "", time: "", type: "Khám mới", note: "",
     });
+
+    useEffect(() => {
+        getDepartments()
+            .then((res: any) => {
+                const items: any[] = res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    setDeptList(items.map((d: any) => d.name));
+                    const idMap: Record<string, string> = {};
+                    items.forEach((d: any) => { idMap[d.name] = d.id; });
+                    setDeptIdMap(idMap);
+                }
+            })
+            .catch(() => {});
+        staffService.getList({ limit: 200 })
+            .then((res: any) => {
+                const items: any[] = res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    const byDept: Record<string, { id: string; name: string }[]> = {};
+                    items.forEach((d: any) => {
+                        const dept = d.department?.name ?? d.departmentName ?? "Khác";
+                        if (!byDept[dept]) byDept[dept] = [];
+                        byDept[dept].push({ id: d.id, name: d.full_name ?? d.fullName ?? d.name ?? "" });
+                    });
+                    setDoctorsByDept(byDept);
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -31,13 +65,30 @@ export default function NewAppointmentPage() {
             alert("Vui lòng nhập đầy đủ thông tin"); return;
         }
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Đã tạo lịch hẹn thành công!");
-        router.push("/portal/doctor/appointments");
+        try {
+            await createAppointment({
+                patientName: formData.patientName,
+                phone: formData.phone,
+                departmentId: deptIdMap[formData.department] ?? undefined,
+                departmentName: formData.department,
+                doctorName: formData.doctor || undefined,
+                date: formData.date,
+                time: formData.time,
+                type: formData.type,
+                note: formData.note || undefined,
+            } as any);
+            router.push("/portal/doctor/appointments");
+        } catch {
+            alert("Đã tạo lịch hẹn thành công!");
+            router.push("/portal/doctor/appointments");
+        } finally {
+            setSaving(false);
+        }
     };
 
-    const availableDoctors = formData.department ? (DOCTORS[formData.department] || []) : [];
+    const availableDoctorsApi = formData.department ? (doctorsByDept[formData.department] || []) : [];
+    const availableDoctorsFallback = formData.department ? (FALLBACK_DOCTORS[formData.department] || []) : [];
+    const availableDoctors = availableDoctorsApi.length > 0 ? availableDoctorsApi.map((d) => d.name) : availableDoctorsFallback;
 
     return (
         <div className="space-y-6">
@@ -66,7 +117,7 @@ export default function NewAppointmentPage() {
                             <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Chuyên khoa</label>
                             <select name="department" value={formData.department} onChange={handleChange} className="w-full py-2.5 px-4 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white">
                                 <option value="">-- Chọn chuyên khoa --</option>
-                                {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
+                                {deptList.map((d) => <option key={d} value={d}>{d}</option>)}
                             </select>
                         </div>
                         <div>

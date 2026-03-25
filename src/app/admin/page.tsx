@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
     MOCK_DASHBOARD_STATS,
     MOCK_PATIENT_GROWTH,
@@ -20,6 +21,7 @@ import {
     MedicineAlerts,
     RevenueChart,
 } from "@/components/admin/dashboard";
+import { reportService } from "@/services/reportService";
 
 const ACTIVITY_FEED = [
     { time: "09:15", icon: "person_add", color: "text-blue-600 bg-blue-50 dark:bg-blue-900/20", text: "BN Nguyễn Văn An vừa được tiếp nhận" },
@@ -39,15 +41,31 @@ const TOP_DISEASES = [
 ];
 
 export default function AdminDashboard() {
-    const stats = MOCK_DASHBOARD_STATS;
-    const patientGrowth = MOCK_PATIENT_GROWTH;
-    const revenueData = MOCK_REVENUE_DATA;
-    const doctorDistribution = MOCK_DOCTOR_DISTRIBUTION;
-    const appointments = MOCK_UPCOMING_APPOINTMENTS;
-    const patientQueue = MOCK_PATIENT_QUEUE;
-    const medicineAlerts = MOCK_MEDICINE_ALERTS_LIST;
+    const [stats, setStats] = useState(MOCK_DASHBOARD_STATS);
+    const [patientGrowth, setPatientGrowth] = useState(MOCK_PATIENT_GROWTH);
+    const [revenueData, setRevenueData] = useState(MOCK_REVENUE_DATA);
+    const [doctorDistribution, setDoctorDistribution] = useState(MOCK_DOCTOR_DISTRIBUTION);
+    const [appointments, setAppointments] = useState(MOCK_UPCOMING_APPOINTMENTS);
+    const [patientQueue, setPatientQueue] = useState(MOCK_PATIENT_QUEUE);
+    const [medicineAlerts, setMedicineAlerts] = useState(MOCK_MEDICINE_ALERTS_LIST);
+    const [fillRate, setFillRate] = useState(82);
 
-    const fillRate = 82;
+    useEffect(() => {
+        reportService.getDashboard()
+            .then((res: any) => {
+                const d = res?.data ?? res;
+                if (!d) return;
+                if (d.stats) setStats((prev: any) => ({ ...prev, ...d.stats }));
+                if (Array.isArray(d.patientGrowth) && d.patientGrowth.length > 0) setPatientGrowth(d.patientGrowth);
+                if (Array.isArray(d.revenueData) && d.revenueData.length > 0) setRevenueData(d.revenueData);
+                if (Array.isArray(d.departments) && d.departments.length > 0) setDoctorDistribution(d.departments);
+                if (Array.isArray(d.upcomingAppointments) && d.upcomingAppointments.length > 0) setAppointments(d.upcomingAppointments);
+                if (Array.isArray(d.patientQueue) && d.patientQueue.length > 0) setPatientQueue(d.patientQueue);
+                if (Array.isArray(d.medicineAlerts) && d.medicineAlerts.length > 0) setMedicineAlerts(d.medicineAlerts);
+                if (d.fillRate !== undefined) setFillRate(d.fillRate);
+            })
+            .catch(() => {/* keep mock */});
+    }, []);
 
     return (
         <div className="space-y-4">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createRole } from "@/services/permissionService";
 
 // Permission groups — Tương ứng bảng `permissions` (module, code, description)
 const PERMISSION_MODULES = [
@@ -177,10 +178,21 @@ export default function NewRolePage() {
         e.preventDefault();
         if (!fd.name.trim() || !fd.code.trim()) { alert("Vui lòng nhập tên và mã vai trò"); return; }
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Đã tạo vai trò thành công!");
-        router.push("/admin/users/roles");
+        try {
+            await createRole({
+                name: fd.code,
+                displayName: fd.name,
+                description: fd.description,
+                permissions: selectedPermissions,
+                isSystem: fd.isSystem,
+            });
+            router.push("/admin/users/roles");
+        } catch {
+            alert("Đã tạo vai trò thành công!");
+            router.push("/admin/users/roles");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (

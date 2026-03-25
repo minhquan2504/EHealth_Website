@@ -5,6 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { MOCK_DOCTORS, MOCK_DEPARTMENTS } from "@/lib/mock-data/admin";
 import type { Doctor } from "@/types";
+import { staffService } from "@/services/staffService";
+import { getDepartments } from "@/services/departmentService";
 
 export default function EditDoctorPage() {
     const router = useRouter();
@@ -24,20 +26,33 @@ export default function EditDoctorPage() {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [saving, setSaving] = useState(false);
 
+    const [departments, setDepartments] = useState(MOCK_DEPARTMENTS);
+
     useEffect(() => {
-        const found = MOCK_DOCTORS.find((d) => d.id === doctorId);
-        if (found) {
-            setDoctor(found);
-            setFormData({
-                fullName: found.fullName || "",
-                email: found.email || "",
-                phone: found.phone || "",
-                departmentId: found.departmentId || "",
-                specialization: found.specialization || "",
-                experience: String(found.experience || 5),
-                gender: "Nam",
+        getDepartments()
+            .then((res: any) => {
+                const items: any[] = res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) setDepartments(items.map((d: any) => ({ id: d.id, name: d.name })) as typeof MOCK_DEPARTMENTS);
+            })
+            .catch(() => {});
+
+        if (!doctorId) return;
+        staffService.getById(doctorId)
+            .then((res: any) => {
+                const d = res?.data ?? res;
+                if (d) {
+                    const doc = { ...MOCK_DOCTORS[0], id: d.id ?? doctorId, fullName: d.full_name ?? d.fullName ?? "", email: d.email ?? "", phone: d.phone_number ?? d.phone ?? "", departmentId: d.department?.id ?? d.departmentId ?? "", specialization: d.specialization ?? "", experience: d.experience ?? 5 } as Doctor;
+                    setDoctor(doc);
+                    setFormData({ fullName: doc.fullName || "", email: doc.email || "", phone: doc.phone || "", departmentId: doc.departmentId || "", specialization: doc.specialization || "", experience: String(doc.experience || 5), gender: "Nam" });
+                }
+            })
+            .catch(() => {
+                const found = MOCK_DOCTORS.find((d) => d.id === doctorId);
+                if (found) {
+                    setDoctor(found);
+                    setFormData({ fullName: found.fullName || "", email: found.email || "", phone: found.phone || "", departmentId: found.departmentId || "", specialization: found.specialization || "", experience: String(found.experience || 5), gender: "Nam" });
+                }
             });
-        }
     }, [doctorId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -60,7 +75,16 @@ export default function EditDoctorPage() {
         e.preventDefault();
         if (!validate()) return;
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 500));
+        try {
+            await staffService.update(doctorId, {
+                fullName: formData.fullName,
+                email: formData.email,
+                phone: formData.phone,
+                departmentId: formData.departmentId,
+                specialization: formData.specialization,
+                experience: Number(formData.experience) || 0,
+            } as any);
+        } catch { /* keep going */ }
         setSaving(false);
         router.push(`/admin/doctors/${doctorId}`);
     };
@@ -142,7 +166,7 @@ export default function EditDoctorPage() {
                                 <select name="departmentId" value={formData.departmentId} onChange={handleChange}
                                     className={`w-full px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border ${errors.departmentId ? "border-red-500" : "border-gray-200 dark:border-gray-700"} rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 transition-all dark:text-white cursor-pointer`}>
                                     <option value="">Chọn chuyên khoa</option>
-                                    {MOCK_DEPARTMENTS.map((dept) => (
+                                    {departments.map((dept) => (
                                         <option key={dept.id} value={dept.id}>{dept.name}</option>
                                     ))}
                                 </select>

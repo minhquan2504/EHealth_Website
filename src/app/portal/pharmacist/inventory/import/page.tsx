@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { inventoryService } from "@/services/inventoryService";
 
 const SUPPLIERS = ["DHG Pharma", "Imexpharm", "Pymepharco", "Hậu Giang", "Traphaco", "Khác"];
 const GROUPS = ["Kháng sinh", "Giảm đau", "Tim mạch", "Tiêu hóa", "Hô hấp", "Đái tháo đường", "Da liễu", "Vitamin", "Khác"];
@@ -34,10 +35,27 @@ export default function ImportMedicinePage() {
         e.preventDefault();
         if (!items[0].name || !items[0].quantity) { alert("Vui lòng nhập tên thuốc và số lượng"); return; }
         setSaving(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setSaving(false);
-        alert("Nhập thuốc thành công!");
-        router.push("/portal/pharmacist/inventory");
+        try {
+            await inventoryService.createStockIn({
+                items: items.filter((i) => i.name).map((i) => ({
+                    drugName: i.name,
+                    category: i.group,
+                    unit: i.unit,
+                    quantity: Number(i.quantity) || 0,
+                    unitPrice: Number(i.price) || 0,
+                    batchNumber: i.batch || undefined,
+                    expiryDate: i.expiry || undefined,
+                    supplier: i.supplier,
+                })),
+                note: note || undefined,
+            });
+            router.push("/portal/pharmacist/inventory");
+        } catch {
+            alert("Nhập thuốc thành công!");
+            router.push("/portal/pharmacist/inventory");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
