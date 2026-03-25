@@ -4,19 +4,10 @@ import { useState } from "react";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Các vai trò đăng nhập
-const ROLE_OPTIONS = [
-    { value: "admin", label: "Quản trị viên", icon: "admin_panel_settings", route: ROUTES.ADMIN.DASHBOARD },
-    { value: "doctor", label: "Bác sĩ", icon: "stethoscope", route: ROUTES.PORTAL.DOCTOR.DASHBOARD },
-    { value: "pharmacist", label: "Dược sĩ", icon: "medication", route: ROUTES.PORTAL.PHARMACIST.DASHBOARD },
-    { value: "receptionist", label: "Lễ tân", icon: "person_add", route: ROUTES.PORTAL.RECEPTIONIST.DASHBOARD },
-];
-
 export default function LoginPage() {
     const { login, isLoading } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [selectedRole, setSelectedRole] = useState("doctor");
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState("");
@@ -164,31 +155,6 @@ export default function LoginPage() {
                             <p className="text-[#94a3b8] text-sm">Chào mừng bạn trở lại hệ thống EHealth</p>
                         </div>
 
-                        {/* Role selector */}
-                        <div className="mb-4">
-                            <label className="block text-[#94a3b8] text-xs font-semibold uppercase tracking-wider mb-2">
-                                Vai trò
-                            </label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {ROLE_OPTIONS.map((role) => (
-                                    <button
-                                        key={role.value}
-                                        type="button"
-                                        onClick={() => setSelectedRole(role.value)}
-                                        className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-all duration-200 text-left ${selectedRole === role.value
-                                            ? "bg-[#3C81C6]/20 border-[#3C81C6]/50 text-[#60a5fa] shadow-lg shadow-[#3C81C6]/10"
-                                            : "bg-white/[0.03] border-white/[0.08] text-[#94a3b8] hover:bg-white/[0.06] hover:border-white/[0.15]"
-                                            }`}
-                                    >
-                                        <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
-                                            {role.icon}
-                                        </span>
-                                        <span className="text-sm font-medium">{role.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
                         <form onSubmit={handleLogin} className="space-y-4">
                             {/* Email */}
                             <div>
@@ -306,41 +272,6 @@ export default function LoginPage() {
                             </button>
                         </form>
 
-                        {/* Divider */}
-                        <div className="flex items-center gap-3 my-4">
-                            <div className="flex-1 h-px bg-white/[0.08]" />
-                            <span className="text-[#475569] text-xs uppercase tracking-wider font-medium">hoặc</span>
-                            <div className="flex-1 h-px bg-white/[0.08]" />
-                        </div>
-
-                        {/* Demo accounts */}
-                        <div className="space-y-1.5">
-                            <p className="text-[#64748b] text-xs text-center mb-2">Tài khoản demo</p>
-                            <div className="grid grid-cols-2 gap-2">
-                                {[
-                                    { email: "admin@ehealth.vn", role: "admin", label: "Quản trị", icon: "admin_panel_settings" },
-                                    { email: "doctor@ehealth.vn", role: "doctor", label: "Bác sĩ", icon: "stethoscope" },
-                                    { email: "pharma@ehealth.vn", role: "pharmacist", label: "Dược sĩ", icon: "medication" },
-                                    { email: "reception@ehealth.vn", role: "receptionist", label: "Lễ tân", icon: "person_add" },
-                                ].map((demo) => (
-                                    <button
-                                        key={demo.role}
-                                        type="button"
-                                        onClick={() => {
-                                            setEmail(demo.email);
-                                            setPassword("123456");
-                                            setSelectedRole(demo.role);
-                                        }}
-                                        className="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[#94a3b8] hover:bg-white/[0.08] hover:text-white hover:border-white/[0.15] transition-all duration-200 text-xs"
-                                    >
-                                        <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
-                                            {demo.icon}
-                                        </span>
-                                        <span className="font-medium">{demo.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
                     </div>
 
                     {/* Footer */}
