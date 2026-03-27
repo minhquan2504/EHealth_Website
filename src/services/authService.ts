@@ -61,10 +61,15 @@ export interface AuthResponse {
 // ============================================
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
     try {
+        // Backend yêu cầu device_id (not-null constraint trên user_sessions)
+        const deviceId = credentials.clientInfo?.deviceId
+            || `web_${navigator?.userAgent?.slice(0, 32).replace(/\s/g, '_') || 'browser'}_${Date.now()}`;
         const response = await axiosClient.post(AUTH_ENDPOINTS.LOGIN_EMAIL, {
             email: credentials.email,
             password: credentials.password,
-            clientInfo: credentials.clientInfo,
+            device_id: deviceId,
+            device_name: credentials.clientInfo?.deviceName || 'Web Browser',
+            user_agent: credentials.clientInfo?.userAgent || (typeof navigator !== 'undefined' ? navigator.userAgent : ''),
         });
 
         if (response.data.success && response.data.data) {
@@ -94,10 +99,13 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
 // ============================================
 export const loginByPhone = async (credentials: LoginPhoneCredentials): Promise<AuthResponse> => {
     try {
+        const deviceId = credentials.clientInfo?.deviceId
+            || `web_${navigator?.userAgent?.slice(0, 32).replace(/\s/g, '_') || 'browser'}_${Date.now()}`;
         const response = await axiosClient.post(AUTH_ENDPOINTS.LOGIN_PHONE, {
             phone: credentials.phone,
             password: credentials.password,
-            clientInfo: credentials.clientInfo,
+            device_id: deviceId,
+            device_name: credentials.clientInfo?.deviceName || 'Web Browser',
         });
 
         if (response.data.success && response.data.data) {
