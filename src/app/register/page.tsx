@@ -34,8 +34,8 @@ export default function RegisterPage() {
                 password: formData.password,
             });
             if (result.success) {
-                setSuccess("Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
-                setTimeout(() => router.push("/login"), 3000);
+                setSuccess("Đăng ký thành công! Đang chuyển đến trang xác thực email...");
+                setTimeout(() => router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`), 2000);
             } else {
                 setError(result.message || "Đăng ký thất bại");
             }
