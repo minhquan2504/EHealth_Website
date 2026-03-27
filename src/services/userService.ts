@@ -28,18 +28,36 @@ export interface User {
 
 export interface CreateUserData {
     email: string;
+    phone?: string;
     password: string;
-    fullName: string;
+    roles?: string[];         // ["DOCTOR"] — mảng, backend format
+    full_name?: string;       // backend format
+    dob?: string;             // "1985-12-25"
+    gender?: 'MALE' | 'FEMALE';
+    identity_card_number?: string;
+    address?: string;
+    // Frontend aliases (camelCase) — sẽ map sang snake_case khi gửi
+    fullName?: string;
     phoneNumber?: string;
-    role: string;
+    role?: string;
     departmentId?: string;
 }
 
 export interface UpdateUserData {
+    email?: string;
+    phone?: string;
+    roles?: string[];
+    status?: string;          // "ACTIVE" | "INACTIVE"
+    full_name?: string;
+    dob?: string;
+    gender?: 'MALE' | 'FEMALE';
+    identity_card_number?: string;
+    avatar_url?: string;
+    address?: string;
+    // Frontend aliases
     fullName?: string;
     phoneNumber?: string;
     role?: string;
-    status?: string;
     departmentId?: string;
 }
 
@@ -88,12 +106,15 @@ export const getUsers = async (params?: {
 export const searchUsers = async (params?: {
     page?: number;
     limit?: number;
-    keyword?: string;
+    q?: string;               // Swagger dùng 'q', không phải 'keyword'
     role?: string;
     status?: string;
+    keyword?: string;         // alias — sẽ map sang q
 }): Promise<UserListResponse> => {
     try {
-        const response = await axiosClient.get(USER_ENDPOINTS.SEARCH, { params });
+        const queryParams = { ...params, q: params?.q ?? params?.keyword };
+        if (queryParams.keyword) delete queryParams.keyword;
+        const response = await axiosClient.get(USER_ENDPOINTS.SEARCH, { params: queryParams });
         return response.data;
     } catch (error: any) {
         throw new Error(error.response?.data?.message || 'Tìm kiếm người dùng thất bại');
@@ -115,11 +136,14 @@ export const createUser = async (data: CreateUserData): Promise<User> => {
     try {
         const response = await axiosClient.post(USER_ENDPOINTS.CREATE, {
             email: data.email,
+            phone: data.phone ?? data.phoneNumber,
             password: data.password,
-            full_name: data.fullName,
-            phone_number: data.phoneNumber,
-            role: data.role,
-            department_id: data.departmentId,
+            roles: data.roles ?? (data.role ? [data.role.toUpperCase()] : ["STAFF"]),
+            full_name: data.full_name ?? data.fullName,
+            dob: data.dob,
+            gender: data.gender,
+            identity_card_number: data.identity_card_number,
+            address: data.address,
         });
         return response.data.data;
     } catch (error: any) {
@@ -130,13 +154,18 @@ export const createUser = async (data: CreateUserData): Promise<User> => {
 /** PUT /api/users/{userId} — Cập nhật người dùng */
 export const updateUser = async (id: string, data: UpdateUserData): Promise<User> => {
     try {
-        const response = await axiosClient.put(USER_ENDPOINTS.DETAIL(id), {
-            full_name: data.fullName,
-            phone_number: data.phoneNumber,
-            role: data.role,
-            status: data.status,
-            department_id: data.departmentId,
-        });
+        const payload: Record<string, any> = {};
+        if (data.email) payload.email = data.email;
+        if (data.phone ?? data.phoneNumber) payload.phone = data.phone ?? data.phoneNumber;
+        if (data.roles ?? data.role) payload.roles = data.roles ?? (data.role ? [data.role.toUpperCase()] : undefined);
+        if (data.status) payload.status = data.status.toUpperCase();
+        if (data.full_name ?? data.fullName) payload.full_name = data.full_name ?? data.fullName;
+        if (data.dob) payload.dob = data.dob;
+        if (data.gender) payload.gender = data.gender;
+        if (data.identity_card_number) payload.identity_card_number = data.identity_card_number;
+        if (data.avatar_url) payload.avatar_url = data.avatar_url;
+        if (data.address) payload.address = data.address;
+        const response = await axiosClient.put(USER_ENDPOINTS.DETAIL(id), payload);
         return response.data.data;
     } catch (error: any) {
         throw new Error(error.response?.data?.message || 'Cập nhật người dùng thất bại');
@@ -155,6 +184,16 @@ export const deleteUser = async (id: string): Promise<void> => {
 // ============================================
 // 1.1.2 Khóa / mở khóa tài khoản
 // ============================================
+
+/** PATCH /api/users/{userId}/lock — Khóa tài khoản */
+export const lockUser = async (id: string): Promise<{ success: boolean; message: string }> => {
+    try {
+        const response = await axiosClient.patch(USER_ENDPOINTS.LOCK(id));
+        return response.data;
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'Khóa tài khoản thất bại');
+    }
+};
 
 /** PATCH /api/users/{userId}/unlock — Mở khóa tài khoản */
 export const unlockUser = async (id: string): Promise<{ success: boolean; message: string }> => {

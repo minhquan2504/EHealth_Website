@@ -60,6 +60,7 @@ export const USER_ENDPOINTS = {
     DETAIL: (id: string) => `/api/users/${id}`,   // GET: chi tiết user
 
     // 1.1.2 Khóa / mở khóa tài khoản
+    LOCK: (id: string) => `/api/users/${id}/lock`,     // PATCH: khóa tài khoản
     UNLOCK: (id: string) => `/api/users/${id}/unlock`, // PATCH: mở khóa tài khoản
 
     // 1.1.3 Quản lý trạng thái tài khoản
