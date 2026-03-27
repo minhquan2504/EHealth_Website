@@ -30,6 +30,7 @@ module.exports = {
                 "float-fast": "float 4s ease-in-out infinite",
                 "pulse-slow": "pulse-glow 6s ease-in-out infinite",
                 "ecg-line": "ecg-dash 3s linear infinite",
+                marquee: "marquee 30s linear infinite",
             },
             keyframes: {
                 float: {
@@ -43,6 +44,10 @@ module.exports = {
                 "ecg-dash": {
                     "0%": { strokeDashoffset: "2400" },
                     "100%": { strokeDashoffset: "0" },
+                },
+                marquee: {
+                    "0%": { transform: "translateX(0)" },
+                    "100%": { transform: "translateX(-50%)" },
                 },
             },
         },

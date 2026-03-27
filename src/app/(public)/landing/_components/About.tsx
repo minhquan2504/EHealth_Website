@@ -1,8 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import { IMG, MILESTONES } from "./data";
 import { SafeImage } from "./SafeImage";
 import { ScrollReveal } from "./ScrollReveal";
 
 export function AboutSection({ scrollTo }: { scrollTo: (id: string) => void }) {
+    const [showVideo, setShowVideo] = useState(false);
+
     return (
         <section id="about" className="py-20 px-6 bg-slate-50" aria-label="Giới thiệu bệnh viện">
             <div className="max-w-7xl mx-auto">
@@ -65,6 +70,55 @@ export function AboutSection({ scrollTo }: { scrollTo: (id: string) => void }) {
                         </button>
                     </ScrollReveal>
                 </div>
+
+                {/* Video section */}
+                <ScrollReveal className="mb-20">
+                    <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-video cursor-pointer group" onClick={() => setShowVideo(true)}>
+                        <SafeImage src={IMG.videoThumb} alt="Video giới thiệu EHealth Hospital" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                            <div className="w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                                <span className="material-symbols-outlined text-[#3C81C6] text-[40px] ml-1" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
+                            </div>
+                            <p className="text-white text-lg font-bold tracking-wide">Xem video giới thiệu bệnh viện</p>
+                        </div>
+                    </div>
+                    {/* Video modal */}
+                    {showVideo && (
+                        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setShowVideo(false)}>
+                            <div className="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+                                <button onClick={() => setShowVideo(false)} className="absolute -top-10 right-0 text-white hover:text-gray-300 z-10">
+                                    <span className="material-symbols-outlined text-[32px]">close</span>
+                                </button>
+                                <div className="w-full h-full flex items-center justify-center text-white text-sm">
+                                    <div className="text-center">
+                                        <span className="material-symbols-outlined text-6xl mb-4 text-gray-500">videocam</span>
+                                        <p className="text-gray-400">Video giới thiệu sẽ được cập nhật</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </ScrollReveal>
+
+                {/* Mission & Vision */}
+                <ScrollReveal className="mb-20">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[
+                            { icon: "visibility", title: "Tầm nhìn", desc: "Trở thành hệ thống y tế thông minh hàng đầu Đông Nam Á, tiên phong ứng dụng AI trong chẩn đoán và điều trị.", color: "from-blue-500 to-indigo-600" },
+                            { icon: "flag", title: "Sứ mệnh", desc: "Cung cấp dịch vụ y tế chất lượng cao, tiếp cận dễ dàng, lấy bệnh nhân làm trung tâm với chi phí hợp lý.", color: "from-emerald-500 to-teal-600" },
+                            { icon: "diamond", title: "Giá trị cốt lõi", desc: "Tận tâm — Chuyên nghiệp — Đổi mới — Minh bạch. Mỗi bệnh nhân là một người thân trong gia đình.", color: "from-amber-500 to-orange-600" },
+                        ].map(item => (
+                            <div key={item.title} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all group">
+                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                                    <span className="material-symbols-outlined text-white text-[24px]">{item.icon}</span>
+                                </div>
+                                <h4 className="text-lg font-bold text-[#121417] mb-2">{item.title}</h4>
+                                <p className="text-sm text-[#687582] leading-relaxed">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </ScrollReveal>
 
                 {/* Milestones timeline */}
                 <ScrollReveal>

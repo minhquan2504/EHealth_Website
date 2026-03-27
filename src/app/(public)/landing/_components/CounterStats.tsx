@@ -29,11 +29,12 @@ export function CounterStats() {
             <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
                 {COUNTER_STATS.map((s, i) => (
                     <ScrollReveal key={s.label} delay={i * 100} className="text-center">
-                        <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
-                            <span className="material-symbols-outlined text-[#60a5fa] text-[26px]">{s.icon}</span>
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/10">
+                            <span className="material-symbols-outlined text-[#60a5fa] text-[28px]">{s.icon}</span>
                         </div>
                         <AnimatedCounter target={s.value} suffix={s.suffix} />
-                        <p className="text-sm text-gray-400 mt-2 font-medium">{s.label}</p>
+                        <p className="text-sm text-gray-300 mt-2 font-bold">{s.label}</p>
+                        <p className="text-[10px] text-gray-500 mt-0.5">{s.detail}</p>
                     </ScrollReveal>
                 ))}
             </div>

@@ -75,15 +75,70 @@ Tổng cộng: **32 hình ảnh**. Sau khi tạo xong, đặt vào thư mục `/
 
 ---
 
-## Tóm tắt
+## 8. Hinh anh BO SUNG (moi) — Landing Page cai tien
 
-| Nhóm | Số lượng |
-|-------|---------|
-| Hero & General | 4 |
+### Hero Slides (3 anh) — `public/img/general/`
+
+| File | Kich thuoc | Prompt |
+|------|-----------|--------|
+| `hero-slide-1.png` | 1920x800 | "A modern Vietnamese hospital exterior, daytime, glass building with green trees and fountains in front, patients and families walking in through automatic glass doors, blue sky with white clouds, professional medical facility sign with cross logo, photorealistic, wide angle lens, warm golden hour lighting, clean modern architecture, Southeast Asian setting" |
+| `hero-slide-2.png` | 1920x800 | "Inside a high-tech hospital AI control center, multiple large curved monitors showing patient data analytics and brain scan images, 2 Vietnamese medical staff in white coats analyzing data, blue LED ambient lighting, holographic medical data overlay effect, futuristic but realistic medical technology room, photorealistic, wide angle" |
+| `hero-slide-3.png` | 1920x800 | "Professional group photo of 8 Vietnamese doctors and nurses standing in a modern hospital lobby with marble floors, wearing white coats with stethoscopes, diverse team including male and female doctors of various ages, warm confident smiles, bright natural lighting from glass ceiling, hospital reception desk visible in background, photorealistic, corporate portrait style" |
+
+### Certification Badges (3 anh) — `public/img/general/`
+
+| File | Kich thuoc | Prompt |
+|------|-----------|--------|
+| `cert-iso.png` | 400x400 | "ISO 9001:2015 quality certification badge, gold circle medal with blue ribbon, text 'ISO 9001:2015' and 'CERTIFIED' visible, shield emblem in center, clean vector illustration style, white/transparent background, healthcare quality management certification, professional corporate emblem" |
+| `cert-jci.png` | 400x400 | "JCI Joint Commission International hospital accreditation gold seal badge, circular gold medal design with blue star center, text 'JCI ACCREDITED' around the border, official medical certification emblem, clean vector style, white/transparent background, international healthcare quality symbol" |
+| `cert-byt.png` | 400x400 | "Vietnamese Ministry of Health (Bo Y Te) official certification badge, circular red and gold government seal design with Vietnamese national emblem at center, text 'BO Y TE' and 'GIAY PHEP HOAT DONG', official government document seal style, clean design, white/transparent background" |
+
+### Bac si bo sung (4 anh) — `public/img/doctors/`
+
+| File | Kich thuoc | Prompt |
+|------|-----------|--------|
+| `doctor-5.png` | 600x750 | "Professional portrait photo of a Vietnamese female doctor, age 40-45, wearing clean white coat with stethoscope around neck, orthopedic surgeon specialist, hair pulled back neatly, warm genuine smile, light professional makeup, modern hospital corridor background slightly blurred (bokeh), studio-quality lighting with soft fill, upper body shot from chest up, photorealistic, clean background" |
+| `doctor-6.png` | 600x750 | "Professional portrait photo of a Vietnamese male doctor, age 48-52, wearing white coat, obstetrician and gynecologist specialist, wearing modern glasses, warm fatherly smile, confident calm expression, short neat hair, modern hospital office background blurred, professional headshot photography, soft natural lighting, upper body from chest up, photorealistic" |
+| `doctor-7.png` | 600x750 | "Professional portrait photo of a young Vietnamese female doctor, age 33-37, wearing white coat with stethoscope, ophthalmologist eye specialist, long hair with some loose strands, friendly approachable expression, modern eye clinic background with examination equipment blurred, bright clean lighting, upper body headshot, photorealistic, medical professional" |
+| `doctor-8.png` | 600x750 | "Professional portrait photo of a Vietnamese male doctor, age 43-47, wearing white dental coat, maxillofacial surgeon and dentist, warm professional smile showing good teeth, clean-shaven, modern dental clinic background blurred, professional studio lighting, upper body headshot from chest up, photorealistic, confident expression" |
+
+### Insurance Partner Logos bo sung (6 anh) — `public/img/partners/`
+
+> **Luu y:** Nen tai logo that tu internet thay vi tao bang AI de dam bao chinh xac.
+
+| File | Kich thuoc | Prompt |
+|------|-----------|--------|
+| `pvi.png` | 320x160 | "PVI Insurance Vietnam company logo, clean corporate design, blue and red color scheme, text 'PVI' prominently displayed, simple flat corporate branding, white/transparent background" |
+| `liberty.png` | 320x160 | "Liberty Insurance company logo, clean flat corporate design, green and white color theme, text 'Liberty Insurance', white/transparent background" |
+| `vbi.png` | 320x160 | "VBI Vietcombank Insurance company logo, blue and red corporate design, text 'VBI', white/transparent background" |
+| `sunlife.png` | 320x160 | "Sun Life Financial insurance logo, bright orange and yellow sun ray design, text 'Sun Life', white/transparent background" |
+| `fwd.png` | 320x160 | "FWD Insurance company logo, vibrant orange gradient modern design, bold text 'FWD', white/transparent background" |
+| `dai-ichi.png` | 320x160 | "Dai-ichi Life Insurance company logo, blue and red design, text 'Dai-ichi Life', white/transparent background" |
+
+### Video Thumbnail & App Mockup (2 anh) — `public/img/general/`
+
+| File | Kich thuoc | Prompt |
+|------|-----------|--------|
+| `video-thumb.png` | 1280x720 | "Aerial drone view of a modern Vietnamese hospital campus, 5-story glass and white concrete building complex, beautiful green garden landscaping with walking paths, parking lot with cars, ambulance at emergency entrance, helipad marker on rooftop, blue sky with scattered clouds, city skyline in distance, photorealistic drone photography style, golden hour warm lighting" |
+| `app-mockup.png` | 800x500 | "Two floating smartphones (iPhone and Samsung) showing a Vietnamese healthcare mobile app interface, left phone shows appointment booking screen with doctor profile and calendar, right phone shows patient health records dashboard with vital signs charts, modern clean flat UI design with blue color scheme, white clean background, slight shadow beneath phones, product mockup photography style" |
+
+---
+
+## Tom tat tong hop
+
+| Nhom | So luong |
+|------|---------|
+| Hero & General (cu) | 4 |
 | Equipment & Facility | 4 |
-| Doctors | 4 |
+| Doctors (cu) | 4 |
 | Services | 8 |
 | Testimonials | 3 |
-| Partners (logos) | 6 |
+| Partners (cu) | 6 |
 | News | 3 |
-| **Tổng** | **32** |
+| **BO SUNG MOI:** | |
+| Hero Slides | 3 |
+| Certification Badges | 3 |
+| Doctors (moi) | 4 |
+| Partners (moi) | 6 |
+| Video + App | 2 |
+| **Tong** | **50** |

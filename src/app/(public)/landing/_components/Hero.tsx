@@ -1,17 +1,40 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import { SafeImage } from "./SafeImage";
 import { ScrollReveal } from "./ScrollReveal";
-import { IMG, DOCTORS } from "./data";
+import { IMG, DOCTORS, HERO_SLIDES } from "./data";
 
 export function HeroSection({ scrollTo }: { scrollTo: (id: string) => void }) {
+    const [current, setCurrent] = useState(0);
+    const [paused, setPaused] = useState(false);
+
+    const next = useCallback(() => setCurrent((c) => (c + 1) % HERO_SLIDES.length), []);
+
+    useEffect(() => {
+        if (paused) return;
+        const t = setInterval(next, 5000);
+        return () => clearInterval(t);
+    }, [paused, next]);
+
+    const slide = HERO_SLIDES[current];
+
     return (
-        <section className="relative min-h-[92vh] flex items-center overflow-hidden" aria-label="Hero">
-            <div className="absolute inset-0 z-0">
+        <section className="relative min-h-[92vh] flex items-center overflow-hidden" aria-label="Hero" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+            {/* Background slides */}
+            {HERO_SLIDES.map((s, i) => (
+                <div key={i} className={`absolute inset-0 z-0 transition-opacity duration-1000 ${i === current ? "opacity-100" : "opacity-0"}`}>
+                    <SafeImage src={s.img} alt={s.title} fill className="object-cover" />
+                </div>
+            ))}
+            {/* Fallback to heroBg if slide images don't exist yet */}
+            <div className="absolute inset-0 z-[1]">
                 <SafeImage src={IMG.heroBg} alt="EHealth Hospital" fill className="object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-r from-white via-white/97 to-white/30" />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/50" />
             </div>
+            {/* Overlays */}
+            <div className="absolute inset-0 z-[2] bg-gradient-to-r from-white via-white/97 to-white/30" />
+            <div className="absolute inset-0 z-[2] bg-gradient-to-b from-white/30 via-transparent to-white/50" />
+
             <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <ScrollReveal>
                     {/* Trust badge */}
@@ -19,14 +42,14 @@ export function HeroSection({ scrollTo }: { scrollTo: (id: string) => void }) {
                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                         Bệnh viện đạt chuẩn JCI quốc tế
                     </div>
+
+                    {/* Dynamic headline */}
                     <h1 className="text-4xl md:text-5xl lg:text-[54px] font-black text-[#121417] leading-[1.08] mb-6 tracking-tight">
-                        Hệ thống Y tế<br />
-                        <span className="bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] bg-clip-text text-transparent">thông minh</span> hàng đầu<br />
-                        Việt Nam
+                        {slide.title}<br />
+                        <span className="bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] bg-clip-text text-transparent">{slide.highlight}</span><br />
+                        {slide.subtitle}
                     </h1>
-                    <p className="text-lg text-[#4a5568] mb-8 max-w-lg leading-relaxed">
-                        Đội ngũ <strong className="text-[#121417]">120+ bác sĩ chuyên khoa</strong>, trang thiết bị nhập khẩu từ <strong className="text-[#121417]">Đức, Nhật, Mỹ</strong>. Đặt lịch online — khám không chờ đợi.
-                    </p>
+                    <p className="text-lg text-[#4a5568] mb-8 max-w-lg leading-relaxed">{slide.desc}</p>
 
                     {/* CTA buttons */}
                     <div className="flex flex-wrap items-center gap-4 mb-10">
@@ -38,15 +61,23 @@ export function HeroSection({ scrollTo }: { scrollTo: (id: string) => void }) {
                         </a>
                     </div>
 
+                    {/* Slide indicators */}
+                    <div className="flex items-center gap-2 mb-8">
+                        {HERO_SLIDES.map((_, i) => (
+                            <button key={i} onClick={() => setCurrent(i)} className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? "w-8 bg-[#3C81C6]" : "w-3 bg-gray-300 hover:bg-gray-400"}`} aria-label={`Slide ${i + 1}`} />
+                        ))}
+                        <span className="ml-3 text-[10px] text-[#687582]">{String(current + 1).padStart(2, "0")} / {String(HERO_SLIDES.length).padStart(2, "0")}</span>
+                    </div>
+
                     {/* Social proof */}
                     <div className="flex items-center gap-6 flex-wrap">
                         <div className="flex -space-x-3">
-                            {DOCTORS.map((d, i) => (
+                            {DOCTORS.slice(0, 4).map((d, i) => (
                                 <div key={i} className="relative w-11 h-11 rounded-full border-[3px] border-white shadow-md overflow-hidden" style={{ zIndex: 4 - i }}>
                                     <SafeImage src={d.img} alt={d.name} fill className="object-cover" />
                                 </div>
                             ))}
-                            <div className="w-11 h-11 rounded-full border-[3px] border-white shadow-md bg-gradient-to-br from-[#3C81C6] to-[#1d4ed8] flex items-center justify-center text-white text-xs font-bold">+116</div>
+                            <div className="w-11 h-11 rounded-full border-[3px] border-white shadow-md bg-gradient-to-br from-[#3C81C6] to-[#1d4ed8] flex items-center justify-center text-white text-xs font-bold">+{DOCTORS.length > 4 ? 116 : "+"}</div>
                         </div>
                         <div className="border-l-2 border-gray-200 pl-6">
                             <div className="flex items-center gap-1 mb-0.5">

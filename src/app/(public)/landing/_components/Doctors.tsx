@@ -1,19 +1,41 @@
-import { DOCTORS } from "./data";
+"use client";
+
+import { useState } from "react";
+import { DOCTORS, SERVICES } from "./data";
 import { SafeImage } from "./SafeImage";
 import { ScrollReveal } from "./ScrollReveal";
 
+const DEPT_TABS = ["Tất cả", ...SERVICES.map(s => s.title)];
+
 export function DoctorTeam({ scrollTo }: { scrollTo: (id: string) => void }) {
+    const [activeTab, setActiveTab] = useState("Tất cả");
+
+    const filtered = activeTab === "Tất cả" ? DOCTORS : DOCTORS.filter(d => d.dept === activeTab);
+
     return (
         <section id="doctors" className="py-20 px-6 bg-slate-50" aria-label="Đội ngũ bác sĩ">
             <div className="max-w-7xl mx-auto">
-                <ScrollReveal className="text-center mb-14">
+                <ScrollReveal className="text-center mb-10">
                     <p className="text-sm font-bold text-[#3C81C6] uppercase tracking-widest mb-2">Đội ngũ chuyên gia</p>
                     <h2 className="text-3xl md:text-4xl font-black text-[#121417] mb-3">Bác sĩ chuyên khoa hàng đầu</h2>
                     <p className="text-[#687582] max-w-2xl mx-auto">Đội ngũ giáo sư, tiến sĩ, bác sĩ chuyên khoa II với nhiều năm kinh nghiệm trong và ngoài nước.</p>
                 </ScrollReveal>
+
+                {/* Department filter tabs */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-hide">
+                    {DEPT_TABS.map(tab => (
+                        <button key={tab} onClick={() => setActiveTab(tab)}
+                            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${activeTab === tab
+                                ? "bg-[#3C81C6] text-white shadow-md shadow-blue-200"
+                                : "bg-white text-[#687582] border border-gray-200 hover:border-[#3C81C6] hover:text-[#3C81C6]"}`}>
+                            {tab}
+                        </button>
+                    ))}
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {DOCTORS.map((d, i) => (
-                        <ScrollReveal key={d.name} delay={i * 100}>
+                    {filtered.map((d, i) => (
+                        <ScrollReveal key={d.name} delay={i * 80}>
                             <div className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
                                 <div className="relative h-72 overflow-hidden bg-gradient-to-b from-blue-50 to-blue-100">
                                     <SafeImage src={d.img} alt={d.name} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-500" />
@@ -23,6 +45,10 @@ export function DoctorTeam({ scrollTo }: { scrollTo: (id: string) => void }) {
                                         : "bg-gray-100/90 text-gray-500"}`}>
                                         <span className={`w-1.5 h-1.5 rounded-full ${d.available ? "bg-green-500 animate-pulse" : "bg-gray-400"}`} />
                                         {d.available ? "Đang nhận lịch" : "Hết lịch"}
+                                    </div>
+                                    {/* Department badge */}
+                                    <div className="absolute bottom-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[10px] font-bold text-[#3C81C6]">
+                                        {d.dept}
                                     </div>
                                 </div>
                                 <div className="p-5 flex flex-col flex-1">
@@ -38,7 +64,7 @@ export function DoctorTeam({ scrollTo }: { scrollTo: (id: string) => void }) {
                                             ))}
                                         </div>
                                         <span className="text-xs font-bold text-[#121417]">{d.rating}</span>
-                                        <span className="text-[10px] text-[#687582]">({d.reviews} đánh giá)</span>
+                                        <span className="text-[10px] text-[#687582]">({d.reviews})</span>
                                     </div>
 
                                     {/* Specialties */}
@@ -55,11 +81,11 @@ export function DoctorTeam({ scrollTo }: { scrollTo: (id: string) => void }) {
                                         <button onClick={() => scrollTo("booking")}
                                             disabled={!d.available}
                                             className={`w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all ${d.available
-                                                ? "border-2 border-[#3C81C6] text-[#3C81C6] hover:bg-[#3C81C6] hover:text-white"
+                                                ? "bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] text-white hover:shadow-lg hover:shadow-blue-200"
                                                 : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
                                             aria-label={`Đặt lịch khám với ${d.name}`}>
                                             <span className="material-symbols-outlined text-[16px]">calendar_month</span>
-                                            {d.available ? "Đặt lịch khám" : "Hết lịch"}
+                                            {d.available ? "Đặt lịch ngay" : "Hết lịch"}
                                         </button>
                                     </div>
                                 </div>
@@ -67,6 +93,14 @@ export function DoctorTeam({ scrollTo }: { scrollTo: (id: string) => void }) {
                         </ScrollReveal>
                     ))}
                 </div>
+
+                {filtered.length === 0 && (
+                    <div className="text-center py-16 text-[#687582]">
+                        <span className="material-symbols-outlined text-4xl mb-2">search_off</span>
+                        <p className="text-sm">Chưa có bác sĩ cho chuyên khoa này</p>
+                    </div>
+                )}
+
                 <ScrollReveal className="text-center mt-10">
                     <button className="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-200 text-[#4a5568] rounded-xl text-sm font-bold hover:border-[#3C81C6] hover:text-[#3C81C6] transition-all active:scale-95">
                         Xem tất cả bác sĩ <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

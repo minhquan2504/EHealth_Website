@@ -6,16 +6,22 @@
 export const IMG = {
     hero: "/img/general/hero-doctor.png",
     heroBg: "/img/general/hero-bg.png",
+    heroSlides: ["/img/general/hero-slide-1.png", "/img/general/hero-slide-2.png", "/img/general/hero-slide-3.png"],
     about: "/img/general/about-hospital.png",
     ctaBg: "/img/general/cta-bg.png",
     equipment: "/img/general/equipment.png",
     labRoom: "/img/general/lab-room.png",
     surgeryRoom: "/img/general/surgery-room.png",
     lobby: "/img/general/lobby.png",
-    doctors: ["/img/doctors/doctor-1.png", "/img/doctors/doctor-2.png", "/img/doctors/doctor-3.png", "/img/doctors/doctor-4.png"],
+    videoThumb: "/img/general/video-thumb.png",
+    appMockup: "/img/general/app-mockup.png",
+    certIso: "/img/general/cert-iso.png",
+    certJci: "/img/general/cert-jci.png",
+    certByt: "/img/general/cert-byt.png",
+    doctors: ["/img/doctors/doctor-1.png", "/img/doctors/doctor-2.png", "/img/doctors/doctor-3.png", "/img/doctors/doctor-4.png", "/img/doctors/doctor-5.png", "/img/doctors/doctor-6.png", "/img/doctors/doctor-7.png", "/img/doctors/doctor-8.png"],
     services: ["/img/services/cardiology.png", "/img/services/neurology.png", "/img/services/dermatology.png", "/img/services/pediatrics.png", "/img/services/ophthalmology.png", "/img/services/dentistry.png", "/img/services/orthopedics.png", "/img/services/obstetrics.png"],
     testimonials: ["/img/testimonials/patient-1.png", "/img/testimonials/patient-2.png", "/img/testimonials/patient-3.png"],
-    partners: ["/img/partners/bhxh.png", "/img/partners/baolong.png", "/img/partners/baoviet.png", "/img/partners/manulife.png", "/img/partners/prudential.png", "/img/partners/aia.png"],
+    partners: ["/img/partners/bhxh.png", "/img/partners/baolong.png", "/img/partners/baoviet.png", "/img/partners/manulife.png", "/img/partners/prudential.png", "/img/partners/aia.png", "/img/partners/pvi.png", "/img/partners/liberty.png", "/img/partners/vbi.png", "/img/partners/sunlife.png", "/img/partners/fwd.png", "/img/partners/dai-ichi.png"],
     news: ["/img/news/news-1.png", "/img/news/news-2.png", "/img/news/news-3.png"],
 };
 
@@ -31,10 +37,14 @@ export const SERVICES = [
 ];
 
 export const DOCTORS = [
-    { name: "PGS.TS. Trần Văn Minh", title: "Trưởng khoa Tim mạch", exp: "25 năm kinh nghiệm", specialties: ["Can thiệp mạch vành", "Suy tim", "Rối loạn nhịp"], img: IMG.doctors[0], rating: 4.9, reviews: 320, available: true, fee: "500.000đ" },
-    { name: "TS.BS. Nguyễn Thị Hoa", title: "Chuyên gia Da liễu", exp: "18 năm kinh nghiệm", specialties: ["Laser trị nám", "Trị mụn", "Thẩm mỹ da"], img: IMG.doctors[1], rating: 4.8, reviews: 285, available: true, fee: "400.000đ" },
-    { name: "BS.CK2. Phạm Đức Long", title: "Trưởng khoa Nhi", exp: "20 năm kinh nghiệm", specialties: ["Hô hấp nhi", "Tiêu hoá nhi", "Dinh dưỡng"], img: IMG.doctors[2], rating: 4.9, reviews: 410, available: false, fee: "450.000đ" },
-    { name: "TS.BS. Lê Hoàng Anh", title: "Chuyên gia Thần kinh", exp: "15 năm kinh nghiệm", specialties: ["Đột quỵ", "Parkinson", "Đau đầu mạn"], img: IMG.doctors[3], rating: 4.7, reviews: 198, available: true, fee: "500.000đ" },
+    { name: "PGS.TS. Trần Văn Minh", title: "Trưởng khoa Tim mạch", dept: "Tim mạch", exp: "25 năm kinh nghiệm", specialties: ["Can thiệp mạch vành", "Suy tim", "Rối loạn nhịp"], img: IMG.doctors[0], rating: 4.9, reviews: 320, available: true, fee: "500.000đ" },
+    { name: "TS.BS. Nguyễn Thị Hoa", title: "Chuyên gia Da liễu", dept: "Da liễu", exp: "18 năm kinh nghiệm", specialties: ["Laser trị nám", "Trị mụn", "Thẩm mỹ da"], img: IMG.doctors[1], rating: 4.8, reviews: 285, available: true, fee: "400.000đ" },
+    { name: "BS.CK2. Phạm Đức Long", title: "Trưởng khoa Nhi", dept: "Nhi khoa", exp: "20 năm kinh nghiệm", specialties: ["Hô hấp nhi", "Tiêu hoá nhi", "Dinh dưỡng"], img: IMG.doctors[2], rating: 4.9, reviews: 410, available: false, fee: "450.000đ" },
+    { name: "TS.BS. Lê Hoàng Anh", title: "Chuyên gia Thần kinh", dept: "Thần kinh", exp: "15 năm kinh nghiệm", specialties: ["Đột quỵ", "Parkinson", "Đau đầu mạn"], img: IMG.doctors[3], rating: 4.7, reviews: 198, available: true, fee: "500.000đ" },
+    { name: "PGS.TS. Võ Thanh Tùng", title: "Trưởng khoa Chỉnh hình", dept: "Chấn thương chỉnh hình", exp: "22 năm kinh nghiệm", specialties: ["Thay khớp gối", "Nội soi khớp vai", "Chấn thương thể thao"], img: IMG.doctors[4], rating: 4.8, reviews: 256, available: true, fee: "450.000đ" },
+    { name: "TS.BS. Đặng Minh Châu", title: "Trưởng khoa Sản phụ", dept: "Sản phụ khoa", exp: "20 năm kinh nghiệm", specialties: ["IVF", "Thai kỳ nguy cơ cao", "Sinh mổ"], img: IMG.doctors[5], rating: 4.9, reviews: 380, available: true, fee: "500.000đ" },
+    { name: "BS.CK2. Lý Ngọc Hà", title: "Chuyên gia Nhãn khoa", dept: "Nhãn khoa", exp: "16 năm kinh nghiệm", specialties: ["LASIK", "Phẫu thuật Phaco", "Điều trị Glaucoma"], img: IMG.doctors[6], rating: 4.7, reviews: 175, available: true, fee: "400.000đ" },
+    { name: "TS.BS. Huỳnh Bảo Quốc", title: "Trưởng khoa RHM", dept: "Răng hàm mặt", exp: "18 năm kinh nghiệm", specialties: ["Implant nha khoa", "Niềng răng", "Phẫu thuật hàm mặt"], img: IMG.doctors[7], rating: 4.8, reviews: 220, available: true, fee: "450.000đ" },
 ];
 
 export const TESTIMONIALS = [
@@ -44,10 +54,10 @@ export const TESTIMONIALS = [
 ];
 
 export const COUNTER_STATS = [
-    { label: "Bệnh nhân tin tưởng", value: 50000, suffix: "+", icon: "groups" },
-    { label: "Bác sĩ chuyên khoa", value: 120, suffix: "+", icon: "medical_services" },
-    { label: "Năm hoạt động", value: 15, suffix: "", icon: "calendar_month" },
-    { label: "Tỷ lệ hài lòng", value: 98, suffix: "%", icon: "thumb_up" },
+    { label: "Bệnh nhân tin tưởng", value: 50000, suffix: "+", icon: "groups", detail: "mỗi năm" },
+    { label: "PGS, TS, BS chuyên khoa", value: 120, suffix: "+", icon: "medical_services", detail: "8 chuyên khoa" },
+    { label: "Năm hoạt động", value: 15, suffix: "+", icon: "calendar_month", detail: "từ năm 2011" },
+    { label: "Tỷ lệ hài lòng", value: 98, suffix: "%", icon: "thumb_up", detail: "12,500+ đánh giá" },
 ];
 
 export const PROCESS_STEPS = [
@@ -84,6 +94,24 @@ export const PARTNERS = [
     { name: "Manulife", img: IMG.partners[3] },
     { name: "Prudential", img: IMG.partners[4] },
     { name: "AIA", img: IMG.partners[5] },
+    { name: "PVI", img: IMG.partners[6] },
+    { name: "Liberty", img: IMG.partners[7] },
+    { name: "VBI", img: IMG.partners[8] },
+    { name: "Sun Life", img: IMG.partners[9] },
+    { name: "FWD", img: IMG.partners[10] },
+    { name: "Dai-ichi Life", img: IMG.partners[11] },
+];
+
+export const HERO_SLIDES = [
+    { img: IMG.heroSlides[0], title: "Hệ thống Y tế", highlight: "Thông minh", subtitle: "hàng đầu Việt Nam", desc: "Đội ngũ 120+ bác sĩ chuyên khoa, trang thiết bị nhập khẩu từ Đức, Nhật, Mỹ." },
+    { img: IMG.heroSlides[1], title: "Ứng dụng", highlight: "AI tiên phong", subtitle: "trong chẩn đoán", desc: "Hệ thống AI hỗ trợ chẩn đoán với độ chính xác 97%, rút ngắn thời gian điều trị." },
+    { img: IMG.heroSlides[2], title: "Đội ngũ", highlight: "Chuyên gia", subtitle: "tận tâm", desc: "24 PGS.TS, 120+ bác sĩ CK2, kinh nghiệm trung bình 18 năm trong nghề." },
+];
+
+export const CERTIFICATIONS = [
+    { name: "ISO 9001:2015", desc: "Chứng nhận quản lý chất lượng", img: IMG.certIso, year: "2015" },
+    { name: "JCI Accreditation", desc: "Chuẩn quốc tế bệnh viện", img: IMG.certJci, year: "2019" },
+    { name: "Bộ Y Tế", desc: "Giấy phép hoạt động", img: IMG.certByt, year: "2011" },
 ];
 
 export const EQUIPMENT_LIST = [
