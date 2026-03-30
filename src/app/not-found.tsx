@@ -2,11 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-/**
- * Next.js Not Found page
- * Hiển thị khi truy cập URL không tồn tại
- */
-export default function NotFound() {
+export default function NotFoundPage() {
     const router = useRouter();
 
     return (

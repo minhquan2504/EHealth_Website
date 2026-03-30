@@ -46,7 +46,7 @@ export default function ActivityLogsPage() {
 
     useEffect(() => {
         auditService.getLogs({ limit: 100 })
-            .then(res => { if (res?.data?.data) setLogs(res.data.data); })
+            .then((res: any) => { const items = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? []; if (Array.isArray(items) && items.length > 0) setLogs(items); })
             .catch(() => { /* giữ mock data nếu API lỗi */ });
     }, []);
 
@@ -232,7 +232,9 @@ export default function ActivityLogsPage() {
                                 </tr>
                             ) : (
                                 filteredLogs.map((log) => {
-                                    const statusInfo = STATUS_STYLES[log.status];
+                                    const statusKey = log.status as keyof typeof STATUS_STYLES;
+                                    const statusUpper = log.status?.toUpperCase?.() as keyof typeof STATUS_STYLES;
+                                    const statusInfo = STATUS_STYLES[statusKey] ?? STATUS_STYLES[statusUpper] ?? { label: log.status ?? "N/A", bg: "bg-gray-100 dark:bg-gray-800", text: "text-gray-600 dark:text-gray-400", icon: "info" };
                                     return (
                                         <tr key={log.id} className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                             <td className="py-4 px-6 text-sm text-[#687582] dark:text-gray-400">

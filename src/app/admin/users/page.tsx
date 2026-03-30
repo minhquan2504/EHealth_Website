@@ -32,9 +32,10 @@ export default function UsersPage() {
         const fetchUsers = async () => {
             try {
                 setIsDataLoading(true);
-                const res = await userService.getUsers({ limit: 100 });
-                if (res?.data) {
-                    setUsers(res.data as unknown as User[]);
+                const res: any = await userService.getUsers({ limit: 100 });
+                const items = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    setUsers(items as unknown as User[]);
                 }
             } catch (err) {
                 console.error('Lỗi tải danh sách người dùng:', err);

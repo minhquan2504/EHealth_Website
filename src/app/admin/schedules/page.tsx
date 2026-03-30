@@ -117,9 +117,9 @@ export default function SchedulesPage() {
             to: to.toISOString().split("T")[0],
             limit: 500,
         })
-            .then(res => {
-                const items: any[] = res?.data ?? [];
-                if (items.length > 0) {
+            .then((res: any) => {
+                const items: any[] = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
                     setSchedules(items.map((s: any) => ({
                         id: s.id,
                         doctorId: s.doctorId ?? "",

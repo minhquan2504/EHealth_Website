@@ -23,8 +23,9 @@ export default function DepartmentsPage() {
         const fetchDepts = async () => {
             try {
                 setIsDataLoading(true);
-                const res = await departmentService.getDepartments({ limit: 100 });
-                if (res?.data) setDepartments(res.data as unknown as Department[]);
+                const res: any = await departmentService.getDepartments({ limit: 100 });
+                const items = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items)) setDepartments(items as Department[]);
             } catch (err) {
                 console.error('Lỗi tải danh sách khoa:', err);
             } finally {

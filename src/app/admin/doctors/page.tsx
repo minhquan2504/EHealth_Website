@@ -33,9 +33,9 @@ export default function DoctorsPage() {
     useEffect(() => {
         // Dùng /api/staff?role=DOCTOR — endpoint chính xác từ Swagger
         staffService.getList({ role: "DOCTOR", limit: 200 })
-            .then(res => {
-                const items: any[] = res?.data ?? [];
-                if (items.length > 0) {
+            .then((res: any) => {
+                const items: any[] = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
                     setDoctors(items.map((d: any) => ({
                         ...MOCK_DOCTORS[0],
                         id: d.id,

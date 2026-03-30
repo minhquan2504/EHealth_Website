@@ -75,7 +75,9 @@ Tổng cộng: **32 hình ảnh**. Sau khi tạo xong, đặt vào thư mục `/
 
 ---
 
-## 8. Hinh anh BO SUNG (moi) — Landing Page cai tien
+## 8. ANH CON THIEU (18 anh) — Can tao bang Gemini
+
+> **QUAN TRONG:** 18 anh duoi day CHUA CO trong `/public/img/`. Tao xong dat vao dung thu muc.
 
 ### Hero Slides (3 anh) — `public/img/general/`
 
@@ -124,21 +126,23 @@ Tổng cộng: **32 hình ảnh**. Sau khi tạo xong, đặt vào thư mục `/
 
 ---
 
-## Tom tat tong hop
+## TRANG THAI ANH
 
-| Nhom | So luong |
-|------|---------|
-| Hero & General (cu) | 4 |
-| Equipment & Facility | 4 |
-| Doctors (cu) | 4 |
-| Services | 8 |
-| Testimonials | 3 |
-| Partners (cu) | 6 |
-| News | 3 |
-| **BO SUNG MOI:** | |
-| Hero Slides | 3 |
-| Certification Badges | 3 |
-| Doctors (moi) | 4 |
-| Partners (moi) | 6 |
-| Video + App | 2 |
-| **Tong** | **50** |
+### DA CO (31 anh) ✅
+| Thu muc | Files |
+|---------|-------|
+| `/public/img/general/` | hero-bg, hero-doctor, about-hospital, cta-bg, equipment, surgery-room, lab-room, lobby (8) |
+| `/public/img/doctors/` | doctor-1, doctor-2, doctor-3, doctor-4 (4) |
+| `/public/img/services/` | cardiology, neurology, dermatology, pediatrics, ophthalmology, dentistry, orthopedics, obstetrics (8) |
+| `/public/img/testimonials/` | patient-1, patient-2, patient-3 (3) |
+| `/public/img/partners/` | bhxh, baolong, baoviet, manulife, prudential, aia (6) |
+| `/public/img/news/` | news-1, news-2, news-3 (3) |
+
+### CON THIEU (18 anh) ❌ — Xem Section 8 de lay prompt
+| Thu muc | Files thieu |
+|---------|-------------|
+| `/public/img/general/` | hero-slide-1, hero-slide-2, hero-slide-3, video-thumb, app-mockup, cert-iso, cert-jci, cert-byt (8) |
+| `/public/img/doctors/` | doctor-5, doctor-6, doctor-7, doctor-8 (4) |
+| `/public/img/partners/` | pvi, liberty, vbi, sunlife, fwd, dai-ichi (6) |
+
+**Tong: 31 da co + 18 thieu = 49 anh**

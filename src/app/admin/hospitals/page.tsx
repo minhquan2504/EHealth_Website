@@ -44,9 +44,9 @@ export default function HospitalsPage() {
 
     useEffect(() => {
         facilityService.getList({ limit: 100 })
-            .then(res => {
-                const items: any[] = res?.data ?? [];
-                if (items.length > 0) {
+            .then((res: any) => {
+                const items: any[] = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? [];
+                if (Array.isArray(items) && items.length > 0) {
                     setHospitals(items.map((f: any) => ({
                         id: f.id,
                         name: f.name ?? "",
