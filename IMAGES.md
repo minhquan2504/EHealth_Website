@@ -128,21 +128,17 @@ Tổng cộng: **32 hình ảnh**. Sau khi tạo xong, đặt vào thư mục `/
 
 ## TRANG THAI ANH
 
-### DA CO (31 anh) ✅
+### DA CO (49 anh) ✅ — TAT CA DA HOAN THANH
 | Thu muc | Files |
 |---------|-------|
-| `/public/img/general/` | hero-bg, hero-doctor, about-hospital, cta-bg, equipment, surgery-room, lab-room, lobby (8) |
-| `/public/img/doctors/` | doctor-1, doctor-2, doctor-3, doctor-4 (4) |
+| `/public/img/general/` | hero-bg, hero-doctor, about-hospital, cta-bg, equipment, surgery-room, lab-room, lobby, hero-slide-1, hero-slide-2, hero-slide-3, video-thumb, app-mockup, cert-iso, cert-jci, cert-byt (16) |
+| `/public/img/doctors/` | doctor-1, doctor-2, doctor-3, doctor-4, doctor-5, doctor-6, doctor-7, doctor-8 (8) |
 | `/public/img/services/` | cardiology, neurology, dermatology, pediatrics, ophthalmology, dentistry, orthopedics, obstetrics (8) |
 | `/public/img/testimonials/` | patient-1, patient-2, patient-3 (3) |
-| `/public/img/partners/` | bhxh, baolong, baoviet, manulife, prudential, aia (6) |
+| `/public/img/partners/` | bhxh, baolong, baoviet, manulife, prudential, aia, pvi, liberty, vbi, sunlife, fwd, dai-ichi (12) |
 | `/public/img/news/` | news-1, news-2, news-3 (3) |
 
-### CON THIEU (18 anh) ❌ — Xem Section 8 de lay prompt
-| Thu muc | Files thieu |
-|---------|-------------|
-| `/public/img/general/` | hero-slide-1, hero-slide-2, hero-slide-3, video-thumb, app-mockup, cert-iso, cert-jci, cert-byt (8) |
-| `/public/img/doctors/` | doctor-5, doctor-6, doctor-7, doctor-8 (4) |
-| `/public/img/partners/` | pvi, liberty, vbi, sunlife, fwd, dai-ichi (6) |
+### CON THIEU (0 anh) ✅
+Tat ca 49 anh da duoc tao xong!
 
-**Tong: 31 da co + 18 thieu = 49 anh**
+**Tong: 49/49 anh ✅**
