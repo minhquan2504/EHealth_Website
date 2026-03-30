@@ -40,9 +40,19 @@ export const inventoryService = {
     cancelStockIn: (orderId: string, reason?: string) =>
         axiosClient.post(STOCK_IN_ENDPOINTS.CANCEL(orderId), { reason }).then(r => r.data),
 
+    // ---- Stock In Items ----
+    getStockInItems: (orderId: string) =>
+        axiosClient.get(STOCK_IN_ENDPOINTS.ITEMS(orderId)).then(r => r.data?.data ?? r.data ?? []),
+
     // ---- Stock Out (Xuất kho) ----
     getStockOutList: (params?: { page?: number; limit?: number; status?: string }) =>
         axiosClient.get(STOCK_OUT_ENDPOINTS.LIST, { params }).then(r => r.data),
+
+    getStockOutDetail: (orderId: string) =>
+        axiosClient.get(STOCK_OUT_ENDPOINTS.DETAIL(orderId)).then(r => r.data?.data ?? r.data),
+
+    getStockOutItems: (orderId: string) =>
+        axiosClient.get(STOCK_OUT_ENDPOINTS.ITEMS(orderId)).then(r => r.data?.data ?? r.data ?? []),
 
     createStockOut: (data: Record<string, any>) =>
         axiosClient.post(STOCK_OUT_ENDPOINTS.LIST, data).then(r => r.data?.data ?? r.data),

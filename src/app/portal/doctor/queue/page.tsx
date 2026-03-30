@@ -19,6 +19,8 @@ export default function QueuePage() {
     const [statusFilter, setStatusFilter] = useState<QueueStatus>("all");
     const [queue, setQueue] = useState(MOCK_PATIENT_QUEUE);
     const [stats, setStats] = useState(MOCK_QUEUE_STATS);
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 10;
 
     useEffect(() => {
         if (!user?.id) return;
@@ -97,6 +99,35 @@ export default function QueuePage() {
             return matchesSearch && matchesStatus;
         });
     }, [queue, searchQuery, statusFilter]);
+
+    // Reset to page 1 when filters change
+    const handleSearchChange = (value: string) => {
+        setSearchQuery(value);
+        setCurrentPage(1);
+    };
+    const handleStatusFilterChange = (status: QueueStatus) => {
+        setStatusFilter(status);
+        setCurrentPage(1);
+    };
+
+    const totalPages = Math.max(1, Math.ceil(filteredQueue.length / ITEMS_PER_PAGE));
+
+    const paginatedQueue = useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        return filteredQueue.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [filteredQueue, currentPage, ITEMS_PER_PAGE]);
+
+    const handleViewCompleted = (patient: typeof MOCK_PATIENT_QUEUE[0]) => {
+        alert(
+            `Thông tin bệnh nhân đã khám:\n\n` +
+            `Họ tên: ${patient.fullName}\n` +
+            `Mã BN: ${patient.id}\n` +
+            `Giới tính: ${patient.gender}, ${patient.age} tuổi\n` +
+            `SĐT: ${patient.phone}\n` +
+            `Lý do khám: ${patient.reason}\n` +
+            `Giờ tiếp nhận: ${patient.checkInTime}`
+        );
+    };
 
     const getStatusStyle = (status: string) => {
         switch (status) {
@@ -281,7 +312,7 @@ export default function QueuePage() {
                                 <input
                                     type="text"
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
                                     className="w-full py-2.5 pl-10 pr-4 text-sm bg-[#f8fafc] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 focus:border-[#3C81C6] transition-all dark:text-white placeholder:text-gray-400"
                                     placeholder={UI_TEXT.DOCTOR.QUEUE.SEARCH_PLACEHOLDER}
                                 />
@@ -292,7 +323,7 @@ export default function QueuePage() {
                                 (status) => (
                                     <button
                                         key={status}
-                                        onClick={() => setStatusFilter(status)}
+                                        onClick={() => handleStatusFilterChange(status)}
                                         className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${statusFilter === status
                                             ? "bg-[#3C81C6] text-white"
                                             : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -326,7 +357,7 @@ export default function QueuePage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#e5e7eb] dark:divide-[#2d353e]">
-                                {filteredQueue.length === 0 ? (
+                                {paginatedQueue.length === 0 ? (
                                     <tr>
                                         <td colSpan={7} className="py-12 text-center text-[#687582] dark:text-gray-400">
                                             <span className="material-symbols-outlined text-4xl mb-2 block">search_off</span>
@@ -334,7 +365,7 @@ export default function QueuePage() {
                                         </td>
                                     </tr>
                                 ) : (
-                                    filteredQueue.map((patient) => {
+                                    paginatedQueue.map((patient) => {
                                         const statusStyle = getStatusStyle(patient.status);
                                         const isPriority = patient.age >= 60 || patient.age <= 6;
                                         const sources = ["receptionist", "online", "followup"] as const;
@@ -441,7 +472,11 @@ export default function QueuePage() {
                                                             </Link>
                                                         )}
                                                         {patient.status === "completed" && (
-                                                            <button className="p-2 text-[#687582] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                                                            <button
+                                                                onClick={() => handleViewCompleted(patient)}
+                                                                className="p-2 text-[#687582] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                                                                title="Xem thông tin"
+                                                            >
                                                                 <span className="material-symbols-outlined text-[20px]">
                                                                     visibility
                                                                 </span>
@@ -460,18 +495,27 @@ export default function QueuePage() {
                     {/* Pagination */}
                     <div className="p-4 border-t border-[#e5e7eb] dark:border-[#2d353e] flex items-center justify-between">
                         <p className="text-sm text-[#687582] dark:text-gray-400">
-                            Hiển thị {filteredQueue.length} bệnh nhân
+                            Hiển thị {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, filteredQueue.length)}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredQueue.length)} trong tổng số{" "}
+                            {filteredQueue.length} bệnh nhân
                         </p>
                         <div className="flex items-center gap-2">
-                            <button className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button
+                                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                                disabled={currentPage === 1}
+                                className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 <span className="material-symbols-outlined text-[20px] text-[#687582]">
                                     chevron_left
                                 </span>
                             </button>
                             <span className="px-3 py-1 bg-[#3C81C6] text-white text-sm font-medium rounded-lg">
-                                1
+                                {currentPage} / {totalPages}
                             </span>
-                            <button className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button
+                                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                                disabled={currentPage === totalPages}
+                                className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 <span className="material-symbols-outlined text-[20px] text-[#687582]">
                                     chevron_right
                                 </span>

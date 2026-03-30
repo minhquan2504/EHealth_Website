@@ -39,6 +39,8 @@ export default function PrescriptionsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
     const [selectedMonth, setSelectedMonth] = useState("this_month");
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 10;
 
     // Modal states
     const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -60,6 +62,23 @@ export default function PrescriptionsPage() {
             return matchesSearch && matchesStatus;
         });
     }, [prescriptions, searchQuery, statusFilter]);
+
+    // Reset to page 1 when filters change
+    const handleSearchChange = (value: string) => {
+        setSearchQuery(value);
+        setCurrentPage(1);
+    };
+    const handleStatusFilterChange = (value: StatusFilter) => {
+        setStatusFilter(value);
+        setCurrentPage(1);
+    };
+
+    const totalPages = Math.max(1, Math.ceil(filteredPrescriptions.length / ITEMS_PER_PAGE));
+
+    const paginatedPrescriptions = useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        return filteredPrescriptions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [filteredPrescriptions, currentPage, ITEMS_PER_PAGE]);
 
     const stats = useMemo(() => {
         return {
@@ -191,7 +210,7 @@ export default function PrescriptionsPage() {
                                 <input
                                     type="text"
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
                                     className="w-full py-2.5 pl-10 pr-4 text-sm bg-[#f8fafc] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 focus:border-[#3C81C6] transition-all dark:text-white placeholder:text-gray-400"
                                     placeholder={UI_TEXT.DOCTOR.PRESCRIPTIONS.SEARCH_PLACEHOLDER}
                                 />
@@ -212,7 +231,7 @@ export default function PrescriptionsPage() {
                             <select
                                 value={statusFilter}
                                 onChange={(e) =>
-                                    setStatusFilter(e.target.value as StatusFilter)
+                                    handleStatusFilterChange(e.target.value as StatusFilter)
                                 }
                                 className="py-2.5 px-3 text-sm bg-[#f8fafc] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 text-[#687582] dark:text-gray-400 cursor-pointer"
                             >
@@ -255,7 +274,7 @@ export default function PrescriptionsPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#e5e7eb] dark:divide-[#2d353e]">
-                                {filteredPrescriptions.length === 0 ? (
+                                {paginatedPrescriptions.length === 0 ? (
                                     <tr>
                                         <td
                                             colSpan={7}
@@ -268,7 +287,7 @@ export default function PrescriptionsPage() {
                                         </td>
                                     </tr>
                                 ) : (
-                                    filteredPrescriptions.map((prescription) => {
+                                    paginatedPrescriptions.map((prescription) => {
                                         const statusStyle = getStatusStyle(prescription.status);
                                         return (
                                             <tr
@@ -368,19 +387,27 @@ export default function PrescriptionsPage() {
                     {/* Pagination */}
                     <div className="p-4 border-t border-[#e5e7eb] dark:border-[#2d353e] flex items-center justify-between">
                         <p className="text-sm text-[#687582] dark:text-gray-400">
-                            Hiển thị {filteredPrescriptions.length} trong tổng số{" "}
-                            {prescriptions.length} đơn thuốc
+                            Hiển thị {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, filteredPrescriptions.length)}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredPrescriptions.length)} trong tổng số{" "}
+                            {filteredPrescriptions.length} đơn thuốc
                         </p>
                         <div className="flex items-center gap-2">
-                            <button className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button
+                                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                                disabled={currentPage === 1}
+                                className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 <span className="material-symbols-outlined text-[20px] text-[#687582]">
                                     chevron_left
                                 </span>
                             </button>
                             <span className="px-3 py-1 bg-[#3C81C6] text-white text-sm font-medium rounded-lg">
-                                1
+                                {currentPage} / {totalPages}
                             </span>
-                            <button className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button
+                                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                                disabled={currentPage === totalPages}
+                                className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 <span className="material-symbols-outlined text-[20px] text-[#687582]">
                                     chevron_right
                                 </span>

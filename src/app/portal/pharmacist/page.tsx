@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { prescriptionService } from "@/services/prescriptionService";
@@ -53,6 +54,7 @@ function getCurrentDate(): string {
 
 // ==================== PAGE ====================
 export default function PharmacistDashboard() {
+    const router = useRouter();
     const [filter, setFilter] = useState<"all" | "urgent">("all");
     const [pendingPrescriptions, setPendingPrescriptions] = useState(PENDING_PRESCRIPTIONS);
     const [lowStock, setLowStock] = useState(LOW_STOCK);
@@ -184,7 +186,7 @@ export default function PharmacistDashboard() {
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <span className="text-xs text-[#687582] dark:text-gray-500 bg-[#f6f7f8] dark:bg-[#13191f] px-2 py-0.5 rounded">{rx.time}</span>
-                                        <button className="px-3 py-1.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white text-xs font-medium rounded-lg transition-colors">Cấp phát</button>
+                                        <button onClick={() => router.push('/portal/pharmacist/dispensing')} className="px-3 py-1.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white text-xs font-medium rounded-lg transition-colors">Cấp phát</button>
                                     </div>
                                 </div>
                             ))}

@@ -115,10 +115,10 @@ export default function ReceptionistPatients() {
                                             <button onClick={() => router.push(`/portal/receptionist/patients/${p.id}`)} className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 text-blue-600 transition-colors" title="Xem hồ sơ">
                                                 <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>visibility</span>
                                             </button>
-                                            <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#687582] transition-colors" title="Sửa">
+                                            <button onClick={() => router.push(`/portal/receptionist/patients/${p.id}`)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#687582] transition-colors" title="Sửa">
                                                 <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>edit</span>
                                             </button>
-                                            <button className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 text-emerald-600 transition-colors" title="Đặt lịch">
+                                            <button onClick={() => router.push('/portal/receptionist/appointments/new')} className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 text-emerald-600 transition-colors" title="Đặt lịch">
                                                 <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>event_available</span>
                                             </button>
                                         </div>

@@ -111,7 +111,7 @@ export default function ReceptionistQueue() {
                     <p className="text-sm text-[#687582] mt-1">Theo dõi và điều phối bệnh nhân chờ khám</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm font-medium hover:border-[#3C81C6] transition-colors">
+                    <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm font-medium hover:border-[#3C81C6] transition-colors">
                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>print</span>In số thứ tự
                     </button>
                     <Link href="/portal/receptionist/reception"

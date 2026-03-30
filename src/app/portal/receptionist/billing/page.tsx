@@ -114,11 +114,11 @@ export default function BillingPage() {
                                     <td className="px-4 py-3">
                                         <div className="flex gap-1">
                                             {inv.status === "pending" && (
-                                                <button className="p-1.5 rounded-lg hover:bg-green-50 text-green-600" title="Thu tiền">
+                                                <button onClick={() => setInvoices(prev => prev.map(i => i.id === inv.id ? { ...i, status: "paid", paid: i.total - i.insurance, method: "Tiền mặt" } : i))} className="p-1.5 rounded-lg hover:bg-green-50 text-green-600" title="Thu tiền">
                                                     <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>payments</span>
                                                 </button>
                                             )}
-                                            <button className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600" title="In hóa đơn">
+                                            <button onClick={() => window.print()} className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600" title="In hóa đơn">
                                                 <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>print</span>
                                             </button>
                                         </div>

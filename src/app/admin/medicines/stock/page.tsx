@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { inventoryService } from "@/services/inventoryService";
 
 interface StockItem {
@@ -26,6 +27,7 @@ const MOCK_STOCK: StockItem[] = [
 ];
 
 export default function MedicineStockPage() {
+    const router = useRouter();
     const [stock, setStock] = useState<StockItem[]>(MOCK_STOCK);
     const [searchQuery, setSearchQuery] = useState("");
     const [levelFilter, setLevelFilter] = useState("all");
@@ -154,7 +156,7 @@ export default function MedicineStockPage() {
                                 const style = getStockStyle(item.stockLevel);
                                 const pct = Math.min(100, Math.round((item.currentStock / item.maxStock) * 100));
                                 return (
-                                    <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr key={item.id} onClick={() => router.push(`/admin/medicines/stock/${item.id}`)} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
                                         <td className="py-3 px-6 text-sm font-bold text-[#3C81C6]">{item.code}</td>
                                         <td className="py-3 px-6 text-sm text-[#121417] dark:text-white">{item.name}</td>
                                         <td className="py-3 px-6">

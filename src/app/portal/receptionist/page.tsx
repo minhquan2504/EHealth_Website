@@ -202,7 +202,7 @@ export default function ReceptionistDashboard() {
                                             {apt.status === "checked_in" ? "Đã tiếp nhận" : "Chờ đến"}
                                         </span>
                                         {apt.status === "waiting" && (
-                                            <button className="p-1.5 rounded-lg bg-[#3C81C6]/10 text-[#3C81C6] hover:bg-[#3C81C6]/20 transition-colors" title="Tiếp nhận">
+                                            <button onClick={() => setAppointments(prev => prev.map(a => a.id === apt.id ? { ...a, status: "checked_in" } : a))} className="p-1.5 rounded-lg bg-[#3C81C6]/10 text-[#3C81C6] hover:bg-[#3C81C6]/20 transition-colors" title="Tiếp nhận">
                                                 <span className="material-symbols-outlined text-[18px]">how_to_reg</span>
                                             </button>
                                         )}

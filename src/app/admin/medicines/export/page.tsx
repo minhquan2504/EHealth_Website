@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { inventoryService } from "@/services/inventoryService";
 
 interface ExportRecord {
@@ -23,6 +24,7 @@ const MOCK_EXPORTS: ExportRecord[] = [
 ];
 
 export default function MedicineExportPage() {
+    const router = useRouter();
     const [records, setRecords] = useState<ExportRecord[]>(MOCK_EXPORTS);
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -69,10 +71,35 @@ export default function MedicineExportPage() {
                     <h1 className="text-3xl font-black tracking-tight text-[#121417] dark:text-white">Xuất kho</h1>
                     <p className="text-[#687582] dark:text-gray-400">Quản lý phiếu xuất kho, cấp phát và hủy thuốc</p>
                 </div>
-                <button className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all">
+                <button onClick={() => router.push("/admin/medicines/export/create")} className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all">
                     <span className="material-symbols-outlined text-[20px]">add_circle</span>
                     Tạo phiếu xuất
                 </button>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600"><span className="material-symbols-outlined">outbox</span></div>
+                    <div>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">Tổng phiếu xuất</p>
+                        <p className="text-xl font-bold text-[#121417] dark:text-white">{records.length}</p>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600"><span className="material-symbols-outlined">check_circle</span></div>
+                    <div>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">Hoàn thành</p>
+                        <p className="text-xl font-bold text-[#121417] dark:text-white">{records.filter(r => r.status === "completed").length}</p>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center text-yellow-600"><span className="material-symbols-outlined">pending</span></div>
+                    <div>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">Chờ duyệt</p>
+                        <p className="text-xl font-bold text-[#121417] dark:text-white">{records.filter(r => r.status === "pending").length}</p>
+                    </div>
+                </div>
             </div>
 
             <div className="bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl shadow-sm">
@@ -101,7 +128,7 @@ export default function MedicineExportPage() {
                             {filtered.map((record) => {
                                 const s = getStatusStyle(record.status);
                                 return (
-                                    <tr key={record.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr key={record.id} onClick={() => router.push(`/admin/medicines/export/${record.id}`)} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
                                         <td className="py-3 px-6 text-sm font-bold text-[#3C81C6]">{record.code}</td>
                                         <td className="py-3 px-6 text-sm text-[#121417] dark:text-white">{record.medicineName}</td>
                                         <td className="py-3 px-6 text-sm font-medium text-[#121417] dark:text-white">{record.quantity}</td>

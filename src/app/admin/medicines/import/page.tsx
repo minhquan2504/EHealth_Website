@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { inventoryService } from "@/services/inventoryService";
 
 interface ImportRecord {
@@ -25,6 +26,7 @@ const MOCK_IMPORTS: ImportRecord[] = [
 ];
 
 export default function MedicineImportPage() {
+    const router = useRouter();
     const [records, setRecords] = useState<ImportRecord[]>(MOCK_IMPORTS);
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -73,7 +75,7 @@ export default function MedicineImportPage() {
                     <h1 className="text-3xl font-black tracking-tight text-[#121417] dark:text-white">Nhập kho</h1>
                     <p className="text-[#687582] dark:text-gray-400">Quản lý phiếu nhập kho thuốc và vật tư y tế</p>
                 </div>
-                <button className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all">
+                <button onClick={() => router.push("/admin/medicines/inventory/import")} className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all">
                     <span className="material-symbols-outlined text-[20px]">add_circle</span>
                     Tạo phiếu nhập
                 </button>
@@ -131,7 +133,7 @@ export default function MedicineImportPage() {
                             {filtered.map((record) => {
                                 const s = getStatusStyle(record.status);
                                 return (
-                                    <tr key={record.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr key={record.id} onClick={() => router.push(`/admin/medicines/import/${record.id}`)} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
                                         <td className="py-3 px-6 text-sm font-bold text-[#3C81C6]">{record.code}</td>
                                         <td className="py-3 px-6 text-sm text-[#121417] dark:text-white">{record.medicineName}</td>
                                         <td className="py-3 px-6 text-sm text-[#121417] dark:text-white font-medium">{record.quantity}</td>

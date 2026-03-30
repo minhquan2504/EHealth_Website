@@ -198,7 +198,7 @@ export default function InventoryPage() {
                             </thead>
                             <tbody className="divide-y divide-[#f0f1f3] dark:divide-[#2d353e]">
                                 {filteredHistory.map((h) => (
-                                    <tr key={h.id} className="hover:bg-[#f6f7f8] dark:hover:bg-[#13191f] transition-colors">
+                                    <tr key={h.id} onClick={() => router.push(h.type === "import" ? `/admin/medicines/import/${h.id}` : `/admin/medicines/export/${h.id}`)} className="hover:bg-[#f6f7f8] dark:hover:bg-[#13191f] transition-colors cursor-pointer">
                                         <td className="px-5 py-3 text-sm font-medium text-[#121417] dark:text-white">{h.id}</td>
                                         <td className="px-5 py-3 text-sm text-[#687582] dark:text-gray-400">{h.date}</td>
                                         <td className="px-5 py-3">

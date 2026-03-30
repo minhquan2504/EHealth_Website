@@ -19,9 +19,33 @@ export default function AppointmentsPage() {
     const [appointments, setAppointments] = useState<any[]>(MOCK_APPOINTMENTS);
     const [pendingRequests, setPendingRequests] = useState<any[]>(MOCK_PENDING_APPOINTMENTS);
     const [selectedAppointment, setSelectedAppointment] = useState<any | null>(null);
+    const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
 
     const daysOfWeek = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
     const hours = Array.from({ length: 10 }, (_, i) => i + 8); // 8:00 - 17:00
+
+    // Compute the Monday of the current week offset
+    const getWeekDates = (offset: number) => {
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon, ...
+        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        const monday = new Date(now);
+        monday.setDate(now.getDate() + mondayOffset + offset * 7);
+        const dates = Array.from({ length: 7 }, (_, i) => {
+            const d = new Date(monday);
+            d.setDate(monday.getDate() + i);
+            return d;
+        });
+        return dates;
+    };
+
+    const weekDates = getWeekDates(currentWeekOffset);
+    const formatWeekLabel = (dates: Date[]) => {
+        const fmt = (d: Date) => `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+        const monday = dates[0];
+        const sunday = dates[6];
+        return `Tuần ${fmt(monday)} - ${fmt(sunday)}/${sunday.getFullYear()}`;
+    };
 
     useEffect(() => {
         if (!user?.id) return;
@@ -103,15 +127,21 @@ export default function AppointmentsPage() {
                         {/* Calendar Header */}
                         <div className="p-4 border-b border-[#e5e7eb] dark:border-[#2d353e] flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                                <button
+                                    onClick={() => setCurrentWeekOffset((prev) => prev - 1)}
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                                >
                                     <span className="material-symbols-outlined text-[20px] text-[#687582]">
                                         chevron_left
                                     </span>
                                 </button>
                                 <h3 className="text-lg font-bold text-[#121417] dark:text-white">
-                                    Tuần 24/10 - 30/10/2024
+                                    {formatWeekLabel(weekDates)}
                                 </h3>
-                                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                                <button
+                                    onClick={() => setCurrentWeekOffset((prev) => prev + 1)}
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                                >
                                     <span className="material-symbols-outlined text-[20px] text-[#687582]">
                                         chevron_right
                                     </span>
@@ -144,7 +174,12 @@ export default function AppointmentsPage() {
                                 <div className="grid grid-cols-8 border-b border-[#e5e7eb] dark:border-[#2d353e] sticky top-0 bg-gray-50 dark:bg-gray-800/50 z-10">
                                     <div className="p-3 text-xs font-medium text-[#687582] dark:text-gray-400"></div>
                                     {daysOfWeek.map((day, index) => {
-                                        const isToday = index === 0; // T2 = Today
+                                        const today = new Date();
+                                        const dateForDay = weekDates[index];
+                                        const isToday =
+                                            dateForDay.getFullYear() === today.getFullYear() &&
+                                            dateForDay.getMonth() === today.getMonth() &&
+                                            dateForDay.getDate() === today.getDate();
                                         return (
                                             <div
                                                 key={day}
@@ -167,7 +202,7 @@ export default function AppointmentsPage() {
                                                         : "text-[#121417] dark:text-white"
                                                         }`}
                                                 >
-                                                    {24 + index}
+                                                    {dateForDay.getDate()}
                                                 </p>
                                             </div>
                                         );
@@ -401,8 +436,8 @@ export default function AppointmentsPage() {
                         <div className="p-6 border-t border-[#e5e7eb] dark:border-[#2d353e] flex justify-end gap-3">
                             <button
                                 onClick={() => {
+                                    handleRejectRequest(selectedAppointment.id);
                                     setSelectedAppointment(null);
-                                    alert("Đã hủy lịch hẹn!");
                                 }}
                                 className="px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium transition-colors"
                             >

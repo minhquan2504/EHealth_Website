@@ -74,7 +74,7 @@ export default function DispensingPage() {
                         <button onClick={() => router.push("/portal/pharmacist/prescriptions")} className="px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold transition-colors">
                             Về danh sách đơn
                         </button>
-                        <button onClick={() => alert("In nhãn thuốc...")} className="px-5 py-2.5 bg-white dark:bg-[#1e242b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold text-[#687582] hover:bg-gray-50 transition-colors flex items-center gap-2">
+                        <button onClick={() => window.print()} className="px-5 py-2.5 bg-white dark:bg-[#1e242b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold text-[#687582] hover:bg-gray-50 transition-colors flex items-center gap-2">
                             <span className="material-symbols-outlined text-[18px]">print</span>In nhãn thuốc
                         </button>
                     </div>
@@ -153,7 +153,7 @@ export default function DispensingPage() {
 
             {/* Actions */}
             <div className="flex items-center justify-between">
-                <button onClick={() => alert("In nhãn thuốc...")} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-[#1e242b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-[#687582] hover:bg-gray-50 transition-colors">
+                <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-[#1e242b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-[#687582] hover:bg-gray-50 transition-colors">
                     <span className="material-symbols-outlined text-[18px]">print</span>In nhãn thuốc
                 </button>
                 <button onClick={handleDispense} disabled={!allChecked || !patientConfirmed || dispensing}
