@@ -42,7 +42,7 @@ export function PartnersSection() {
                         <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-50/50 to-transparent z-10" />
                         <div className="flex items-center gap-12 animate-[marquee_30s_linear_infinite] hover:[animation-play-state:paused]">
                             {doubledPartners.map((p, i) => (
-                                <div key={`${p.name}-${i}`} className="relative w-28 h-14 flex-shrink-0 grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300 cursor-pointer">
+                                <div key={`${p.name}-${i}`} className="relative w-28 h-14 flex-shrink-0 transition-all duration-300 cursor-pointer hover:scale-110">
                                     <SafeImage src={p.img} alt={p.name} fill className="object-contain" />
                                 </div>
                             ))}

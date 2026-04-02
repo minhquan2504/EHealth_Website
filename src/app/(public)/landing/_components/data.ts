@@ -18,6 +18,9 @@ export const IMG = {
     certIso: "/img/general/cert-iso.png",
     certJci: "/img/general/cert-jci.png",
     certByt: "/img/general/cert-byt.png",
+    certHimss: "/img/general/cert-himss.png",
+    certTop10: "/img/general/cert-top10.png",
+    certWho: "/img/general/cert-who.png",
     doctors: ["/img/doctors/doctor-1.png", "/img/doctors/doctor-2.png", "/img/doctors/doctor-3.png", "/img/doctors/doctor-4.png", "/img/doctors/doctor-5.png", "/img/doctors/doctor-6.png", "/img/doctors/doctor-7.png", "/img/doctors/doctor-8.png"],
     services: ["/img/services/cardiology.png", "/img/services/neurology.png", "/img/services/dermatology.png", "/img/services/pediatrics.png", "/img/services/ophthalmology.png", "/img/services/dentistry.png", "/img/services/orthopedics.png", "/img/services/obstetrics.png"],
     testimonials: ["/img/testimonials/patient-1.png", "/img/testimonials/patient-2.png", "/img/testimonials/patient-3.png"],
@@ -112,6 +115,9 @@ export const CERTIFICATIONS = [
     { name: "ISO 9001:2015", desc: "Chứng nhận quản lý chất lượng", img: IMG.certIso, year: "2015" },
     { name: "JCI Accreditation", desc: "Chuẩn quốc tế bệnh viện", img: IMG.certJci, year: "2019" },
     { name: "Bộ Y Tế", desc: "Giấy phép hoạt động", img: IMG.certByt, year: "2011" },
+    { name: "HIMSS", desc: "Chứng nhận Y tế số", img: IMG.certHimss, year: "2023" },
+    { name: "Top 10 Bệnh viện", desc: "Bệnh viện xuất sắc Việt Nam", img: IMG.certTop10, year: "2024" },
+    { name: "WHO Partnership", desc: "Đối tác Y tế Quốc tế", img: IMG.certWho, year: "2020" },
 ];
 
 export const EQUIPMENT_LIST = [
