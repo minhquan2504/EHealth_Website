@@ -115,7 +115,7 @@ export const MOCK_USERS: User[] = [
         email: "letan01@ehealth.vn",
         fullName: "Trần Thị B (Lễ tân)",
         avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuAqJb3hZE7mNsgl_pBlG89fBjlt56Z3_-txezlqsCM5EGFDjKzg952j7uyAHlTmmODT1Wal5j26t4tilEQYB6VDl7CPTxe6fFvVGSOFXjnZeWeGo1O5bD1H9bfdcittfKzBYECLCYKFsFFmIjriwan_EjrTZ8lagdrMZ3fZWcIMiDyvDi2urqCT29nCy2SOPXaEF-IVI5WKSsPW7k6w6YpEu0D6sMGbXiCwEhAYyy52sOwxD863NgxJ08CIcxuxIJAIxZHn6JB5qA1v",
-        role: ROLES.RECEPTIONIST,
+        role: ROLES.STAFF,
         status: USER_STATUS.ACTIVE,
         lastAccess: "15 phút trước",
         createdAt: "2023-06-10",

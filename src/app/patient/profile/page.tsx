@@ -1,0 +1,395 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import axiosClient from "@/api/axiosClient";
+import { PROFILE_ENDPOINTS, PATIENT_ENDPOINTS } from "@/api/endpoints";
+
+const TABS = [
+    { id: "personal", label: "Thông tin cá nhân", icon: "person" },
+    { id: "family", label: "Người thân", icon: "group" },
+    { id: "history", label: "Lịch sử khám", icon: "history" },
+    { id: "insurance", label: "Bảo hiểm", icon: "health_and_safety" },
+    { id: "results", label: "Kết quả", icon: "lab_profile" },
+    { id: "security", label: "Bảo mật", icon: "lock" },
+];
+
+interface ProfileData {
+    fullName: string;
+    phone: string;
+    email: string;
+    dob: string;
+    gender: string;
+    idNumber: string;
+    insuranceNumber: string;
+    address: string;
+    avatar?: string;
+}
+
+interface FamilyMember {
+    id: string;
+    name: string;
+    dob: string;
+    gender: string;
+    relation: string;
+    phone: string;
+}
+
+export default function ProfilePage() {
+    const { user } = useAuth();
+    const [activeTab, setActiveTab] = useState("personal");
+    const [editing, setEditing] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [profile, setProfile] = useState<ProfileData>({
+        fullName: user?.fullName || "",
+        phone: user?.phone || "",
+        email: user?.email || "",
+        dob: "",
+        gender: "male",
+        idNumber: "",
+        insuranceNumber: "",
+        address: "",
+    });
+    const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
+    const [showAddFamily, setShowAddFamily] = useState(false);
+    const [newFamily, setNewFamily] = useState<Partial<FamilyMember>>({ name: "", dob: "", gender: "male", relation: "", phone: "" });
+
+    // Password change
+    const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
+
+    useEffect(() => {
+        loadProfile();
+    }, []);
+
+    const loadProfile = async () => {
+        try {
+            const res = await axiosClient.get(PROFILE_ENDPOINTS.ME);
+            const data = res.data?.data || res.data;
+            if (data) {
+                setProfile({
+                    fullName: data.fullName || data.full_name || user?.fullName || "",
+                    phone: data.phone || user?.phone || "",
+                    email: data.email || user?.email || "",
+                    dob: data.dob || data.dateOfBirth || "",
+                    gender: data.gender || "male",
+                    idNumber: data.idNumber || data.citizenId || "",
+                    insuranceNumber: data.insuranceNumber || data.healthInsuranceId || "",
+                    address: data.address || "",
+                    avatar: data.avatar,
+                });
+            }
+        } catch { /* use defaults */ }
+    };
+
+    const handleSave = async () => {
+        try {
+            setSaving(true);
+            await axiosClient.put(PROFILE_ENDPOINTS.ME, {
+                fullName: profile.fullName,
+                phone: profile.phone,
+                dateOfBirth: profile.dob,
+                gender: profile.gender,
+                citizenId: profile.idNumber,
+                healthInsuranceId: profile.insuranceNumber,
+                address: profile.address,
+            });
+            setEditing(false);
+        } catch { /* silent */ } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleChangePassword = async () => {
+        if (passwords.new !== passwords.confirm) return;
+        try {
+            setSaving(true);
+            await axiosClient.put(PROFILE_ENDPOINTS.CHANGE_PASSWORD, {
+                currentPassword: passwords.current,
+                newPassword: passwords.new,
+            });
+            setPasswords({ current: "", new: "", confirm: "" });
+        } catch { /* silent */ } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleAddFamily = async () => {
+        if (!newFamily.name || !newFamily.relation) return;
+        try {
+            if (user?.id) {
+                await axiosClient.post(PATIENT_ENDPOINTS.ADD_RELATION(user.id), newFamily);
+            }
+            setFamilyMembers(prev => [...prev, { ...newFamily, id: `fm-${Date.now()}` } as FamilyMember]);
+            setShowAddFamily(false);
+            setNewFamily({ name: "", dob: "", gender: "male", relation: "", phone: "" });
+        } catch { /* silent */ }
+    };
+
+    const updateProfile = (key: keyof ProfileData, value: string) => setProfile(prev => ({ ...prev, [key]: value }));
+
+    return (
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Hồ sơ bệnh nhân</h1>
+                    <p className="text-sm text-gray-500 mt-0.5">Quản lý thông tin cá nhân và sức khoẻ</p>
+                </div>
+            </div>
+
+            {/* Profile card */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                <div className="relative">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#3C81C6] to-[#60a5fa] flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-[#3C81C6]/20">
+                        {profile.fullName?.charAt(0)?.toUpperCase() || "U"}
+                    </div>
+                    <button className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 shadow-sm transition-colors">
+                        <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>edit</span>
+                    </button>
+                </div>
+                <div className="text-center sm:text-left">
+                    <h2 className="text-xl font-bold text-gray-900">{profile.fullName || "Bệnh nhân"}</h2>
+                    <p className="text-sm text-gray-500">{profile.email}</p>
+                    <div className="flex flex-wrap items-center gap-2 mt-2 justify-center sm:justify-start">
+                        {profile.phone && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-lg">
+                                <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>call</span>
+                                {profile.phone}
+                            </span>
+                        )}
+                        {profile.insuranceNumber && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg">
+                                <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>health_and_safety</span>
+                                BHYT
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide">
+                {TABS.map(tab => (
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all
+                        ${activeTab === tab.id ? "bg-[#3C81C6] text-white shadow-sm shadow-[#3C81C6]/20" : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"}`}>
+                        <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>{tab.icon}</span>
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* Tab Content */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+                {/* ===== Personal Info ===== */}
+                {activeTab === "personal" && (
+                    <div>
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-bold text-gray-900">Thông tin cá nhân</h3>
+                            {!editing ? (
+                                <button onClick={() => setEditing(true)}
+                                    className="px-4 py-2 text-sm font-medium text-[#3C81C6] bg-[#3C81C6]/[0.06] rounded-xl hover:bg-[#3C81C6]/[0.12] transition-colors flex items-center gap-1.5">
+                                    <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>edit</span>
+                                    Chỉnh sửa
+                                </button>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <button onClick={() => setEditing(false)} className="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50">Huỷ</button>
+                                    <button onClick={handleSave} disabled={saving}
+                                        className="px-4 py-2 text-sm font-semibold text-white bg-[#3C81C6] rounded-xl hover:bg-[#2a6da8] disabled:opacity-50 transition-colors">
+                                        {saving ? "Đang lưu..." : "Lưu"}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <ProfileField label="Họ và tên" icon="person" value={profile.fullName} onChange={v => updateProfile("fullName", v)} disabled={!editing} />
+                            <ProfileField label="Số điện thoại" icon="call" value={profile.phone} onChange={v => updateProfile("phone", v)} disabled={!editing} />
+                            <ProfileField label="Email" icon="mail" value={profile.email} onChange={v => updateProfile("email", v)} disabled />
+                            <ProfileField label="Ngày sinh" icon="cake" value={profile.dob} onChange={v => updateProfile("dob", v)} disabled={!editing} type="date" />
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 block">Giới tính</label>
+                                <div className="flex gap-2">
+                                    {[{ v: "male", l: "Nam" }, { v: "female", l: "Nữ" }].map(g => (
+                                        <button key={g.v} onClick={() => editing && updateProfile("gender", g.v)}
+                                            className={`flex-1 py-2.5 rounded-xl border text-sm font-medium transition-all
+                                            ${profile.gender === g.v ? "border-[#3C81C6] bg-[#3C81C6]/[0.06] text-[#3C81C6]" : "border-gray-200 text-gray-500"}
+                                            ${!editing ? "opacity-60 cursor-not-allowed" : ""}`}>
+                                            {g.l}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <ProfileField label="CCCD/CMND" icon="badge" value={profile.idNumber} onChange={v => updateProfile("idNumber", v)} disabled={!editing} />
+                            <ProfileField label="Số thẻ BHYT" icon="health_and_safety" value={profile.insuranceNumber} onChange={v => updateProfile("insuranceNumber", v)} disabled={!editing} />
+                            <div className="sm:col-span-2">
+                                <ProfileField label="Địa chỉ" icon="location_on" value={profile.address} onChange={v => updateProfile("address", v)} disabled={!editing} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ===== Family Members ===== */}
+                {activeTab === "family" && (
+                    <div>
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-bold text-gray-900">Người thân</h3>
+                            <button onClick={() => setShowAddFamily(true)}
+                                className="px-4 py-2 text-sm font-medium text-[#3C81C6] bg-[#3C81C6]/[0.06] rounded-xl hover:bg-[#3C81C6]/[0.12] transition-colors flex items-center gap-1.5">
+                                <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>person_add</span>
+                                Thêm người thân
+                            </button>
+                        </div>
+
+                        {familyMembers.length === 0 ? (
+                            <div className="text-center py-12">
+                                <span className="material-symbols-outlined text-gray-300 mb-3" style={{ fontSize: "56px" }}>group_off</span>
+                                <p className="text-gray-500 font-medium">Chưa có thông tin người thân</p>
+                                <p className="text-gray-400 text-sm mt-1">Thêm người thân để đặt lịch khám hộ</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {familyMembers.map(fm => (
+                                    <div key={fm.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-[#3C81C6]/20 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center">
+                                                <span className="material-symbols-outlined text-gray-400" style={{ fontSize: "20px" }}>person</span>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-gray-900">{fm.name}</p>
+                                                <p className="text-xs text-gray-400">{fm.relation} • {fm.gender === "male" ? "Nam" : "Nữ"}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button className="p-2 rounded-lg text-gray-400 hover:text-[#3C81C6] hover:bg-[#3C81C6]/[0.06] transition-colors">
+                                                <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>edit</span>
+                                            </button>
+                                            <button className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                                                <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>delete</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Add family modal */}
+                        {showAddFamily && (
+                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+                                    <h3 className="text-lg font-bold text-gray-900 mb-4">Thêm người thân</h3>
+                                    <div className="space-y-3">
+                                        <ProfileField label="Họ tên" icon="person" value={newFamily.name || ""} onChange={v => setNewFamily(p => ({ ...p, name: v }))} />
+                                        <ProfileField label="Số điện thoại" icon="call" value={newFamily.phone || ""} onChange={v => setNewFamily(p => ({ ...p, phone: v }))} />
+                                        <ProfileField label="Ngày sinh" icon="cake" value={newFamily.dob || ""} onChange={v => setNewFamily(p => ({ ...p, dob: v }))} type="date" />
+                                        <div>
+                                            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 block">Mối quan hệ</label>
+                                            <select value={newFamily.relation || ""} onChange={e => setNewFamily(p => ({ ...p, relation: e.target.value }))}
+                                                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30">
+                                                <option value="">— Chọn —</option>
+                                                <option value="Vợ/Chồng">Vợ/Chồng</option>
+                                                <option value="Con">Con</option>
+                                                <option value="Cha/Mẹ">Cha/Mẹ</option>
+                                                <option value="Anh/Chị/Em">Anh/Chị/Em</option>
+                                                <option value="Khác">Khác</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3 mt-6">
+                                        <button onClick={() => setShowAddFamily(false)} className="flex-1 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50">Huỷ</button>
+                                        <button onClick={handleAddFamily} className="flex-1 py-2.5 text-sm font-semibold text-white bg-[#3C81C6] rounded-xl hover:bg-[#2a6da8] transition-colors">Thêm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ===== Medical History ===== */}
+                {activeTab === "history" && (
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">Lịch sử khám bệnh</h3>
+                        <div className="text-center py-12">
+                            <span className="material-symbols-outlined text-gray-300 mb-3" style={{ fontSize: "56px" }}>history</span>
+                            <p className="text-gray-500 font-medium">Lịch sử khám sẽ được cập nhật tự động</p>
+                            <p className="text-gray-400 text-sm mt-1">Sau mỗi lần khám tại EHealth, kết quả sẽ được lưu tại đây</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* ===== Insurance ===== */}
+                {activeTab === "insurance" && (
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">Thông tin bảo hiểm</h3>
+                        <div className="space-y-4">
+                            {profile.insuranceNumber ? (
+                                <div className="p-5 border border-green-200 bg-green-50 rounded-xl">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <span className="material-symbols-outlined text-green-600" style={{ fontSize: "22px" }}>verified</span>
+                                        <div>
+                                            <p className="font-semibold text-green-800">Thẻ BHYT đã đăng ký</p>
+                                            <p className="text-sm text-green-600">Số thẻ: {profile.insuranceNumber}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-12">
+                                    <span className="material-symbols-outlined text-gray-300 mb-3" style={{ fontSize: "56px" }}>health_and_safety</span>
+                                    <p className="text-gray-500 font-medium">Chưa có thông tin bảo hiểm</p>
+                                    <p className="text-gray-400 text-sm mt-1">Thêm số thẻ BHYT tại tab &quot;Thông tin cá nhân&quot;</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* ===== Results ===== */}
+                {activeTab === "results" && (
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">Kết quả khám & xét nghiệm</h3>
+                        <div className="text-center py-12">
+                            <span className="material-symbols-outlined text-gray-300 mb-3" style={{ fontSize: "56px" }}>lab_profile</span>
+                            <p className="text-gray-500 font-medium">Chưa có kết quả xét nghiệm</p>
+                            <p className="text-gray-400 text-sm mt-1">Kết quả sẽ được cập nhật sau mỗi lần khám</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* ===== Security ===== */}
+                {activeTab === "security" && (
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-6">Bảo mật tài khoản</h3>
+                        <div className="max-w-md space-y-4">
+                            <ProfileField label="Mật khẩu hiện tại" icon="lock" value={passwords.current} onChange={v => setPasswords(p => ({ ...p, current: v }))} type="password" />
+                            <ProfileField label="Mật khẩu mới" icon="lock" value={passwords.new} onChange={v => setPasswords(p => ({ ...p, new: v }))} type="password" />
+                            <ProfileField label="Xác nhận mật khẩu mới" icon="lock" value={passwords.confirm} onChange={v => setPasswords(p => ({ ...p, confirm: v }))} type="password" />
+                            {passwords.new && passwords.confirm && passwords.new !== passwords.confirm && (
+                                <p className="text-xs text-red-500">Mật khẩu xác nhận không khớp</p>
+                            )}
+                            <button onClick={handleChangePassword} disabled={!passwords.current || !passwords.new || passwords.new !== passwords.confirm || saving}
+                                className="px-5 py-2.5 text-sm font-semibold text-white bg-[#3C81C6] rounded-xl hover:bg-[#2a6da8] disabled:opacity-50 transition-colors">
+                                {saving ? "Đang xử lý..." : "Đổi mật khẩu"}
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function ProfileField({ label, icon, value, onChange, disabled = false, type = "text" }: {
+    label: string; icon: string; value: string; onChange: (v: string) => void; disabled?: boolean; type?: string;
+}) {
+    return (
+        <div>
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 block">{label}</label>
+            <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400" style={{ fontSize: "18px" }}>{icon}</span>
+                <input type={type} value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
+                    className={`w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30 transition-colors
+                    ${disabled ? "bg-gray-50 text-gray-500 cursor-not-allowed" : "bg-white text-gray-700"}`} />
+            </div>
+        </div>
+    );
+}

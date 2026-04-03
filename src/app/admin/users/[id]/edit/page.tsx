@@ -17,7 +17,7 @@ export default function EditUserPage() {
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
-        role: ROLES.RECEPTIONIST as string,
+        role: ROLES.STAFF as string,
         phone: "",
         gender: "Nam",
         birthDate: "",
@@ -31,11 +31,11 @@ export default function EditUserPage() {
             .then((res) => {
                 const d = (res as any)?.data ?? res as any;
                 if (d) {
-                    setUser({ ...MOCK_USERS[0], ...d, id: d.id ?? userId, fullName: d.full_name ?? d.fullName ?? "", email: d.email ?? "", role: d.role ?? ROLES.RECEPTIONIST, status: d.status?.toLowerCase() ?? "active" } as User);
+                    setUser({ ...MOCK_USERS[0], ...d, id: d.id ?? userId, fullName: d.full_name ?? d.fullName ?? "", email: d.email ?? "", role: d.role ?? ROLES.STAFF, status: d.status?.toLowerCase() ?? "active" } as User);
                     setFormData({
                         fullName: d.full_name ?? d.fullName ?? "",
                         email: d.email ?? "",
-                        role: d.role ?? ROLES.RECEPTIONIST,
+                        role: d.role ?? ROLES.STAFF,
                         phone: d.phone_number ?? d.phoneNumber ?? "",
                         gender: d.gender === "MALE" ? "Nam" : d.gender === "FEMALE" ? "Nữ" : "Nam",
                         birthDate: d.date_of_birth ?? d.birthDate ?? "",
@@ -46,7 +46,7 @@ export default function EditUserPage() {
                 const found = MOCK_USERS.find((u) => u.id === userId);
                 if (found) {
                     setUser(found);
-                    setFormData({ fullName: found.fullName || "", email: found.email || "", role: found.role || ROLES.RECEPTIONIST, phone: "0901 234 567", gender: "Nam", birthDate: "1990-06-15" });
+                    setFormData({ fullName: found.fullName || "", email: found.email || "", role: found.role || ROLES.STAFF, phone: "0901 234 567", gender: "Nam", birthDate: "1990-06-15" });
                 }
             });
     }, [userId]);

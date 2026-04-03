@@ -24,7 +24,7 @@ export function UserFormModal({
     const [formData, setFormData] = useState({
         fullName: initialData?.fullName || "",
         email: initialData?.email || "",
-        role: initialData?.role || ROLES.RECEPTIONIST,
+        role: initialData?.role || ROLES.STAFF,
         password: "",
     });
 
@@ -80,7 +80,7 @@ export function UserFormModal({
         setFormData({
             fullName: "",
             email: "",
-            role: ROLES.RECEPTIONIST,
+            role: ROLES.STAFF,
             password: "",
         });
         onClose();

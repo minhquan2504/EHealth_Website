@@ -23,7 +23,7 @@ const PORTAL_CONFIG: Record<string, { label: string; settingsRoute: string; init
     },
     "/portal/receptionist": {
         label: "Lễ tân",
-        settingsRoute: ROUTES.PORTAL.RECEPTIONIST.SETTINGS,
+        settingsRoute: ROUTES.PORTAL.STAFF.SETTINGS,
         initials: "LT",
         name: "Phạm Thị Hoa",
         role: "Lễ tân — Quầy tiếp nhận 1",
@@ -34,6 +34,13 @@ const PORTAL_CONFIG: Record<string, { label: string; settingsRoute: string; init
         initials: "QT",
         name: "Admin Hệ Thống",
         role: "Quản trị viên",
+    },
+    "/patient": {
+        label: "Bệnh nhân",
+        settingsRoute: ROUTES.PATIENT.PROFILE,
+        initials: "BN",
+        name: "Bệnh nhân",
+        role: "Bệnh nhân",
     },
 };
 

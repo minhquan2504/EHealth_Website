@@ -53,9 +53,9 @@ export function HeroSection({ scrollTo }: { scrollTo: (id: string) => void }) {
 
                     {/* CTA buttons */}
                     <div className="flex flex-wrap items-center gap-4 mb-10">
-                        <button onClick={() => scrollTo("booking")} className="px-8 py-4 bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] hover:from-[#2a6da8] hover:to-[#1e40af] text-white rounded-2xl text-base font-bold transition-all hover:-translate-y-1 shadow-xl shadow-blue-500/30 flex items-center gap-2.5 active:scale-95" aria-label="Đặt lịch khám ngay">
+                        <a href="/booking" className="px-8 py-4 bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] hover:from-[#2a6da8] hover:to-[#1e40af] text-white rounded-2xl text-base font-bold transition-all hover:-translate-y-1 shadow-xl shadow-blue-500/30 flex items-center gap-2.5 active:scale-95" aria-label="Đặt lịch khám ngay">
                             <span className="material-symbols-outlined text-[22px]">calendar_month</span>Đặt lịch khám ngay
-                        </button>
+                        </a>
                         <a href="tel:19001234" className="px-8 py-4 bg-white border-2 border-gray-200 text-[#121417] rounded-2xl text-base font-bold hover:border-green-500 hover:text-green-600 transition-all flex items-center gap-2.5 shadow-sm active:scale-95 group">
                             <span className="material-symbols-outlined text-[22px] text-green-500 group-hover:animate-bounce">call</span>Hotline: 1900 1234
                         </a>

@@ -23,8 +23,9 @@ export interface User {
     id: string;
     email: string;
     fullName: string;
-    role: 'admin' | 'doctor' | 'nurse' | 'pharmacist' | 'receptionist';
+    role: 'admin' | 'doctor' | 'nurse' | 'pharmacist' | 'staff' | 'patient';
     avatar?: string;
+    phone?: string;
 }
 
 interface AuthContextType {
@@ -168,8 +169,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 return '/portal/doctor';
             case 'pharmacist':
                 return '/portal/pharmacist';
+            case 'staff':
             case 'receptionist':
                 return '/portal/receptionist';
+            case 'patient':
+                return '/patient';
             default:
                 return '/login';
         }

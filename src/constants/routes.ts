@@ -10,6 +10,10 @@ export const ROUTES = {
     FORGOT_PASSWORD: "/forgot-password",
     OTP: "/otp",
     LANDING: "/landing",
+    SPECIALTIES: "/specialties",
+    DOCTORS: "/doctors",
+    DOCTOR_DETAIL: (id: string) => `/doctors/${id}`,
+    BOOKING: "/booking",
   },
 
   // Admin routes
@@ -36,7 +40,7 @@ export const ROUTES = {
     SETTINGS: "/admin/settings",
   },
 
-  // Portal routes (Doctor, Pharmacist, Receptionist)
+  // Portal routes (Doctor, Pharmacist, Staff)
   PORTAL: {
     DOCTOR: {
       DASHBOARD: "/portal/doctor",
@@ -56,7 +60,7 @@ export const ROUTES = {
       INVENTORY: "/portal/pharmacist/inventory",
       SETTINGS: "/portal/pharmacist/settings",
     },
-    RECEPTIONIST: {
+    STAFF: {
       DASHBOARD: "/portal/receptionist",
       RECEPTION: "/portal/receptionist/reception",
       APPOINTMENTS: "/portal/receptionist/appointments",
@@ -65,6 +69,22 @@ export const ROUTES = {
       BILLING: "/portal/receptionist/billing",
       SETTINGS: "/portal/receptionist/settings",
     },
+  },
+
+  // Patient routes (cần đăng nhập role PATIENT)
+  PATIENT: {
+    DASHBOARD: "/patient",
+    LOGIN: "/patient/login",
+    REGISTER: "/patient/register",
+    BOOKING_SUCCESS: "/patient/booking-success",
+    APPOINTMENTS: "/patient/appointments",
+    APPOINTMENT_DETAIL: (id: string) => `/patient/appointments/${id}`,
+    PROFILE: "/patient/profile",
+    MEDICAL_RECORDS: "/patient/medical-records",
+    HEALTH_RECORDS: "/patient/health-records",
+    BILLING: "/patient/billing",
+    TELEMEDICINE: "/patient/telemedicine",
+    AI_CONSULT: "/patient/ai-consult",
   },
 } as const;
 
@@ -197,51 +217,54 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
   },
 ];
 
-// Receptionist sidebar menu items
-export const RECEPTIONIST_MENU_ITEMS = [
+// Staff sidebar menu items (formerly Receptionist)
+export const STAFF_MENU_ITEMS = [
   {
     key: "dashboard",
-    href: ROUTES.PORTAL.RECEPTIONIST.DASHBOARD,
+    href: ROUTES.PORTAL.STAFF.DASHBOARD,
     icon: "home",
     label: "Trang chủ",
   },
   {
     key: "reception",
-    href: ROUTES.PORTAL.RECEPTIONIST.RECEPTION,
+    href: ROUTES.PORTAL.STAFF.RECEPTION,
     icon: "how_to_reg",
     label: "Tiếp nhận BN",
   },
   {
     key: "appointments",
-    href: ROUTES.PORTAL.RECEPTIONIST.APPOINTMENTS,
+    href: ROUTES.PORTAL.STAFF.APPOINTMENTS,
     icon: "calendar_month",
     label: "Lịch hẹn",
   },
   {
     key: "queue",
-    href: ROUTES.PORTAL.RECEPTIONIST.QUEUE,
+    href: ROUTES.PORTAL.STAFF.QUEUE,
     icon: "groups",
     label: "Hàng đợi",
   },
   {
     key: "patients",
-    href: ROUTES.PORTAL.RECEPTIONIST.PATIENTS,
+    href: ROUTES.PORTAL.STAFF.PATIENTS,
     icon: "person_add",
     label: "Bệnh nhân",
   },
   {
     key: "billing",
-    href: ROUTES.PORTAL.RECEPTIONIST.BILLING,
+    href: ROUTES.PORTAL.STAFF.BILLING,
     icon: "receipt_long",
     label: "Thanh toán",
   },
   {
     key: "settings",
-    href: ROUTES.PORTAL.RECEPTIONIST.SETTINGS,
+    href: ROUTES.PORTAL.STAFF.SETTINGS,
     icon: "settings",
     label: "Cài đặt",
   },
 ] as const;
+
+// Backward compatibility alias
+export const RECEPTIONIST_MENU_ITEMS = STAFF_MENU_ITEMS;
 
 // Pharmacist sidebar menu items
 export const PHARMACIST_MENU_ITEMS = [
@@ -274,5 +297,57 @@ export const PHARMACIST_MENU_ITEMS = [
     href: ROUTES.PORTAL.PHARMACIST.SETTINGS,
     icon: "settings",
     label: "Cài đặt",
+  },
+] as const;
+
+// Patient sidebar menu items
+export const PATIENT_MENU_ITEMS = [
+  {
+    key: "dashboard",
+    href: ROUTES.PATIENT.DASHBOARD,
+    icon: "home",
+    label: "Trang chủ",
+  },
+  {
+    key: "appointments",
+    href: ROUTES.PATIENT.APPOINTMENTS,
+    icon: "calendar_month",
+    label: "Lịch hẹn của tôi",
+  },
+  {
+    key: "medical-records",
+    href: ROUTES.PATIENT.MEDICAL_RECORDS,
+    icon: "folder_shared",
+    label: "Kết quả khám",
+  },
+  {
+    key: "health-records",
+    href: ROUTES.PATIENT.HEALTH_RECORDS,
+    icon: "monitor_heart",
+    label: "Hồ sơ sức khỏe",
+  },
+  {
+    key: "billing",
+    href: ROUTES.PATIENT.BILLING,
+    icon: "receipt_long",
+    label: "Thanh toán",
+  },
+  {
+    key: "telemedicine",
+    href: ROUTES.PATIENT.TELEMEDICINE,
+    icon: "videocam",
+    label: "Khám từ xa",
+  },
+  {
+    key: "ai-consult",
+    href: ROUTES.PATIENT.AI_CONSULT,
+    icon: "smart_toy",
+    label: "AI tư vấn",
+  },
+  {
+    key: "profile",
+    href: ROUTES.PATIENT.PROFILE,
+    icon: "person",
+    label: "Hồ sơ cá nhân",
   },
 ] as const;

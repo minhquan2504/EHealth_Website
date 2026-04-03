@@ -20,7 +20,7 @@ export default function NewUserPage() {
         fullName: "",
         email: "",
         phone: "",
-        role: ROLES.RECEPTIONIST,
+        role: ROLES.STAFF,
         password: "",
         confirmPassword: "",
         gender: "male",

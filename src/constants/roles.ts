@@ -7,7 +7,7 @@ export const ROLES = {
     ADMIN: "ADMIN",
     DOCTOR: "DOCTOR",
     PHARMACIST: "PHARMACIST",
-    RECEPTIONIST: "RECEPTIONIST",
+    STAFF: "STAFF",
     PATIENT: "PATIENT",
 } as const;
 
@@ -18,7 +18,7 @@ export const ROLE_LABELS: Record<Role, string> = {
     [ROLES.ADMIN]: "Admin (QTV)",
     [ROLES.DOCTOR]: "Bác sĩ",
     [ROLES.PHARMACIST]: "Dược sĩ",
-    [ROLES.RECEPTIONIST]: "Lễ tân",
+    [ROLES.STAFF]: "Nhân viên",
     [ROLES.PATIENT]: "Bệnh nhân",
 };
 
@@ -39,7 +39,7 @@ export const ROLE_COLORS: Record<Role, { bg: string; text: string; dot: string }
         text: "text-teal-700 dark:text-teal-300",
         dot: "bg-teal-500",
     },
-    [ROLES.RECEPTIONIST]: {
+    [ROLES.STAFF]: {
         bg: "bg-purple-50 dark:bg-purple-900/20",
         text: "text-purple-700 dark:text-purple-300",
         dot: "bg-purple-500",

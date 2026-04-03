@@ -39,7 +39,7 @@ export function PermissionsModal({ isOpen, onClose }: PermissionsModalProps) {
         [ROLES.ADMIN]: PERMISSIONS.map((p) => p.id),
         [ROLES.DOCTOR]: ["doctors.view", "schedules.view", "medicines.view"],
         [ROLES.PHARMACIST]: ["medicines.view", "medicines.manage"],
-        [ROLES.RECEPTIONIST]: ["users.view", "doctors.view", "schedules.view"],
+        [ROLES.STAFF]: ["users.view", "doctors.view", "schedules.view"],
         [ROLES.PATIENT]: [],
     });
 

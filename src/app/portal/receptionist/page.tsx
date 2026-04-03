@@ -25,10 +25,10 @@ const APPOINTMENTS = [
 ];
 
 const QUICK_ACTIONS = [
-    { icon: "person_add", label: "Đăng ký BN mới", desc: "Tiếp nhận", color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10", href: ROUTES.PORTAL.RECEPTIONIST.PATIENTS },
-    { icon: "event_available", label: "Đặt lịch hẹn", desc: "Tạo mới", color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-500/10", href: ROUTES.PORTAL.RECEPTIONIST.APPOINTMENTS },
-    { icon: "qr_code_scanner", label: "Tiếp nhận", desc: "Quét mã", color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10", href: ROUTES.PORTAL.RECEPTIONIST.QUEUE },
-    { icon: "receipt_long", label: "Thanh toán", desc: "Xử lý", color: "text-violet-600", bg: "bg-violet-50 dark:bg-violet-500/10", href: ROUTES.PORTAL.RECEPTIONIST.BILLING },
+    { icon: "person_add", label: "Đăng ký BN mới", desc: "Tiếp nhận", color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10", href: ROUTES.PORTAL.STAFF.PATIENTS },
+    { icon: "event_available", label: "Đặt lịch hẹn", desc: "Tạo mới", color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-500/10", href: ROUTES.PORTAL.STAFF.APPOINTMENTS },
+    { icon: "qr_code_scanner", label: "Tiếp nhận", desc: "Quét mã", color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10", href: ROUTES.PORTAL.STAFF.QUEUE },
+    { icon: "receipt_long", label: "Thanh toán", desc: "Xử lý", color: "text-violet-600", bg: "bg-violet-50 dark:bg-violet-500/10", href: ROUTES.PORTAL.STAFF.BILLING },
 ];
 
 const DEPT_STATUS = [
@@ -163,7 +163,7 @@ export default function ReceptionistDashboard() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-1.5">
-                                <Link href={ROUTES.PORTAL.RECEPTIONIST.APPOINTMENTS} className="text-xs text-[#3C81C6] hover:underline font-medium mr-2">
+                                <Link href={ROUTES.PORTAL.STAFF.APPOINTMENTS} className="text-xs text-[#3C81C6] hover:underline font-medium mr-2">
                                     Xem tất cả
                                 </Link>
                                 {[

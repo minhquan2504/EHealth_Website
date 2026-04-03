@@ -33,11 +33,11 @@ export function LandingNavbar({ activeSection, scrollTo }: { activeSection: stri
                     <Link href="/login" className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-[#4a5568] hover:text-[#3C81C6] transition-colors px-3 py-2 rounded-lg hover:bg-gray-50">
                         <span className="material-symbols-outlined text-[18px]">person</span>Đăng nhập
                     </Link>
-                    <button onClick={() => handleNav("booking")} className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] hover:from-[#2a6da8] hover:to-[#1e40af] text-white rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-500/25 active:scale-95"
+                    <a href="/booking" className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] hover:from-[#2a6da8] hover:to-[#1e40af] text-white rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-500/25 active:scale-95"
                         aria-label="Đặt lịch khám">
                         <span className="material-symbols-outlined text-[18px]">calendar_month</span>
                         Đặt lịch khám
-                    </button>
+                    </a>
                     <button onClick={() => setMobileMenu(!mobileMenu)} className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
                         aria-label={mobileMenu ? "Đóng menu" : "Mở menu"} aria-expanded={mobileMenu}>
                         <span className="material-symbols-outlined text-[24px] text-[#121417]">{mobileMenu ? "close" : "menu"}</span>
@@ -55,9 +55,9 @@ export function LandingNavbar({ activeSection, scrollTo }: { activeSection: stri
                         <Link href="/login" className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-[#4a5568] hover:bg-blue-50">
                             <span className="material-symbols-outlined text-[18px]">person</span>Đăng nhập
                         </Link>
-                        <button onClick={() => handleNav("booking")} className="w-full py-3 bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] text-white rounded-xl text-sm font-bold active:scale-95 flex items-center justify-center gap-2">
+                        <a href="/booking" className="w-full py-3 bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] text-white rounded-xl text-sm font-bold active:scale-95 flex items-center justify-center gap-2">
                             <span className="material-symbols-outlined text-[18px]">calendar_month</span>Đặt lịch khám
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
