@@ -15,6 +15,9 @@ export interface PatientProfile {
     address?: string;
     relationship: "self" | "parent" | "child" | "sibling" | "spouse" | "other";
     relationshipLabel: string;
+    email?: string;
+    bloodType?: string;
+    insuranceExpiry?: string;
     allergies?: string[];
     medicalHistory?: string;
     isActive: boolean;
