@@ -7,7 +7,7 @@ import { getAppointments, type Appointment } from "@/services/appointmentService
 import { AppointmentStatusBadge } from "@/components/patient/AppointmentStatusBadge";
 import { filterMockAppointments } from "@/data/patient-mock";
 import { MOCK_INVOICES, MOCK_TELE_SESSIONS, MOCK_VITAL_SIGNS } from "@/data/patient-portal-mock";
-import { MOCK_MEDICATION_REMINDERS, MOCK_MEDICATION_LOGS, type MedicationReminder, type MedicationLog } from "@/data/medication-reminders-mock";
+import { MOCK_MEDICATION_REMINDERS, MOCK_MEDICATION_LOGS, getTodaySchedule, getActiveReminders, type MedicationReminder, type MedicationLog } from "@/data/medication-reminders-mock";
 import { loadFromStorage, STORAGE_KEYS } from "@/utils/localStorage";
 
 export default function PatientDashboard() {

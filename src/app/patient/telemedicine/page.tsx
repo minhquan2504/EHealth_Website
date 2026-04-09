@@ -153,8 +153,8 @@ export default function TelemedicinePage() {
 
             {/* Chat Modal */}
             {showChat && selectedSession && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-                    <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-md flex flex-col" style={{ height: "70vh" }}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setShowChat(false)}>
+                    <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-md flex flex-col" style={{ height: "70vh" }} onClick={e => e.stopPropagation()}>
                         <div className="p-4 border-b border-[#e5e7eb] dark:border-[#2d353e] flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#3C81C6] to-[#60a5fa] flex items-center justify-center text-white text-xs font-bold">{selectedSession.doctorName.charAt(0)}</div>

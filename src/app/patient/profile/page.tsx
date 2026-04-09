@@ -322,8 +322,8 @@ export default function ProfilePage() {
 
                         {/* Add family modal */}
                         {showAddFamily && (
-                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-                                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setShowAddFamily(false)}>
+                                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
                                     <h3 className="text-lg font-bold text-gray-900 mb-4">Thêm người thân</h3>
                                     <div className="space-y-3">
                                         <ProfileField label="Họ tên" icon="person" value={newFamily.name || ""} onChange={v => setNewFamily(p => ({ ...p, name: v }))} />

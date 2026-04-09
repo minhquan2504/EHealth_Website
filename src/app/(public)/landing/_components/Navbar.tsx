@@ -33,7 +33,7 @@ export function LandingNavbar({ activeSection, scrollTo }: { activeSection: stri
                     </div>
                 </Link>
 
-                <div className="hidden lg:flex items-center gap-1 text-[13px] font-semibold text-[#4a5568]">
+                <div className="hidden lg:flex items-center gap-1 text-[13px] font-bold text-[#2d3748]">
                     {NAV_ITEMS.map(n => (
                         <button key={n.id} onClick={() => handleNav(n)}
                             className={`px-3 py-2 rounded-lg hover:text-[#3C81C6] hover:bg-blue-50/60 transition-all ${activeSection === n.id ? "text-[#3C81C6] bg-blue-50/60" : ""}`}

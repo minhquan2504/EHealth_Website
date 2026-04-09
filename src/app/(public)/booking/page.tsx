@@ -90,6 +90,8 @@ function BookingPageInner() {
         if (serviceFilter !== "all") {
             svcs = svcs.filter(s => s.category === serviceFilter);
         }
+        // Phổ biến lên đầu
+        svcs.sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0));
         return svcs;
     })();
 
@@ -128,10 +130,14 @@ function BookingPageInner() {
     useEffect(() => {
         if (user && isAuthenticated) {
             setForm(prev => ({ ...prev, fullName: user.fullName || "", phone: user.phone || "" }));
-            const profiles = getProfilesByUserId(user.id || "patient-001");
+            let profiles = getProfilesByUserId(user.id || "patient-001");
+            if (profiles.length === 0) profiles = getProfilesByUserId("patient-001");
             setPatientProfiles(profiles);
             const primary = profiles.find(p => p.isPrimary);
-            if (primary) setSelectedProfileId(primary.id);
+            if (primary) {
+                setSelectedProfileId(primary.id);
+                applyProfile(primary.id);
+            }
         }
     }, [user, isAuthenticated]);
 

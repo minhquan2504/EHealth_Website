@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MOCK_PATIENT_PROFILES, getProfilesByUserId, type PatientProfile } from "@/data/patient-profiles-mock";
 import {
     MOCK_INVOICES, MOCK_TRANSACTIONS, MOCK_SERVICE_PRICES,
     type Invoice, type Transaction, type ServicePrice,
@@ -19,6 +20,8 @@ export default function BillingPage() {
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
     const [showPayModal, setShowPayModal] = useState(false);
     const [priceCategory, setPriceCategory] = useState("all");
+    const [selectedProfileId, setSelectedProfileId] = useState("pp-001");
+    const profiles = getProfilesByUserId("patient-001");
 
     const pending = MOCK_INVOICES.filter(i => i.status === "pending" || i.status === "overdue");
     const paid = MOCK_INVOICES.filter(i => i.status === "paid" || i.status === "refunded");
@@ -32,6 +35,13 @@ export default function BillingPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-[#121417] dark:text-white">Thanh toán & Hóa đơn</h1>
                     <p className="text-sm text-[#687582] mt-0.5">Quản lý hóa đơn, thanh toán và tra cứu bảng giá</p>
+                    <div className="flex items-center gap-2 mt-3">
+                        <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "18px" }}>person</span>
+                        <select value={selectedProfileId} onChange={e => setSelectedProfileId(e.target.value)}
+                            className="px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-[#1e242b] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30 font-medium">
+                            {profiles.map(p => <option key={p.id} value={p.id}>{p.fullName} — {p.relationshipLabel}</option>)}
+                        </select>
+                    </div>
                 </div>
                 {totalPending > 0 && (
                     <div className="px-4 py-2 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl">

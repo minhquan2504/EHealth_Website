@@ -117,7 +117,7 @@ export function TimeSlotPicker({ selectedDate, onDateChange, selectedTime, onTim
                     Chọn ngày khám
                 </label>
 
-                <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4">
+                <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 max-w-md">
                     {/* Calendar header */}
                     <div className="flex items-center justify-between mb-4">
                         <button onClick={goToPrevMonth} disabled={!canGoPrev}
@@ -160,7 +160,7 @@ export function TimeSlotPicker({ selectedDate, onDateChange, selectedTime, onTim
                                     key={idx}
                                     onClick={() => !isDisabled && hasSlots && onDateChange(day.date)}
                                     disabled={isDisabled || !hasSlots}
-                                    className={`relative aspect-square flex flex-col items-center justify-center rounded-xl text-sm transition-all duration-200
+                                    className={`relative h-10 w-10 mx-auto flex flex-col items-center justify-center rounded-xl text-sm transition-all duration-200
                                         ${isSelected
                                             ? "bg-gradient-to-br from-[#3C81C6] to-[#2563eb] text-white shadow-lg shadow-[#3C81C6]/25 scale-105 font-bold"
                                             : day.isToday
@@ -226,7 +226,7 @@ export function TimeSlotPicker({ selectedDate, onDateChange, selectedTime, onTim
                                 <span>Đã chọn</span>
                             </div>
                             <div className="flex items-center gap-1.5">
-                                <div className="w-3 h-3 rounded bg-gray-200" />
+                                <div className="w-3 h-3 rounded bg-red-100 border border-red-200" />
                                 <span>Hết chỗ</span>
                             </div>
                             <div className="flex items-center gap-1.5">
@@ -280,8 +280,11 @@ function SlotButton({ slot, selected, onClick }: { slot: TimeSlot; selected: boo
             ${selected ? "bg-gradient-to-b from-[#3C81C6] to-[#2563eb] text-white shadow-md shadow-[#3C81C6]/25 scale-105" : ""}
             ${!selected && slot.available && !isLow ? "bg-gray-50 text-gray-700 hover:bg-[#3C81C6]/[0.08] hover:text-[#3C81C6] border border-gray-100 hover:border-[#3C81C6]/20" : ""}
             ${!selected && isLow ? "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100" : ""}
-            ${!slot.available ? "bg-gray-100 text-gray-300 cursor-not-allowed line-through" : "cursor-pointer active:scale-[0.95]"}`}>
+            ${!slot.available ? "bg-red-50 text-red-300 cursor-not-allowed border border-red-100" : "cursor-pointer active:scale-[0.95]"}`}>
             {slot.time}
+            {!slot.available && (
+                <span className="block text-[10px] font-normal mt-0.5 text-red-400">Hết chỗ</span>
+            )}
             {slot.available && slot.remaining !== undefined && !selected && (
                 <span className={`block text-[10px] font-normal mt-0.5 ${isLow ? "text-amber-600" : "text-gray-400"}`}>
                     Còn {slot.remaining}

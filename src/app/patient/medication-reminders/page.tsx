@@ -287,11 +287,7 @@ export default function MedicationRemindersPage() {
                             {profiles.map(p => <option key={p.id} value={p.id}>{p.fullName} ({p.relationshipLabel})</option>)}
                         </select>
                     )}
-                    <button onClick={openCreate}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#3C81C6] to-[#2563eb] text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.97]">
-                        <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>add</span>
-                        Thêm thuốc
-                    </button>
+                    {/* Bệnh nhân không được tự thêm thuốc — chỉ bác sĩ kê đơn */}
                 </div>
             </div>
 
@@ -482,8 +478,8 @@ export default function MedicationRemindersPage() {
 
             {/* ===== Modal: Add/Edit Medication ===== */}
             {showForm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-                    <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4" onClick={() => { setShowForm(false); resetForm(); }}>
+                    <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                         <div className="p-6 border-b border-gray-100 dark:border-[#2d353e] flex items-center justify-between">
                             <h2 className="text-lg font-bold text-[#121417] dark:text-white">{editingId ? "Chỉnh sửa nhắc thuốc" : "Thêm nhắc thuốc"}</h2>
                             <button onClick={() => { setShowForm(false); resetForm(); }} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">

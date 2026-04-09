@@ -25,6 +25,8 @@ export default function PatientProfilesPage() {
     const [formData, setFormData] = useState<Partial<PatientProfile>>({});
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [detailProfile, setDetailProfile] = useState<PatientProfile | null>(null);
+    const [detailTab, setDetailTab] = useState("info");
 
     // Load data on mount — dùng tất cả profiles (mock data cũng chỉ có 1 user)
     useEffect(() => {
@@ -253,6 +255,11 @@ export default function PatientProfilesPage() {
 
                         {/* Quick actions */}
                         <div className="mt-4 pt-3 border-t border-gray-100 dark:border-[#2d353e] flex items-center gap-2">
+                            <button onClick={() => { setDetailProfile(profile); setDetailTab("info"); }}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#3C81C6]/10 text-[#3C81C6] text-xs font-bold rounded-lg hover:bg-[#3C81C6]/20 transition-all">
+                                <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>visibility</span>
+                                Xem chi tiết
+                            </button>
                             <Link href={`/booking?profileId=${profile.id}`}
                                 className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gradient-to-r from-[#3C81C6] to-[#2563eb] text-white text-xs font-bold rounded-lg shadow-sm hover:shadow-md transition-all active:scale-[0.97]">
                                 <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>calendar_month</span>
@@ -302,19 +309,159 @@ export default function PatientProfilesPage() {
                 </div>
             )}
 
-            {/* ===== Modal Form ===== */}
-            {showForm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-                    <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-gray-100 dark:border-[#2d353e] flex items-center justify-between">
-                            <h2 className="text-lg font-bold text-[#121417] dark:text-white">
-                                {editingId ? "Chỉnh sửa hồ sơ" : "Thêm hồ sơ mới"}
-                            </h2>
-                            <button onClick={() => setShowForm(false)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                <span className="material-symbols-outlined text-gray-500" style={{ fontSize: "20px" }}>close</span>
+            {/* ===== Chi tiết hồ sơ bệnh nhân (Full page) ===== */}
+            {detailProfile && (
+                <div className="fixed inset-0 z-50 bg-white dark:bg-[#0d1117] overflow-y-auto">
+                    <div className="max-w-3xl mx-auto py-6 px-4">
+                        {/* Header */}
+                        <div className="flex items-center gap-3 mb-6">
+                            <button onClick={() => setDetailProfile(null)} className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                <span className="material-symbols-outlined text-gray-500" style={{ fontSize: "20px" }}>arrow_back</span>
+                            </button>
+                            <div className="flex-1">
+                                <h1 className="text-xl font-bold text-[#121417] dark:text-white">{detailProfile.fullName}</h1>
+                                <p className="text-sm text-gray-500">{detailProfile.relationshipLabel} {detailProfile.isPrimary && "• Hồ sơ chính"}</p>
+                            </div>
+                            <button onClick={() => { openEdit(detailProfile); setDetailProfile(null); }}
+                                className="flex items-center gap-1.5 px-4 py-2 bg-[#3C81C6] text-white text-sm font-bold rounded-xl hover:bg-[#2a6da8] transition-colors">
+                                <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>edit</span>
+                                Sửa
                             </button>
                         </div>
-                        <div className="p-6 space-y-4">
+
+                        {/* Tabs */}
+                        <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
+                            {[
+                                { id: "info", label: "Thông tin", icon: "person" },
+                                { id: "contact", label: "Liên hệ", icon: "call" },
+                                { id: "insurance", label: "Bảo hiểm", icon: "health_and_safety" },
+                                { id: "history", label: "Lịch sử khám", icon: "history" },
+                                { id: "docs", label: "Tài liệu", icon: "description" },
+                            ].map(tab => (
+                                <button key={tab.id} onClick={() => setDetailTab(tab.id)}
+                                    className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all
+                                    ${detailTab === tab.id ? "bg-[#3C81C6] text-white shadow-md" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200"}`}>
+                                    <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>{tab.icon}</span>
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Tab content */}
+                        {detailTab === "info" && (
+                            <div className="bg-gray-50 dark:bg-[#1e242b] rounded-2xl p-6 space-y-4">
+                                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "20px" }}>badge</span>
+                                    Thông tin cá nhân
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <DetailField label="Họ và tên" value={detailProfile.fullName} />
+                                    <DetailField label="Giới tính" value={detailProfile.gender === "male" ? "Nam" : detailProfile.gender === "female" ? "Nữ" : "Khác"} />
+                                    <DetailField label="Ngày sinh" value={detailProfile.dob ? new Date(detailProfile.dob + "T00:00:00").toLocaleDateString("vi-VN") : "—"} />
+                                    <DetailField label="CCCD/CMND" value={detailProfile.idNumber || "—"} />
+                                    <DetailField label="Nhóm máu" value={detailProfile.bloodType || "—"} />
+                                    <DetailField label="Quan hệ" value={detailProfile.relationshipLabel} />
+                                </div>
+                                {detailProfile.allergies && detailProfile.allergies.length > 0 && (
+                                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Dị ứng</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {detailProfile.allergies.map(a => (
+                                                <span key={a} className="px-3 py-1 bg-red-50 text-red-600 text-xs font-bold rounded-full">{a}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                {detailProfile.medicalHistory && (
+                                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Tiền sử bệnh</p>
+                                        <p className="text-sm text-gray-700 dark:text-gray-300">{detailProfile.medicalHistory}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {detailTab === "contact" && (
+                            <div className="bg-gray-50 dark:bg-[#1e242b] rounded-2xl p-6 space-y-4">
+                                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "20px" }}>contact_phone</span>
+                                    Thông tin liên hệ
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <DetailField label="Số điện thoại" value={detailProfile.phone} />
+                                    <DetailField label="Email" value={detailProfile.email || "—"} />
+                                    <div className="col-span-2">
+                                        <DetailField label="Địa chỉ" value={detailProfile.address || "—"} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {detailTab === "insurance" && (
+                            <div className="bg-gray-50 dark:bg-[#1e242b] rounded-2xl p-6 space-y-4">
+                                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "20px" }}>health_and_safety</span>
+                                    Bảo hiểm y tế
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <DetailField label="Số BHYT" value={detailProfile.insuranceNumber || "Chưa cập nhật"} />
+                                    <DetailField label="Hạn BHYT" value={detailProfile.insuranceExpiry ? new Date(detailProfile.insuranceExpiry + "T00:00:00").toLocaleDateString("vi-VN") : "—"} />
+                                </div>
+                                {!detailProfile.insuranceNumber && (
+                                    <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                                        <span className="material-symbols-outlined text-amber-500" style={{ fontSize: "18px" }}>info</span>
+                                        <p className="text-xs text-amber-700 dark:text-amber-400">Hồ sơ chưa có thông tin bảo hiểm. Bấm &quot;Sửa&quot; để cập nhật.</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {detailTab === "history" && (
+                            <div className="bg-gray-50 dark:bg-[#1e242b] rounded-2xl p-6">
+                                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
+                                    <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "20px" }}>history</span>
+                                    Lịch sử khám bệnh
+                                </h3>
+                                <div className="text-center py-8 text-gray-400">
+                                    <span className="material-symbols-outlined mb-2" style={{ fontSize: "40px" }}>event_note</span>
+                                    <p className="text-sm">Chưa có lịch sử khám bệnh</p>
+                                    <p className="text-xs mt-1">Dữ liệu sẽ hiển thị khi có kết nối API</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {detailTab === "docs" && (
+                            <div className="bg-gray-50 dark:bg-[#1e242b] rounded-2xl p-6">
+                                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
+                                    <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "20px" }}>description</span>
+                                    Tài liệu y tế
+                                </h3>
+                                <div className="text-center py-8 text-gray-400">
+                                    <span className="material-symbols-outlined mb-2" style={{ fontSize: "40px" }}>folder_open</span>
+                                    <p className="text-sm">Chưa có tài liệu</p>
+                                    <p className="text-xs mt-1">Kết quả xét nghiệm, phim chụp sẽ hiển thị tại đây</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* ===== Modal Form ===== */}
+            {showForm && (
+                <div className="fixed inset-0 z-50 bg-white dark:bg-[#0d1117] overflow-y-auto">
+                    <div className="max-w-lg mx-auto py-6 px-4">
+                        <div className="pb-4 mb-4 border-b border-gray-100 dark:border-[#2d353e] flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <button onClick={() => setShowForm(false)} className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                    <span className="material-symbols-outlined text-gray-500" style={{ fontSize: "20px" }}>arrow_back</span>
+                                </button>
+                                <h2 className="text-lg font-bold text-[#121417] dark:text-white">
+                                    {editingId ? "Chỉnh sửa hồ sơ" : "Thêm hồ sơ mới"}
+                                </h2>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
                             {/* Relationship */}
                             <div>
                                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 block">Quan hệ</label>
@@ -374,7 +521,7 @@ export default function PatientProfilesPage() {
                                     className="w-full px-4 py-3 border border-gray-200 dark:border-[#2d353e] rounded-xl text-sm text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-[#13191f] focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30 min-h-[80px] resize-none" />
                             </div>
                         </div>
-                        <div className="p-6 border-t border-gray-100 dark:border-[#2d353e] flex items-center justify-end gap-3">
+                        <div className="pt-4 mt-4 border-t border-gray-100 dark:border-[#2d353e] flex items-center justify-end gap-3">
                             <button onClick={() => setShowForm(false)}
                                 className="px-4 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
                                 Hủy
@@ -390,8 +537,8 @@ export default function PatientProfilesPage() {
 
             {/* ===== Delete Confirm ===== */}
             {deleteConfirm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-                    <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4" onClick={() => setDeleteConfirm(null)}>
+                    <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center" onClick={e => e.stopPropagation()}>
                         <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mx-auto mb-4">
                             <span className="material-symbols-outlined text-red-500" style={{ fontSize: "28px" }}>person_off</span>
                         </div>
@@ -410,6 +557,15 @@ export default function PatientProfilesPage() {
                     </div>
                 </div>
             )}
+        </div>
+    );
+}
+
+function DetailField({ label, value }: { label: string; value: string }) {
+    return (
+        <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{label}</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">{value}</p>
         </div>
     );
 }

@@ -419,8 +419,8 @@ export default function PrescriptionsPage() {
 
             {/* View Prescription Modal */}
             {viewModalOpen && selectedPrescription && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-[#1e242b] rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setViewModalOpen(false)}>
+                    <div className="bg-white dark:bg-[#1e242b] rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                         <div className="p-6 border-b border-[#e5e7eb] dark:border-[#2d353e] flex items-center justify-between">
                             <h3 className="text-lg font-bold text-[#121417] dark:text-white">
                                 Chi tiết đơn thuốc

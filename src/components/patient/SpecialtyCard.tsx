@@ -61,11 +61,11 @@ export function SpecialtyCard({ id, name, description, icon, color, doctorCount,
 
             {/* Actions */}
             <div className="flex items-center gap-2 mt-auto pt-4 border-t border-gray-50">
-                <Link href={`/doctors?specialtyId=${id}`}
+                <Link href={id ? `/doctors?specialtyId=${id}` : "/doctors"}
                     className="flex-1 text-center py-2 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                     Xem bác sĩ
                 </Link>
-                <Link href={`/booking?specialtyId=${id}`}
+                <Link href={id ? `/booking?specialtyId=${id}` : "/booking"}
                     className="flex-1 text-center py-2 text-xs font-semibold text-white bg-gradient-to-r from-[#3C81C6] to-[#2563eb] rounded-lg shadow-sm hover:shadow-md transition-all active:scale-[0.97]">
                     Đặt lịch
                 </Link>

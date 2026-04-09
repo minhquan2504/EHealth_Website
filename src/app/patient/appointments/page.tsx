@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { MOCK_PATIENT_PROFILES, getProfilesByUserId, type PatientProfile } from "@/data/patient-profiles-mock";
 import { AppointmentStatusBadge } from "@/components/patient/AppointmentStatusBadge";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAppointments, type Appointment } from "@/services/appointmentService";
@@ -18,6 +19,8 @@ export default function AppointmentsPage() {
     const [activeTab, setActiveTab] = useState("upcoming");
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedProfileId, setSelectedProfileId] = useState("pp-001");
+    const profiles = getProfilesByUserId("patient-001");
 
     useEffect(() => {
         loadAppointments();
@@ -55,6 +58,13 @@ export default function AppointmentsPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Lịch hẹn của tôi</h1>
                     <p className="text-sm text-gray-500 mt-0.5">Quản lý tất cả lịch hẹn khám bệnh</p>
+                    <div className="flex items-center gap-2 mt-3">
+                        <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "18px" }}>person</span>
+                        <select value={selectedProfileId} onChange={e => setSelectedProfileId(e.target.value)}
+                            className="px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-[#1e242b] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30 font-medium">
+                            {profiles.map(p => <option key={p.id} value={p.id}>{p.fullName} — {p.relationshipLabel}</option>)}
+                        </select>
+                    </div>
                 </div>
                 <Link href="/booking"
                     className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#3C81C6] to-[#2563eb] text-white text-sm font-semibold rounded-xl shadow-md shadow-[#3C81C6]/20 hover:shadow-lg transition-all active:scale-[0.97]">

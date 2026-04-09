@@ -113,12 +113,12 @@ export const HERO_SLIDES = [
 ];
 
 export const CERTIFICATIONS = [
-    { name: "ISO 9001:2015", desc: "Chứng nhận quản lý chất lượng", img: IMG.certIso, year: "2015" },
-    { name: "JCI Accreditation", desc: "Chuẩn quốc tế bệnh viện", img: IMG.certJci, year: "2019" },
-    { name: "Bộ Y Tế", desc: "Giấy phép hoạt động", img: IMG.certByt, year: "2011" },
-    { name: "HIMSS", desc: "Chứng nhận Y tế số", img: IMG.certHimss, year: "2023" },
-    { name: "Top 10 Bệnh viện", desc: "Bệnh viện xuất sắc Việt Nam", img: IMG.certTop10, year: "2024" },
-    { name: "WHO Partnership", desc: "Đối tác Y tế Quốc tế", img: IMG.certWho, year: "2020" },
+    { name: "ISO 9001:2015", desc: "Chứng nhận quản lý chất lượng", img: IMG.certIso, icon: "verified", color: "text-blue-600 bg-blue-50", year: "2015" },
+    { name: "JCI Accreditation", desc: "Chuẩn quốc tế bệnh viện", img: IMG.certJci, icon: "workspace_premium", color: "text-amber-600 bg-amber-50", year: "2019" },
+    { name: "Bộ Y Tế", desc: "Giấy phép hoạt động", img: IMG.certByt, icon: "shield_with_house", color: "text-red-600 bg-red-50", year: "2011" },
+    { name: "HIMSS", desc: "Chứng nhận Y tế số", img: IMG.certHimss, icon: "computer", color: "text-indigo-600 bg-indigo-50", year: "2023" },
+    { name: "Top 10 Bệnh viện", desc: "Bệnh viện xuất sắc Việt Nam", img: IMG.certTop10, icon: "emoji_events", color: "text-emerald-600 bg-emerald-50", year: "2024" },
+    { name: "WHO Partnership", desc: "Đối tác Y tế Quốc tế", img: IMG.certWho, icon: "public", color: "text-cyan-600 bg-cyan-50", year: "2020" },
 ];
 
 export const EQUIPMENT_LIST = [

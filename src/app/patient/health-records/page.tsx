@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { MOCK_PATIENT_PROFILES, getProfilesByUserId, type PatientProfile } from "@/data/patient-profiles-mock";
 import {
     MOCK_VITAL_SIGNS, MOCK_HEALTH_TIMELINE, MOCK_MEDICAL_HISTORY,
     MOCK_LAB_RESULTS, MOCK_MEDICATIONS,
@@ -19,6 +20,8 @@ const TABS = [
 
 export default function HealthRecordsPage() {
     const [activeTab, setActiveTab] = useState("overview");
+    const [selectedProfileId, setSelectedProfileId] = useState("pp-001");
+    const profiles = getProfilesByUserId("patient-001");
     const latestVital = MOCK_VITAL_SIGNS[0];
 
     return (
@@ -26,6 +29,13 @@ export default function HealthRecordsPage() {
             <div>
                 <h1 className="text-2xl font-bold text-[#121417] dark:text-white">Hồ sơ sức khỏe điện tử</h1>
                 <p className="text-sm text-[#687582] mt-0.5">Theo dõi toàn diện sức khỏe của bạn qua thời gian</p>
+                <div className="flex items-center gap-2 mt-3">
+                    <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "18px" }}>person</span>
+                    <select value={selectedProfileId} onChange={e => setSelectedProfileId(e.target.value)}
+                        className="px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-[#1e242b] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30 font-medium">
+                        {profiles.map(p => <option key={p.id} value={p.id}>{p.fullName} — {p.relationshipLabel}</option>)}
+                    </select>
+                </div>
             </div>
 
             <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide">

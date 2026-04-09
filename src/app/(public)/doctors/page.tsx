@@ -18,7 +18,8 @@ const PRICE_RANGES = [
 
 function DoctorsPageInner() {
     const searchParams = useSearchParams();
-    const initialSpecialty = searchParams.get("specialtyId") || "";
+    const rawSpecialty = searchParams.get("specialtyId");
+    const initialSpecialty = rawSpecialty && rawSpecialty !== "undefined" && rawSpecialty !== "null" ? rawSpecialty : "";
 
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [specialties, setSpecialties] = useState<Specialty[]>([]);
