@@ -33,15 +33,15 @@ export function LandingNavbar({ activeSection, scrollTo }: { activeSection: stri
                     </div>
                 </Link>
 
-                <div className="hidden lg:flex items-center gap-0 text-[12px] font-bold text-[#2d3748] flex-nowrap">
+                <div className="hidden xl:flex items-center gap-0.5 text-[13px] font-extrabold text-[#1a202c] flex-nowrap">
                     {NAV_ITEMS.map(n => (
                         <button key={n.id} onClick={() => handleNav(n)}
-                            className={`px-2 py-2 rounded-lg hover:text-[#3C81C6] hover:bg-blue-50/60 transition-all whitespace-nowrap ${activeSection === n.id ? "text-[#3C81C6] bg-blue-50/60" : ""}`}
+                            className={`px-2.5 py-2 rounded-lg hover:text-[#3C81C6] hover:bg-blue-50/80 transition-all whitespace-nowrap ${activeSection === n.id ? "text-[#3C81C6] bg-blue-50/80 shadow-sm" : ""}`}
                             aria-label={`Đi đến ${n.label}`}>{n.label}</button>
                     ))}
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 ml-4">
                     {isAuthenticated && user ? (
                         <div className="relative">
                             <button onClick={() => setUserMenuOpen(!userMenuOpen)}

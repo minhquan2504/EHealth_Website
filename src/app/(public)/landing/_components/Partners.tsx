@@ -16,8 +16,8 @@ export function PartnersSection() {
                     <div className="flex items-center justify-center gap-8 md:gap-16 flex-wrap">
                         {CERTIFICATIONS.map((cert) => (
                             <div key={cert.name} className="flex flex-col items-center gap-3 group cursor-pointer">
-                                <div className={`w-20 h-20 rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center group-hover:shadow-xl group-hover:-translate-y-1 transition-all ${cert.color || "bg-white text-gray-600"}`}>
-                                    <span className="material-symbols-outlined" style={{ fontSize: "36px" }}>{cert.icon || "verified"}</span>
+                                <div className="relative w-20 h-20 rounded-2xl bg-gray-50 shadow-lg border border-gray-100 overflow-hidden group-hover:shadow-xl group-hover:-translate-y-1 transition-all">
+                                    <SafeImage src={cert.img} alt={cert.name} fill className="object-contain p-3 mix-blend-multiply" />
                                 </div>
                                 <div className="text-center">
                                     <p className="text-sm font-bold text-[#121417]">{cert.name}</p>
