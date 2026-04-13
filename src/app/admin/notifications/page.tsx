@@ -287,10 +287,12 @@ export default function AdminNotifications() {
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-1">
                                                     <button onClick={() => openEditCat(cat)}
+                                                        aria-label="Sửa loại thông báo"
                                                         className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-[#687582] hover:text-[#3C81C6] transition-colors" title="Sửa">
                                                         <span className="material-symbols-outlined text-[16px]">edit</span>
                                                     </button>
                                                     <button onClick={() => handleDeleteCat(cat.id)}
+                                                        aria-label="Xóa loại thông báo"
                                                         className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[#687582] hover:text-red-500 transition-colors" title="Xóa">
                                                         <span className="material-symbols-outlined text-[16px]">delete</span>
                                                     </button>
@@ -338,10 +340,12 @@ export default function AdminNotifications() {
                                         </div>
                                         <div className="flex items-center gap-1 flex-shrink-0">
                                             <button onClick={() => openEditTpl(tpl)}
+                                                aria-label="Sửa mẫu thông báo"
                                                 className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-[#687582] hover:text-[#3C81C6] transition-colors" title="Sửa">
                                                 <span className="material-symbols-outlined text-[16px]">edit</span>
                                             </button>
                                             <button onClick={() => handleDeleteTpl(tpl.id)}
+                                                aria-label="Xóa mẫu thông báo"
                                                 className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[#687582] hover:text-red-500 transition-colors" title="Xóa">
                                                 <span className="material-symbols-outlined text-[16px]">delete</span>
                                             </button>
@@ -443,7 +447,7 @@ export default function AdminNotifications() {
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1">Tiêu đề *</label>
-                                    <input type="text" value={bcForm.title} onChange={e => setBcForm(p => ({ ...p, title: e.target.value }))} placeholder="VD: Thông báo bảo trì hệ thống"
+                                    <input type="text" value={bcForm.title} onChange={e => setBcForm(p => ({ ...p, title: e.target.value }))} aria-label="Tiêu đề thông báo" placeholder="VD: Thông báo bảo trì hệ thống"
                                         className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
                                 </div>
                                 <div>
@@ -502,12 +506,12 @@ export default function AdminNotifications() {
                         <div className="p-6 space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1">Tên loại *</label>
-                                <input type="text" value={catForm.name} onChange={e => setCatForm(p => ({ ...p, name: e.target.value }))} placeholder="VD: Lịch hẹn"
+                                <input type="text" value={catForm.name} onChange={e => setCatForm(p => ({ ...p, name: e.target.value }))} aria-label="Tên loại thông báo" placeholder="VD: Lịch hẹn"
                                     className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-[#3C81C6]/20" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1">Mã (code) *</label>
-                                <input type="text" value={catForm.code} onChange={e => setCatForm(p => ({ ...p, code: e.target.value.toUpperCase().replace(/\s/g, "_") }))} placeholder="VD: APPOINTMENT"
+                                <input type="text" value={catForm.code} onChange={e => setCatForm(p => ({ ...p, code: e.target.value.toUpperCase().replace(/\s/g, "_") }))} aria-label="Mã loại thông báo" placeholder="VD: APPOINTMENT"
                                     className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm font-mono outline-none dark:text-white focus:ring-2 focus:ring-[#3C81C6]/20" />
                             </div>
                             <div>
@@ -540,6 +544,7 @@ export default function AdminNotifications() {
                             <div>
                                 <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1">Loại thông báo</label>
                                 <select value={tplForm.categoryId} onChange={e => setTplForm(p => ({ ...p, categoryId: e.target.value }))}
+                                    aria-label="Loại thông báo"
                                     className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none dark:text-white">
                                     <option value="">-- Chọn loại --</option>
                                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -547,7 +552,7 @@ export default function AdminNotifications() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1">Tên mẫu *</label>
-                                <input type="text" value={tplForm.name} onChange={e => setTplForm(p => ({ ...p, name: e.target.value }))} placeholder="VD: Xác nhận lịch hẹn"
+                                <input type="text" value={tplForm.name} onChange={e => setTplForm(p => ({ ...p, name: e.target.value }))} aria-label="Tên mẫu thông báo" placeholder="VD: Xác nhận lịch hẹn"
                                     className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-[#3C81C6]/20" />
                             </div>
                             <div>
@@ -562,7 +567,7 @@ export default function AdminNotifications() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1">Biến động (ngăn bởi dấu phẩy)</label>
-                                <input type="text" value={tplForm.variables} onChange={e => setTplForm(p => ({ ...p, variables: e.target.value }))} placeholder="VD: patientName, date, time"
+                                <input type="text" value={tplForm.variables} onChange={e => setTplForm(p => ({ ...p, variables: e.target.value }))} aria-label="Biến động" placeholder="VD: patientName, date, time"
                                     className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm font-mono outline-none dark:text-white" />
                             </div>
                         </div>

@@ -93,7 +93,7 @@ export default function PharmacistDashboard() {
             .then(res => {
                 const items: any[] = res?.data?.data ?? res?.data ?? res ?? [];
                 const total = res?.pagination?.total ?? res?.data?.pagination?.total ?? items.length;
-                if (total) setStats(prev => prev.map((s, i) => i === 3 ? { ...s, value: Number(total).toLocaleString() } : s));
+                if (total) setStats(prev => prev.map((s, i) => i === 3 ? { ...s, value: Number(total).toLocaleString("vi-VN") } : s));
             })
             .catch(() => {});
     }, []);

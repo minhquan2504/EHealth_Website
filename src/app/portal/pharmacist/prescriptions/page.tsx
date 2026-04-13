@@ -74,7 +74,6 @@ export default function PharmacistPrescriptions() {
     };
 
     const detailRx = rxs.find(r => r.id === detail);
-    const interactionWarning = detail ? INTERACTION_WARNINGS[detail] : null;
 
     return (
         <div className="p-6 md:p-8"><div className="max-w-full mx-auto space-y-6">
@@ -184,18 +183,11 @@ export default function PharmacistPrescriptions() {
                             </div>
                             <div><span className="text-sm text-[#687582]">Chẩn đoán:</span><p className="text-sm font-medium text-[#121417] dark:text-white">{detailRx.diagnosis}</p></div>
 
-                            {/* Interaction Warning */}
-                            {interactionWarning && (
-                                <div className={`flex items-start gap-3 p-3.5 rounded-xl border ${interactionWarning.severity === "high" ? "bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800" : "bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800"}`}>
-                                    <span className={`material-symbols-outlined text-[20px] mt-0.5 ${interactionWarning.severity === "high" ? "text-red-500" : "text-amber-500"}`}>warning</span>
-                                    <div>
-                                        <p className={`text-xs font-bold mb-0.5 ${interactionWarning.severity === "high" ? "text-red-700 dark:text-red-400" : "text-amber-700 dark:text-amber-400"}`}>⚠ Cảnh báo tương tác thuốc</p>
-                                        <p className={`text-xs ${interactionWarning.severity === "high" ? "text-red-600 dark:text-red-300" : "text-amber-600 dark:text-amber-300"}`}>
-                                            <strong>{interactionWarning.drugs.join(" + ")}</strong>: {interactionWarning.warning}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
+                            {/* Interaction Warning — tính năng đang phát triển */}
+                            <div className="flex items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40">
+                                <span className="material-symbols-outlined text-gray-400 text-[18px]">info</span>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Tính năng kiểm tra tương tác thuốc đang phát triển</p>
+                            </div>
 
                             {/* Medicines Checklist */}
                             <div>

@@ -232,6 +232,7 @@ export default function NewBillingPage() {
 
     return (
         <div className="space-y-6 p-6 md:p-8">
+            <h1 className="sr-only">Tạo hóa đơn mới</h1>
             {/* Breadcrumb */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-[#687582]">

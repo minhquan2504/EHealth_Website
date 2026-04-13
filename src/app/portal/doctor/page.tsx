@@ -82,6 +82,7 @@ export default function DoctorDashboard() {
 
     return (
         <div className="p-6 md:p-8">
+            <h1 className="sr-only">Bảng điều khiển bác sĩ</h1>
             <div className="max-w-7xl mx-auto space-y-5">
                 {/* Page Header */}
                 <DoctorPageHeader />

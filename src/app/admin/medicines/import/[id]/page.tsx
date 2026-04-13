@@ -217,7 +217,7 @@ export default function StockInDetailPage() {
                 </div>
                 <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e]">
                     <p className="text-xs text-[#687582] dark:text-gray-400 font-medium uppercase tracking-wider mb-1">Tổng giá trị</p>
-                    <p className="text-sm font-bold text-[#3C81C6]">{totalValue.toLocaleString()}₫</p>
+                    <p className="text-sm font-bold text-[#3C81C6]">{totalValue.toLocaleString("vi-VN")}₫</p>
                 </div>
             </div>
 
@@ -270,10 +270,10 @@ export default function StockInDetailPage() {
                                 <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                     <td className="py-3 px-5 text-sm text-[#687582]">{idx + 1}</td>
                                     <td className="py-3 px-5 text-sm font-medium text-[#121417] dark:text-white">{item.drugName}</td>
-                                    <td className="py-3 px-5 text-sm font-bold text-[#121417] dark:text-white text-right">{item.quantity.toLocaleString()}</td>
+                                    <td className="py-3 px-5 text-sm font-bold text-[#121417] dark:text-white text-right">{item.quantity.toLocaleString("vi-VN")}</td>
                                     <td className="py-3 px-5 text-sm text-[#687582]">{item.unit}</td>
-                                    <td className="py-3 px-5 text-sm text-[#121417] dark:text-white text-right">{item.unitPrice.toLocaleString()}₫</td>
-                                    <td className="py-3 px-5 text-sm font-bold text-[#3C81C6] text-right">{(item.quantity * item.unitPrice).toLocaleString()}₫</td>
+                                    <td className="py-3 px-5 text-sm text-[#121417] dark:text-white text-right">{item.unitPrice.toLocaleString("vi-VN")}₫</td>
+                                    <td className="py-3 px-5 text-sm font-bold text-[#3C81C6] text-right">{(item.quantity * item.unitPrice).toLocaleString("vi-VN")}₫</td>
                                     <td className="py-3 px-5 text-sm text-[#687582]">{item.lotNumber || "—"}</td>
                                     <td className="py-3 px-5 text-sm text-[#687582]">{item.expiryDate || "—"}</td>
                                 </tr>
@@ -282,7 +282,7 @@ export default function StockInDetailPage() {
                         <tfoot className="bg-gray-50 dark:bg-gray-800/50 border-t-2 border-[#dde0e4] dark:border-[#2d353e]">
                             <tr>
                                 <td colSpan={5} className="py-3 px-5 text-sm font-bold text-[#121417] dark:text-white text-right">Tổng cộng</td>
-                                <td className="py-3 px-5 text-base font-black text-[#3C81C6] text-right">{totalValue.toLocaleString()}₫</td>
+                                <td className="py-3 px-5 text-base font-black text-[#3C81C6] text-right">{totalValue.toLocaleString("vi-VN")}₫</td>
                                 <td colSpan={2} />
                             </tr>
                         </tfoot>

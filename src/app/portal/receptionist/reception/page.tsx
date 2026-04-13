@@ -219,6 +219,7 @@ export default function ReceptionPage() {
                             <div className="relative flex-1">
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#687582] text-[20px]">search</span>
                                 <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSearch()}
+                                    aria-label="Tìm kiếm bệnh nhân"
                                     placeholder={`Nhập ${searchType === "phone" ? "số điện thoại" : searchType === "cccd" ? "số CCCD" : "số BHYT"}...`}
                                     className="w-full pl-10 pr-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
                             </div>
@@ -248,19 +249,20 @@ export default function ReceptionPage() {
                                     <p className="text-xs text-blue-700 dark:text-blue-400">Không tìm thấy hồ sơ. Vui lòng nhập thông tin bệnh nhân mới.</p>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <input type="text" value={newPatient.name} onChange={e => setNewPatient(p => ({ ...p, name: e.target.value }))} placeholder="Họ và tên *"
+                                    <input type="text" value={newPatient.name} onChange={e => setNewPatient(p => ({ ...p, name: e.target.value }))} aria-label="Họ và tên" placeholder="Họ và tên *"
                                         className="px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
-                                    <input type="text" value={newPatient.phone} onChange={e => setNewPatient(p => ({ ...p, phone: e.target.value }))} placeholder="Số điện thoại *"
+                                    <input type="text" value={newPatient.phone} onChange={e => setNewPatient(p => ({ ...p, phone: e.target.value }))} aria-label="Số điện thoại" placeholder="Số điện thoại *"
                                         className="px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
                                     <select value={newPatient.gender} onChange={e => setNewPatient(p => ({ ...p, gender: e.target.value }))}
+                                        aria-label="Giới tính"
                                         className="px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none dark:text-white">
                                         <option value="male">Nam</option><option value="female">Nữ</option>
                                     </select>
-                                    <input type="text" value={newPatient.age} onChange={e => setNewPatient(p => ({ ...p, age: e.target.value }))} placeholder="Tuổi"
+                                    <input type="text" value={newPatient.age} onChange={e => setNewPatient(p => ({ ...p, age: e.target.value }))} aria-label="Tuổi" placeholder="Tuổi"
                                         className="px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none dark:text-white" />
-                                    <input type="text" value={newPatient.insurance} onChange={e => setNewPatient(p => ({ ...p, insurance: e.target.value }))} placeholder="Số BHYT"
+                                    <input type="text" value={newPatient.insurance} onChange={e => setNewPatient(p => ({ ...p, insurance: e.target.value }))} aria-label="Số BHYT" placeholder="Số BHYT"
                                         className="px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none dark:text-white col-span-2 sm:col-span-1" />
-                                    <input type="text" value={newPatient.address} onChange={e => setNewPatient(p => ({ ...p, address: e.target.value }))} placeholder="Địa chỉ"
+                                    <input type="text" value={newPatient.address} onChange={e => setNewPatient(p => ({ ...p, address: e.target.value }))} aria-label="Địa chỉ" placeholder="Địa chỉ"
                                         className="px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none dark:text-white sm:col-span-2" />
                                 </div>
                             </div>
@@ -294,7 +296,7 @@ export default function ReceptionPage() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Lý do khám</label>
-                            <input type="text" value={reason} onChange={e => setReason(e.target.value)} placeholder="VD: Đau bụng, sốt cao, tái khám..."
+                            <input type="text" value={reason} onChange={e => setReason(e.target.value)} aria-label="Lý do khám" placeholder="VD: Đau bụng, sốt cao, tái khám..."
                                 className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
                         </div>
                         {/* AI Triage */}

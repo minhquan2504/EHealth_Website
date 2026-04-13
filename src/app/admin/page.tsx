@@ -46,6 +46,7 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-4">
+            <h1 className="sr-only">Bảng điều khiển quản trị</h1>
             <PageHeader />
             <StatsCards stats={stats} />
 

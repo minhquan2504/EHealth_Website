@@ -86,10 +86,7 @@ export default function ReceptionistQueue() {
 
     const handleTransfer = () => {
         if (!transferModal || !transferTarget) return;
-        setQueue(prev => prev.map(q => {
-            if (q.id !== transferModal.id) return q;
-            return transferModal.type === "doctor" ? { ...q, doctor: transferTarget } : { ...q, dept: transferTarget };
-        }));
+        alert("Chức năng chuyển bác sĩ/khoa đang phát triển");
         setTransferModal(null);
         setTransferTarget("");
     };

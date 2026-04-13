@@ -85,6 +85,7 @@ export default function AppointmentsPage() {
 
     return (
         <div className="p-6 md:p-8 h-full">
+            <h1 className="sr-only">Lịch hẹn bác sĩ</h1>
             <div className="max-w-7xl mx-auto flex flex-col h-full gap-6">
                 {/* AI Appointment Triage */}
                 {user?.id && (

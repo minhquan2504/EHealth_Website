@@ -653,6 +653,7 @@ export default function ExaminationPage() {
                                                         setVitalErrors(prev => ({ ...prev, [f.key]: res.valid ? "" : res.message }));
                                                     }
                                                 }}
+                                                    aria-label={f.label}
                                                     placeholder={f.placeholder} className={`w-full text-lg font-bold text-[#121417] dark:text-white bg-transparent outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600 ${vitalErrors[f.key] ? "text-red-500" : ""}`} />
                                                 <span className="text-xs text-[#b0b8c1] flex-shrink-0">{f.unit}</span>
                                             </div>
@@ -802,14 +803,15 @@ export default function ExaminationPage() {
                                         <div>
                                             <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Ghi chú chỉ định</label>
                                             <input type="text" value={labNote} onChange={(e) => setLabNote(e.target.value)}
+                                                aria-label="Ghi chú chỉ định"
                                                 placeholder="VD: Nhịn ăn sáng trước khi lấy máu..."
                                                 className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <button onClick={simulateLabResults}
-                                                className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors shadow-md shadow-teal-200 dark:shadow-none">
-                                                <span className="material-symbols-outlined text-[18px]">science</span>
-                                                Mô phỏng kết quả XN
+                                            <button disabled
+                                                className="flex items-center gap-2 px-4 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-xl text-sm font-bold cursor-not-allowed opacity-60">
+                                                <span className="material-symbols-outlined text-[18px]">hourglass_empty</span>
+                                                Chưa có kết quả, vui lòng chờ phòng xét nghiệm
                                             </button>
                                             <span className="text-xs text-[#687582]">Đã chọn {selectedLabs.length} xét nghiệm</span>
                                         </div>
@@ -827,6 +829,7 @@ export default function ExaminationPage() {
                                         <div className="relative">
                                             <input type="text" value={icdQuery}
                                                 onChange={(e) => setIcdQuery(e.target.value)}
+                                                aria-label="Tìm ICD-10"
                                                 placeholder="Gõ để tìm mã ICD-10..."
                                                 className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white pr-8" />
                                             {icdSearching && <div className="absolute right-3 top-3 w-4 h-4 border-2 border-[#3C81C6] border-t-transparent rounded-full animate-spin" />}
@@ -847,7 +850,7 @@ export default function ExaminationPage() {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Chẩn đoán *</label>
-                                        <input type="text" value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Tên bệnh / chẩn đoán..."
+                                        <input type="text" value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} aria-label="Chẩn đoán" placeholder="Tên bệnh / chẩn đoán..."
                                             className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
                                     </div>
                                 </div>
@@ -894,7 +897,7 @@ export default function ExaminationPage() {
                                                     <p className="text-sm font-semibold text-[#121417] dark:text-white">{m.name}</p>
                                                     <p className="text-xs text-[#687582] truncate">{[m.dosage, m.frequency, m.duration, m.note].filter(Boolean).join(" • ")}</p>
                                                 </div>
-                                                <button onClick={() => removeMed(i)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 opacity-0 group-hover:opacity-100 transition-all">
+                                                <button onClick={() => removeMed(i)} aria-label="Xóa thuốc" className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 opacity-0 group-hover:opacity-100 transition-all">
                                                     <span className="material-symbols-outlined text-[18px]">delete</span>
                                                 </button>
                                             </div>
@@ -910,15 +913,15 @@ export default function ExaminationPage() {
                                 <div className="p-4 border-2 border-dashed border-[#dde0e4] dark:border-[#2d353e] rounded-xl space-y-3">
                                     <p className="text-xs font-bold text-[#687582] uppercase tracking-wide">Thêm thuốc mới</p>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                        <input type="text" value={newMed.name} onChange={(e) => setNewMed(p => ({ ...p, name: e.target.value }))} placeholder="Tên thuốc *"
+                                        <input type="text" value={newMed.name} onChange={(e) => setNewMed(p => ({ ...p, name: e.target.value }))} aria-label="Tên thuốc" placeholder="Tên thuốc *"
                                             className="px-3 py-2 bg-white dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-lg text-sm outline-none focus:border-[#3C81C6] dark:text-white" />
-                                        <input type="text" value={newMed.dosage} onChange={(e) => setNewMed(p => ({ ...p, dosage: e.target.value }))} placeholder="Liều lượng"
+                                        <input type="text" value={newMed.dosage} onChange={(e) => setNewMed(p => ({ ...p, dosage: e.target.value }))} aria-label="Liều lượng" placeholder="Liều lượng"
                                             className="px-3 py-2 bg-white dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-lg text-sm outline-none focus:border-[#3C81C6] dark:text-white" />
-                                        <input type="text" value={newMed.frequency} onChange={(e) => setNewMed(p => ({ ...p, frequency: e.target.value }))} placeholder="Tần suất"
+                                        <input type="text" value={newMed.frequency} onChange={(e) => setNewMed(p => ({ ...p, frequency: e.target.value }))} aria-label="Tần suất dùng thuốc" placeholder="Tần suất"
                                             className="px-3 py-2 bg-white dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-lg text-sm outline-none focus:border-[#3C81C6] dark:text-white" />
-                                        <input type="text" value={newMed.duration} onChange={(e) => setNewMed(p => ({ ...p, duration: e.target.value }))} placeholder="Số ngày"
+                                        <input type="text" value={newMed.duration} onChange={(e) => setNewMed(p => ({ ...p, duration: e.target.value }))} aria-label="Số ngày dùng thuốc" placeholder="Số ngày"
                                             className="px-3 py-2 bg-white dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-lg text-sm outline-none focus:border-[#3C81C6] dark:text-white" />
-                                        <input type="text" value={newMed.note} onChange={(e) => setNewMed(p => ({ ...p, note: e.target.value }))} placeholder="Ghi chú"
+                                        <input type="text" value={newMed.note} onChange={(e) => setNewMed(p => ({ ...p, note: e.target.value }))} aria-label="Ghi chú thuốc" placeholder="Ghi chú"
                                             className="px-3 py-2 bg-white dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-lg text-sm outline-none focus:border-[#3C81C6] dark:text-white" />
                                         <button onClick={addMed} className="px-4 py-2 bg-[#3C81C6] text-white rounded-lg text-sm font-medium hover:bg-[#2a6da8] flex items-center justify-center gap-1.5 transition-colors">
                                             <span className="material-symbols-outlined text-[16px]">add</span>Thêm thuốc
@@ -985,7 +988,7 @@ export default function ExaminationPage() {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Lời dặn bác sĩ</label>
-                                        <input type="text" value={doctorNote} onChange={(e) => setDoctorNote(e.target.value)} placeholder="Chế độ ăn, sinh hoạt..."
+                                        <input type="text" value={doctorNote} onChange={(e) => setDoctorNote(e.target.value)} aria-label="Lời dặn bác sĩ" placeholder="Chế độ ăn, sinh hoạt..."
                                             className="w-full px-4 py-2.5 bg-[#f8f9fa] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
                                     </div>
                                 </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { UI_TEXT } from "@/constants/ui-text";
 import { getDrugs } from "@/services/medicineService";
 import { MEDICINE_STATUS } from "@/constants/status";
+import { validateFile } from "@/utils/fileValidation";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { MedicineFormModal } from "@/features/medicines/components/medicine-form-modal";
 import { AddStockModal } from "@/features/medicines/components/add-stock-modal";
@@ -299,6 +300,8 @@ export default function MedicinesPage() {
                             input.onchange = async (e) => {
                                 const file = (e.target as HTMLInputElement).files?.[0];
                                 if (!file) return;
+                                const validation = validateFile(file, { maxSize: 5 * 1024 * 1024, allowedTypes: ["csv", "xlsx", "xls"] });
+                                if (!validation.valid) { alert(validation.message); return; }
                                 try {
                                     const { importDrugs } = await import("@/services/medicineService");
                                     const result = await importDrugs(file);
@@ -337,7 +340,7 @@ export default function MedicinesPage() {
                     </div>
                     <div>
                         <p className="text-sm text-[#687582] dark:text-gray-400">{UI_TEXT.ADMIN.MEDICINES.TOTAL_MEDICINES}</p>
-                        <p className="text-xl font-bold text-[#121417] dark:text-white">{dynamicStats.total.toLocaleString()}</p>
+                        <p className="text-xl font-bold text-[#121417] dark:text-white">{dynamicStats.total.toLocaleString("vi-VN")}</p>
                     </div>
                 </div>
 
@@ -499,7 +502,7 @@ export default function MedicinesPage() {
                                             </td>
                                             <td className="py-4 px-6">
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${getStockStyle(medicine.stockLevel)}`}>
-                                                    {medicine.stock.toLocaleString()}
+                                                    {medicine.stock.toLocaleString("vi-VN")}
                                                 </span>
                                             </td>
                                             <td className="py-4 px-6">

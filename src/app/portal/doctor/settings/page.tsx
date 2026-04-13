@@ -97,6 +97,7 @@ export default function SettingsPage() {
 
     return (
         <div className="p-6 md:p-8 h-full">
+            <h1 className="sr-only">Cài đặt tài khoản</h1>
             <div className="max-w-6xl mx-auto flex flex-col h-full gap-6">
                 {/* Page Header */}
                 <div>
@@ -259,6 +260,7 @@ export default function SettingsPage() {
                                         </label>
                                         <input
                                             type="password"
+                                            aria-label="Mật khẩu hiện tại"
                                             className="w-full px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 focus:border-[#3C81C6] dark:text-white"
                                             placeholder="••••••••"
                                         />
@@ -269,6 +271,7 @@ export default function SettingsPage() {
                                         </label>
                                         <input
                                             type="password"
+                                            aria-label="Mật khẩu mới"
                                             className="w-full px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 focus:border-[#3C81C6] dark:text-white"
                                             placeholder="••••••••"
                                         />
@@ -279,6 +282,7 @@ export default function SettingsPage() {
                                         </label>
                                         <input
                                             type="password"
+                                            aria-label="Xác nhận mật khẩu mới"
                                             className="w-full px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 focus:border-[#3C81C6] dark:text-white"
                                             placeholder="••••••••"
                                         />

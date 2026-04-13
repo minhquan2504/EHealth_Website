@@ -163,7 +163,7 @@ export default function StockBatchDetailPage() {
                 </div>
                 <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e]">
                     <p className="text-xs text-[#687582] dark:text-gray-400 font-medium uppercase tracking-wider mb-1">Giá nhập</p>
-                    <p className="text-sm font-bold text-[#3C81C6]">{batch.unitPrice.toLocaleString()}₫/{batch.unit}</p>
+                    <p className="text-sm font-bold text-[#3C81C6]">{batch.unitPrice.toLocaleString("vi-VN")}₫/{batch.unit}</p>
                 </div>
             </div>
 
@@ -224,7 +224,7 @@ export default function StockBatchDetailPage() {
                                         </span>
                                     </td>
                                     <td className={`py-3 px-5 text-sm font-bold text-right ${h.type === "import" ? "text-emerald-600" : "text-amber-600"}`}>
-                                        {h.type === "import" ? "+" : "-"}{h.quantity.toLocaleString()}
+                                        {h.type === "import" ? "+" : "-"}{h.quantity.toLocaleString("vi-VN")}
                                     </td>
                                     <td className="py-3 px-5 text-sm font-medium text-[#3C81C6]">{h.refCode}</td>
                                     <td className="py-3 px-5 text-sm text-[#687582]">{h.note}</td>

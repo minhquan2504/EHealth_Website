@@ -25,6 +25,7 @@ import {
     MedicalRecord,
     RelationType,
 } from "@/services/patientService";
+import { validateFile } from "@/utils/fileValidation";
 
 // ==================== HELPERS ====================
 function fmtDob(iso?: string): string {
@@ -301,6 +302,8 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
     const handleUploadDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        const validation = validateFile(file, { maxSize: 5 * 1024 * 1024, allowedTypes: ["pdf", "jpg", "jpeg", "png", "doc", "docx"] });
+        if (!validation.valid) { alert(validation.message); if (fileInputRef.current) fileInputRef.current.value = ""; return; }
         setUploadingDoc(true);
         try {
             const fd = new FormData();
@@ -644,23 +647,23 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             <div>
                                                 <label className="text-xs text-[#687582] mb-1 block">Số điện thoại *</label>
-                                                <input className={inputCls} placeholder="0901234567" value={contactForm.phone_number} onChange={e => setContactForm(p => ({ ...p, phone_number: e.target.value }))} />
+                                                <input className={inputCls} aria-label="Số điện thoại" placeholder="0901234567" value={contactForm.phone_number} onChange={e => setContactForm(p => ({ ...p, phone_number: e.target.value }))} />
                                             </div>
                                             <div>
                                                 <label className="text-xs text-[#687582] mb-1 block">Email</label>
-                                                <input className={inputCls} placeholder="email@example.com" value={contactForm.email} onChange={e => setContactForm(p => ({ ...p, email: e.target.value }))} />
+                                                <input className={inputCls} aria-label="Email" placeholder="email@example.com" value={contactForm.email} onChange={e => setContactForm(p => ({ ...p, email: e.target.value }))} />
                                             </div>
                                             <div className="md:col-span-2">
                                                 <label className="text-xs text-[#687582] mb-1 block">Địa chỉ</label>
-                                                <input className={inputCls} placeholder="Số nhà, đường..." value={contactForm.street_address} onChange={e => setContactForm(p => ({ ...p, street_address: e.target.value }))} />
+                                                <input className={inputCls} aria-label="Địa chỉ" placeholder="Số nhà, đường..." value={contactForm.street_address} onChange={e => setContactForm(p => ({ ...p, street_address: e.target.value }))} />
                                             </div>
                                             <div>
                                                 <label className="text-xs text-[#687582] mb-1 block">Phường/Xã</label>
-                                                <input className={inputCls} value={contactForm.ward} onChange={e => setContactForm(p => ({ ...p, ward: e.target.value }))} />
+                                                <input className={inputCls} aria-label="Phường/Xã" value={contactForm.ward} onChange={e => setContactForm(p => ({ ...p, ward: e.target.value }))} />
                                             </div>
                                             <div>
                                                 <label className="text-xs text-[#687582] mb-1 block">Tỉnh/Thành</label>
-                                                <input className={inputCls} value={contactForm.province} onChange={e => setContactForm(p => ({ ...p, province: e.target.value }))} />
+                                                <input className={inputCls} aria-label="Tỉnh/Thành" value={contactForm.province} onChange={e => setContactForm(p => ({ ...p, province: e.target.value }))} />
                                             </div>
                                         </div>
                                         <div className="flex gap-2 pt-2">
@@ -691,7 +694,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                                             {c.street_address && <p className="text-xs text-[#687582]">{[c.street_address, c.ward, c.province].filter(Boolean).join(", ")}</p>}
                                         </div>
                                         {!c.is_primary && (
-                                            <button onClick={() => handleDeleteContact(c.contact_id)} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-red-400 hover:text-red-600 transition-colors flex-shrink-0" title="Xóa">
+                                            <button onClick={() => handleDeleteContact(c.contact_id)} aria-label="Xóa liên hệ" className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-red-400 hover:text-red-600 transition-colors flex-shrink-0" title="Xóa">
                                                 <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>delete</span>
                                             </button>
                                         )}
@@ -804,7 +807,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                                                     <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>download</span>
                                                 </a>
                                             )}
-                                            <button onClick={() => handleDeleteDoc(d.document_id)} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-[#687582] hover:text-red-500 transition-colors" title="Xóa">
+                                            <button onClick={() => handleDeleteDoc(d.document_id)} aria-label="Xóa tài liệu" className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-[#687582] hover:text-red-500 transition-colors" title="Xóa">
                                                 <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>delete</span>
                                             </button>
                                         </div>
@@ -833,15 +836,15 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             <div>
                                                 <label className="text-xs text-[#687582] mb-1 block">Họ tên *</label>
-                                                <input className={inputCls} placeholder="Nguyễn Thị B" value={relationForm.full_name} onChange={e => setRelationForm(p => ({ ...p, full_name: e.target.value }))} />
+                                                <input className={inputCls} aria-label="Họ tên người thân" placeholder="Nguyễn Thị B" value={relationForm.full_name} onChange={e => setRelationForm(p => ({ ...p, full_name: e.target.value }))} />
                                             </div>
                                             <div>
                                                 <label className="text-xs text-[#687582] mb-1 block">Số điện thoại *</label>
-                                                <input className={inputCls} placeholder="0901234567" value={relationForm.phone_number} onChange={e => setRelationForm(p => ({ ...p, phone_number: e.target.value }))} />
+                                                <input className={inputCls} aria-label="Số điện thoại người thân" placeholder="0901234567" value={relationForm.phone_number} onChange={e => setRelationForm(p => ({ ...p, phone_number: e.target.value }))} />
                                             </div>
                                             <div>
                                                 <label className="text-xs text-[#687582] mb-1 block">Quan hệ</label>
-                                                <select className={inputCls} value={relationForm.relationship} onChange={e => setRelationForm(p => ({ ...p, relationship: e.target.value as RelationType }))}>
+                                                <select className={inputCls} aria-label="Quan hệ với bệnh nhân" value={relationForm.relationship} onChange={e => setRelationForm(p => ({ ...p, relationship: e.target.value as RelationType }))}>
                                                     <option value="PARENT">Phụ huynh</option>
                                                     <option value="SPOUSE">Vợ/Chồng</option>
                                                     <option value="CHILD">Con</option>
@@ -885,7 +888,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                                                 <p className="text-xs text-[#687582]">{r.phone_number} · {relLabel(r.relationship)}</p>
                                             </div>
                                         </div>
-                                        <button onClick={() => handleDeleteRelation(r.relation_id)} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-[#687582] hover:text-red-500 transition-colors flex-shrink-0" title="Xóa">
+                                        <button onClick={() => handleDeleteRelation(r.relation_id)} aria-label="Xóa người thân" className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-[#687582] hover:text-red-500 transition-colors flex-shrink-0" title="Xóa">
                                             <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>delete</span>
                                         </button>
                                     </div>

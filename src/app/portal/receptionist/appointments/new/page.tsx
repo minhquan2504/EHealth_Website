@@ -96,8 +96,11 @@ export default function NewAppointmentPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!fd.patientName || !fd.phone || !fd.date || !fd.time) {
-            alert("Vui lòng nhập đầy đủ thông tin bệnh nhân, ngày và giờ hẹn"); return;
+        if (!fd.patientName && !selectedPatient) { alert("Vui lòng chọn bệnh nhân"); return; }
+        if (!fd.date) { alert("Vui lòng chọn ngày"); return; }
+        if (!fd.time) { alert("Vui lòng chọn giờ"); return; }
+        if (!fd.patientName || !fd.phone) {
+            alert("Vui lòng nhập đầy đủ thông tin bệnh nhân"); return;
         }
         setSaving(true);
         try {

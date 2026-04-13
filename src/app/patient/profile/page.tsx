@@ -11,9 +11,7 @@ import { validateName, validatePhone, validateDob, validateIdNumber, validateBHY
 const TABS = [
     { id: "personal", label: "Thông tin cá nhân", icon: "person" },
     { id: "family", label: "Người thân", icon: "group" },
-    { id: "history", label: "Lịch sử khám", icon: "history" },
     { id: "insurance", label: "Bảo hiểm", icon: "health_and_safety" },
-    { id: "results", label: "Kết quả", icon: "lab_profile" },
     { id: "security", label: "Bảo mật", icon: "lock" },
 ];
 
@@ -391,18 +389,6 @@ export default function ProfilePage() {
                     </div>
                 )}
 
-                {/* ===== Medical History ===== */}
-                {activeTab === "history" && (
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">Lịch sử khám bệnh</h3>
-                        <div className="text-center py-12">
-                            <span className="material-symbols-outlined text-gray-300 mb-3" style={{ fontSize: "56px" }}>history</span>
-                            <p className="text-gray-500 font-medium">Lịch sử khám sẽ được cập nhật tự động</p>
-                            <p className="text-gray-400 text-sm mt-1">Sau mỗi lần khám tại EHealth, kết quả sẽ được lưu tại đây</p>
-                        </div>
-                    </div>
-                )}
-
                 {/* ===== Insurance ===== */}
                 {activeTab === "insurance" && (
                     <div>
@@ -425,18 +411,6 @@ export default function ProfilePage() {
                                     <p className="text-gray-400 text-sm mt-1">Thêm số thẻ BHYT tại tab &quot;Thông tin cá nhân&quot;</p>
                                 </div>
                             )}
-                        </div>
-                    </div>
-                )}
-
-                {/* ===== Results ===== */}
-                {activeTab === "results" && (
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">Kết quả khám & xét nghiệm</h3>
-                        <div className="text-center py-12">
-                            <span className="material-symbols-outlined text-gray-300 mb-3" style={{ fontSize: "56px" }}>lab_profile</span>
-                            <p className="text-gray-500 font-medium">Chưa có kết quả xét nghiệm</p>
-                            <p className="text-gray-400 text-sm mt-1">Kết quả sẽ được cập nhật sau mỗi lần khám</p>
                         </div>
                     </div>
                 )}

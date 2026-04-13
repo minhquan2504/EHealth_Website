@@ -35,10 +35,7 @@ export default function TelemedicinePage() {
 
     // ── Chat in room ──
     const [chatInput, setChatInput] = useState("");
-    const [chatMessages, setChatMessages] = useState([
-        { id: 1, sender: "doctor", text: "Xin chào, tôi là bác sĩ phụ trách. Hôm nay bạn cảm thấy thế nào?", time: "15:30" },
-        { id: 2, sender: "patient", text: "Chào bác sĩ, em vẫn uống thuốc đều nhưng thỉnh thoảng hơi chóng mặt", time: "15:31" },
-    ]);
+    const [chatMessages, setChatMessages] = useState<{ id: number; sender: string; text: string; time: string }[]>([]);
     const [roomLoading, setRoomLoading] = useState(false);
     const [roomError, setRoomError] = useState("");
 
@@ -265,6 +262,12 @@ export default function TelemedicinePage() {
                                     <h3 className="text-sm font-semibold text-[#121417] dark:text-white">Chat trong phiên khám</h3>
                                 </div>
                                 <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                                    {chatMessages.length === 0 && (
+                                        <div className="flex flex-col items-center justify-center h-full py-8 text-center">
+                                            <span className="material-symbols-outlined text-gray-300 text-4xl mb-2">chat</span>
+                                            <p className="text-xs text-[#687582]">Chưa có tin nhắn. Bắt đầu cuộc trò chuyện với bệnh nhân.</p>
+                                        </div>
+                                    )}
                                     {chatMessages.map(msg => (
                                         <div key={msg.id} className={`flex ${msg.sender === "doctor" ? "justify-end" : "justify-start"}`}>
                                             <div className={`max-w-[85%] rounded-xl px-3 py-2 ${msg.sender === "doctor" ? "bg-[#3C81C6] text-white" : "bg-[#f6f7f8] dark:bg-[#13191f] text-[#121417] dark:text-white"}`}>
@@ -284,6 +287,7 @@ export default function TelemedicinePage() {
                                                 setChatInput("");
                                             }
                                         }}
+                                        aria-label="Nhập tin nhắn"
                                         placeholder="Nhập tin nhắn..."
                                         className="flex-1 px-3 py-2 bg-[#f6f7f8] dark:bg-[#13191f] border border-[#dde0e4] dark:border-[#2d353e] rounded-lg text-sm outline-none focus:border-[#3C81C6]" />
                                     <button
@@ -293,6 +297,7 @@ export default function TelemedicinePage() {
                                             telemedicineService.sendMessage(activeSession.id, chatInput.trim()).catch(() => {});
                                             setChatInput("");
                                         }}
+                                        aria-label="Gửi tin nhắn"
                                         className="p-2 bg-[#3C81C6] text-white rounded-lg">
                                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>send</span>
                                     </button>
@@ -340,7 +345,7 @@ export default function TelemedicinePage() {
                 <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-lg p-6" onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold text-[#121417] dark:text-white">Ghi kết quả khám</h3>
-                        <button onClick={() => setShowResult(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <button onClick={() => setShowResult(false)} aria-label="Đóng" className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                             <span className="material-symbols-outlined text-[#687582]">close</span>
                         </button>
                     </div>
@@ -354,6 +359,7 @@ export default function TelemedicinePage() {
                         <div>
                             <label className="text-xs font-semibold text-[#687582] mb-1 block">Chẩn đoán</label>
                             <input type="text" value={resultForm.diagnosis ?? ""} onChange={e => setResultForm(f => ({ ...f, diagnosis: e.target.value }))}
+                                aria-label="Chẩn đoán"
                                 placeholder="Nhập chẩn đoán..."
                                 className="w-full px-4 py-2.5 border border-[#e5e7eb] dark:border-[#2d353e] rounded-xl text-sm bg-[#f6f7f8] dark:bg-[#13191f] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30" />
                         </div>
@@ -393,7 +399,7 @@ export default function TelemedicinePage() {
                 <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold text-[#121417] dark:text-white">Kê đơn thuốc từ xa</h3>
-                        <button onClick={() => setShowPrescription(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <button onClick={() => setShowPrescription(false)} aria-label="Đóng" className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                             <span className="material-symbols-outlined text-[#687582]">close</span>
                         </button>
                     </div>
@@ -410,20 +416,21 @@ export default function TelemedicinePage() {
                                     <span className="text-xs font-semibold text-[#687582]">Thuốc {idx + 1}</span>
                                     {prescForm.length > 1 && (
                                         <button onClick={() => setPrescForm(f => f.filter((_, i) => i !== idx))}
+                                            aria-label="Xóa thuốc"
                                             className="text-red-500 hover:text-red-700">
                                             <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>delete</span>
                                         </button>
                                     )}
                                 </div>
                                 <input type="text" value={med.name} onChange={e => setPrescForm(f => f.map((m, i) => i === idx ? { ...m, name: e.target.value } : m))}
-                                    placeholder="Tên thuốc *" className="w-full px-3 py-2 border border-[#e5e7eb] dark:border-[#2d353e] rounded-lg text-sm bg-white dark:bg-[#1e242b] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30" />
+                                    aria-label="Tên thuốc" placeholder="Tên thuốc *" className="w-full px-3 py-2 border border-[#e5e7eb] dark:border-[#2d353e] rounded-lg text-sm bg-white dark:bg-[#1e242b] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30" />
                                 <div className="grid grid-cols-3 gap-2">
                                     <input type="text" value={med.dosage} onChange={e => setPrescForm(f => f.map((m, i) => i === idx ? { ...m, dosage: e.target.value } : m))}
-                                        placeholder="Liều lượng" className="px-3 py-2 border border-[#e5e7eb] dark:border-[#2d353e] rounded-lg text-sm bg-white dark:bg-[#1e242b] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30" />
+                                        aria-label="Liều lượng" placeholder="Liều lượng" className="px-3 py-2 border border-[#e5e7eb] dark:border-[#2d353e] rounded-lg text-sm bg-white dark:bg-[#1e242b] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30" />
                                     <input type="text" value={med.frequency} onChange={e => setPrescForm(f => f.map((m, i) => i === idx ? { ...m, frequency: e.target.value } : m))}
-                                        placeholder="Tần suất" className="px-3 py-2 border border-[#e5e7eb] dark:border-[#2d353e] rounded-lg text-sm bg-white dark:bg-[#1e242b] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30" />
+                                        aria-label="Tần suất dùng thuốc" placeholder="Tần suất" className="px-3 py-2 border border-[#e5e7eb] dark:border-[#2d353e] rounded-lg text-sm bg-white dark:bg-[#1e242b] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30" />
                                     <input type="text" value={med.duration} onChange={e => setPrescForm(f => f.map((m, i) => i === idx ? { ...m, duration: e.target.value } : m))}
-                                        placeholder="Thời gian" className="px-3 py-2 border border-[#e5e7eb] dark:border-[#2d353e] rounded-lg text-sm bg-white dark:bg-[#1e242b] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30" />
+                                        aria-label="Thời gian dùng thuốc" placeholder="Thời gian" className="px-3 py-2 border border-[#e5e7eb] dark:border-[#2d353e] rounded-lg text-sm bg-white dark:bg-[#1e242b] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/30" />
                                 </div>
                             </div>
                         ))}
@@ -461,7 +468,7 @@ export default function TelemedicinePage() {
                 <div className="bg-white dark:bg-[#1e242b] rounded-2xl shadow-2xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold text-[#121417] dark:text-white">Lịch tái khám</h3>
-                        <button onClick={() => setShowFollowUp(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <button onClick={() => setShowFollowUp(false)} aria-label="Đóng" className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                             <span className="material-symbols-outlined text-[#687582]">close</span>
                         </button>
                     </div>

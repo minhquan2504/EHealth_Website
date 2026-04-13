@@ -215,6 +215,7 @@ export default function QueuePage() {
 
     return (
         <div className="p-6 md:p-8">
+            <h1 className="sr-only">Hàng đợi bệnh nhân</h1>
             <div className="max-w-7xl mx-auto space-y-6">
                 {/* Page Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">

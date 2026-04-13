@@ -92,7 +92,7 @@ export default function StatisticsPage() {
             `Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
             "",
             `Tổng doanh thu: ${summary.revenue} Triệu VND`,
-            `Tổng bệnh nhân: ${summary.patients.toLocaleString()}`,
+            `Tổng bệnh nhân: ${summary.patients.toLocaleString("vi-VN")}`,
             `Lượt khám TB/ngày: ${summary.avgVisit}`,
             `Đánh giá trung bình: ${summary.rating}/5`,
             "",
@@ -184,7 +184,7 @@ export default function StatisticsPage() {
                 />
                 <SummaryCard
                     label="Tổng bệnh nhân"
-                    value={summary.patients.toLocaleString()}
+                    value={summary.patients.toLocaleString("vi-VN")}
                     change={`+${summary.patientsChange}% so với ${periodLabel}`}
                     changeColor="text-blue-600"
                     icon="group"
@@ -228,7 +228,7 @@ export default function StatisticsPage() {
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-lg font-bold text-[#121417] dark:text-white">{chartTitle}</h3>
                         <span className="text-xs text-[#687582] px-2 py-1 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            Tổng: {chartData.reduce((s, d) => s + d.value, 0).toLocaleString()} Tr
+                            Tổng: {chartData.reduce((s, d) => s + d.value, 0).toLocaleString("vi-VN")} Tr
                         </span>
                     </div>
                     <div className="h-64 flex items-end justify-between gap-2">
@@ -240,7 +240,7 @@ export default function StatisticsPage() {
                                         style={{ height: `${(item.value / maxChartValue) * 200}px` }}
                                     >
                                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                            {item.value.toLocaleString()} Tr
+                                            {item.value.toLocaleString("vi-VN")} Tr
                                         </div>
                                     </div>
                                 </div>
@@ -258,7 +258,7 @@ export default function StatisticsPage() {
                             <div key={dept.name} className="space-y-1.5">
                                 <div className="flex justify-between text-sm">
                                     <span className="font-medium text-[#121417] dark:text-white">{dept.name}</span>
-                                    <span className="text-[#687582]">{dept.patients.toLocaleString()} BN</span>
+                                    <span className="text-[#687582]">{dept.patients.toLocaleString("vi-VN")} BN</span>
                                 </div>
                                 <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                     <div

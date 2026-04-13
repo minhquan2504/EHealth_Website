@@ -241,7 +241,7 @@ export default function RevenuePage() {
                 </div>
                 <div className="bg-white dark:bg-[#1e242b] p-5 rounded-2xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm">
                     <p className="text-xs text-[#687582] dark:text-gray-400 font-medium uppercase tracking-wider mb-1">Tổng bệnh nhân</p>
-                    <p className="text-3xl font-extrabold text-[#121417] dark:text-white">{summary.totalPatients.toLocaleString()}</p>
+                    <p className="text-3xl font-extrabold text-[#121417] dark:text-white">{summary.totalPatients.toLocaleString("vi-VN")}</p>
                     <div className="flex items-center gap-1 mt-2 text-xs font-bold text-amber-600">
                         <span className="material-symbols-outlined text-[14px]">trending_flat</span>
                         +{summary.patientChange}% so với {periodLabel}

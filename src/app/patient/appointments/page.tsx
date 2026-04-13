@@ -31,6 +31,10 @@ export default function AppointmentsPage() {
     const [newDate, setNewDate] = useState("");
     const [newTime, setNewTime] = useState("");
     const [rescheduling, setRescheduling] = useState(false);
+    const [minDate, setMinDate] = useState("");
+    useEffect(() => {
+        setMinDate(new Date().toISOString().split("T")[0]);
+    }, []);
 
     const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
@@ -236,7 +240,9 @@ export default function AppointmentsPage() {
                                     </>
                                 )}
                                 {apt.status === "completed" && (
-                                    <button className="px-3 py-1.5 text-xs font-medium text-[#3C81C6] bg-[#3C81C6]/[0.06] border border-[#3C81C6]/20 rounded-lg hover:bg-[#3C81C6]/[0.12] transition-colors">
+                                    <button
+                                        onClick={() => alert("Tính năng đánh giá sẽ sớm có")}
+                                        className="px-3 py-1.5 text-xs font-medium text-[#3C81C6] bg-[#3C81C6]/[0.06] border border-[#3C81C6]/20 rounded-lg hover:bg-[#3C81C6]/[0.12] transition-colors">
                                         Đánh giá
                                     </button>
                                 )}
@@ -292,7 +298,7 @@ export default function AppointmentsPage() {
                         <div className="space-y-3 mb-4">
                             <div>
                                 <label className="text-xs text-gray-500 font-medium mb-1 block">Ngày mới *</label>
-                                <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} min={new Date().toISOString().split("T")[0]}
+                                <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} min={minDate}
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-200 bg-gray-50" />
                             </div>
                             <div>

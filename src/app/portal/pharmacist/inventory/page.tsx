@@ -92,7 +92,7 @@ export default function PharmacistInventory() {
     }).length;
     const fmt = (n: number) => n.toLocaleString("vi-VN") + "đ";
 
-    const handleCreateRequest = () => {
+    const handleCreateRequest = async () => {
         if (!reqForm.medicine || !reqForm.qty) return;
         const newReq = {
             id: `YC-${String(requests.length + 1).padStart(3, "0")}`,
@@ -103,6 +103,18 @@ export default function PharmacistInventory() {
             date: new Date().toLocaleDateString("vi-VN"),
             status: "pending" as RequestStatus,
         };
+        try {
+            await inventoryService.createStockIn({
+                drugName: reqForm.medicine,
+                quantity: parseInt(reqForm.qty),
+                reason: reqForm.reason,
+                type: requestType,
+            });
+            alert("Gửi yêu cầu thành công");
+        } catch {
+            alert("Gửi yêu cầu thất bại. Vui lòng thử lại.");
+            return;
+        }
         setRequests(prev => [newReq, ...prev]);
         setShowRequestModal(false);
         setReqForm({ medicine: "", qty: "", reason: "" });

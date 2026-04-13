@@ -124,17 +124,26 @@ export default function BillingPage() {
             const res = await billingService.createQR({
                 invoiceId:   inv.id,
                 amount:      inv.total,
-                description: `Thanh toan ${inv.code}`,
+                description: `Thanh toán ${inv.code}`,
             });
             const data = unwrap<any>(res);
             setQrOrderId(data.orderId ?? data.transferId ?? "");
             setQrImage(data.qrImageUrl ?? data.qrCode ?? data.qrDataURL ?? "");
             setQrState("showing");
 
-            // Poll payment status every 5 seconds
+            // Poll payment status every 5 seconds (max 5 minutes)
             if (data.orderId || data.transferId) {
                 const oid = data.orderId ?? data.transferId;
+                let pollCount = 0;
+                const MAX_POLLS = 60; // 5 minutes
                 pollRef.current = setInterval(async () => {
+                    pollCount++;
+                    if (pollCount >= MAX_POLLS) {
+                        stopPoll();
+                        setQrState("error");
+                        alert("QR thanh toán đã hết hạn. Vui lòng thử lại.");
+                        return;
+                    }
                     try {
                         const statusRes = await billingService.getQRStatus(oid);
                         const st = unwrap<any>(statusRes);

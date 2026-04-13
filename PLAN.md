@@ -59,18 +59,18 @@
 ## PHASE 0 — KHỞI ĐỘNG & VERIFY (1 ngày)
 
 ### Checklist
-- [ ] Verify BE đang chạy: `curl http://160.250.186.97:3000/api-docs` hoặc start local
-- [ ] Kiểm tra Swagger có đủ endpoints: mở `/api-docs`
-- [ ] Tạo tài khoản test cho mỗi role qua Postman hoặc seed DB:
+- [x] Verify BE đang chạy: `curl http://160.250.186.97:3000/api-docs` hoặc start local
+- [x] Kiểm tra Swagger có đủ endpoints: mở `/api-docs`
+- [x] Tạo tài khoản test cho mỗi role qua Postman hoặc seed DB:
   - `admin@test.local` / `Admin@123` — role ADMIN
   - `doctor@test.local` / `Doctor@123` — role DOCTOR
   - `nurse@test.local` / `Nurse@123` — role NURSE
   - `staff@test.local` / `Staff@123` — role STAFF (receptionist/cashier)
   - `pharmacist@test.local` / `Pharma@123` — role (mapping từ STAFF hoặc tạo mới)
   - `patient@test.local` / `Patient@123` — role PATIENT
-- [ ] Verify login flow + refresh token hoạt động
-- [ ] Kiểm tra AxiosClient handle 401 + refresh đúng
-- [ ] Cập nhật `.env.local` với `NEXT_PUBLIC_API_URL`
+- [x] Verify login flow + refresh token hoạt động
+- [x] Kiểm tra AxiosClient handle 401 + refresh đúng
+- [x] Cập nhật `.env.local` với `NEXT_PUBLIC_API_URL`
 
 ### Files liên quan
 - [axiosClient.ts](src/api/axiosClient.ts)
@@ -106,14 +106,14 @@ Hoàn thiện flow đăng nhập/đăng ký/đổi mật khẩu/quản lý sessi
 | PUT | `/api/profile/password` | profileService.changePassword |
 
 ### Pages cần sửa
-- [ ] [/login](src/app/login/page.tsx)
-- [ ] [/register](src/app/register/page.tsx)
-- [ ] [/forgot-password](src/app/forgot-password/page.tsx)
-- [ ] [/verify-email](src/app/verify-email/page.tsx)
-- [ ] [/otp](src/app/otp/page.tsx) — đăng nhập/đăng ký phone
-- [ ] [/patient/profile](src/app/patient/profile/page.tsx) — thay mock
-- [ ] [AuthContext.tsx](src/contexts/AuthContext.tsx) — lưu roles[] array
-- [ ] [AuthGuard.tsx](src/components/common/AuthGuard.tsx) — check roles[] array
+- [x] [/login](src/app/login/page.tsx)
+- [x] [/register](src/app/register/page.tsx)
+- [x] [/forgot-password](src/app/forgot-password/page.tsx)
+- [x] [/verify-email](src/app/verify-email/page.tsx)
+- [x] [/otp](src/app/otp/page.tsx) — đăng nhập/đăng ký phone
+- [x] [/patient/profile](src/app/patient/profile/page.tsx) — thay mock
+- [x] [AuthContext.tsx](src/contexts/AuthContext.tsx) — lưu roles[] array
+- [x] [AuthGuard.tsx](src/components/common/AuthGuard.tsx) — check roles[] array
 
 ### Tiêu chí hoàn thành
 - Login thành công với mọi role, redirect đúng trang
@@ -130,12 +130,12 @@ Hoàn thiện flow đăng nhập/đăng ký/đổi mật khẩu/quản lý sessi
 `/api/users` (14 endpoints) + `/api/roles` (10) + `/api/permissions` (5) + `/api/modules` + `/api/menus` + `/api/api-permissions`
 
 ### Pages
-- [ ] [/admin/users](src/app/admin/users/page.tsx)
-- [ ] [/admin/users/new](src/app/admin/users/new/page.tsx)
-- [ ] [/admin/users/[id]](src/app/admin/users/[id]/page.tsx)
-- [ ] [/admin/users/[id]/edit](src/app/admin/users/[id]/edit/page.tsx)
-- [ ] [/admin/users/roles](src/app/admin/users/roles/page.tsx)
-- [ ] [/admin/users/roles/new](src/app/admin/users/roles/new/page.tsx)
+- [x] [/admin/users](src/app/admin/users/page.tsx)
+- [x] [/admin/users/new](src/app/admin/users/new/page.tsx)
+- [x] [/admin/users/[id]](src/app/admin/users/[id]/page.tsx)
+- [x] [/admin/users/[id]/edit](src/app/admin/users/[id]/edit/page.tsx)
+- [x] [/admin/users/roles](src/app/admin/users/roles/page.tsx)
+- [x] [/admin/users/roles/new](src/app/admin/users/roles/new/page.tsx)
 
 ### Việc cụ thể
 - Thay `MOCK_USERS`, `MOCK_ROLES` bằng API
@@ -160,29 +160,29 @@ Hoàn thiện flow đăng nhập/đăng ký/đổi mật khẩu/quản lý sessi
 8. **Equipment** — `/api/equipments`
 
 ### Services cần tạo mới
-- [ ] [branchService.ts](src/services/branchService.ts) — MỚI
-- [ ] [leaveService.ts](src/services/leaveService.ts) — MỚI
-- [ ] [roomService.ts](src/services/roomService.ts) — MỚI hoặc mở rộng
-- [ ] [equipmentService.ts](src/services/equipmentService.ts) — MỚI
-- [ ] [shiftService.ts](src/services/shiftService.ts) — MỚI
-- [ ] [holidayService.ts](src/services/holidayService.ts) — MỚI
-- [ ] Mở rộng [staffService.ts](src/services/staffService.ts) để dùng thực sự
+- [x] [branchService.ts](src/services/branchService.ts) — MỚI
+- [x] [leaveService.ts](src/services/leaveService.ts) — MỚI
+- [x] [roomService.ts](src/services/roomService.ts) — MỚI hoặc mở rộng
+- [x] [equipmentService.ts](src/services/equipmentService.ts) — MỚI
+- [x] [shiftService.ts](src/services/shiftService.ts) — MỚI
+- [x] [holidayService.ts](src/services/holidayService.ts) — MỚI
+- [x] Mở rộng [staffService.ts](src/services/staffService.ts) để dùng thực sự
 
 ### Pages
-- [ ] [/admin/doctors](src/app/admin/doctors/page.tsx) — thay MOCK_DOCTORS
-- [ ] [/admin/doctors/new](src/app/admin/doctors/new/page.tsx)
-- [ ] [/admin/doctors/[id]](src/app/admin/doctors/[id]/page.tsx)
-- [ ] [/admin/doctors/[id]/edit](src/app/admin/doctors/[id]/edit/page.tsx)
-- [ ] [/admin/departments](src/app/admin/departments/page.tsx)
-- [ ] [/admin/departments/new](src/app/admin/departments/new/page.tsx)
-- [ ] [/admin/departments/[id]](src/app/admin/departments/[id]/page.tsx)
-- [ ] [/admin/schedules](src/app/admin/schedules/page.tsx)
-- [ ] [/admin/schedules/new](src/app/admin/schedules/new/page.tsx)
-- [ ] [/admin/hospitals](src/app/admin/hospitals/page.tsx)
-- [ ] [/admin/hospitals/time-slots](src/app/admin/hospitals/time-slots/page.tsx)
-- [ ] [/(public)/doctors](src/app/(public)/doctors/page.tsx) — thay 100% mock
-- [ ] [/(public)/doctors/[id]](src/app/(public)/doctors/[id]/page.tsx)
-- [ ] [/(public)/specialties](src/app/(public)/specialties/page.tsx)
+- [x] [/admin/doctors](src/app/admin/doctors/page.tsx) — thay MOCK_DOCTORS
+- [x] [/admin/doctors/new](src/app/admin/doctors/new/page.tsx)
+- [x] [/admin/doctors/[id]](src/app/admin/doctors/[id]/page.tsx)
+- [x] [/admin/doctors/[id]/edit](src/app/admin/doctors/[id]/edit/page.tsx)
+- [x] [/admin/departments](src/app/admin/departments/page.tsx)
+- [x] [/admin/departments/new](src/app/admin/departments/new/page.tsx)
+- [x] [/admin/departments/[id]](src/app/admin/departments/[id]/page.tsx)
+- [x] [/admin/schedules](src/app/admin/schedules/page.tsx)
+- [x] [/admin/schedules/new](src/app/admin/schedules/new/page.tsx)
+- [x] [/admin/hospitals](src/app/admin/hospitals/page.tsx)
+- [x] [/admin/hospitals/time-slots](src/app/admin/hospitals/time-slots/page.tsx)
+- [x] [/(public)/doctors](src/app/(public)/doctors/page.tsx) — thay 100% mock
+- [x] [/(public)/doctors/[id]](src/app/(public)/doctors/[id]/page.tsx)
+- [x] [/(public)/specialties](src/app/(public)/specialties/page.tsx)
 
 ---
 
@@ -197,15 +197,15 @@ Hoàn thiện flow đăng nhập/đăng ký/đổi mật khẩu/quản lý sessi
 6. **Medical History** — `/api/medical-history`
 
 ### Services cần tạo
-- [ ] [documentService.ts](src/services/documentService.ts) — MỚI (DOCUMENT_ENDPOINTS)
-- [ ] [patientInsuranceService.ts](src/services/patientInsuranceService.ts) — MỚI
-- [ ] [patientRelationService.ts](src/services/patientRelationService.ts) — MỚI hoặc mở rộng
+- [x] [documentService.ts](src/services/documentService.ts) — MỚI (DOCUMENT_ENDPOINTS)
+- [x] [patientInsuranceService.ts](src/services/patientInsuranceService.ts) — MỚI
+- [x] [patientRelationService.ts](src/services/patientRelationService.ts) — MỚI hoặc mở rộng
 
 ### Pages
-- [ ] [/portal/receptionist/patients](src/app/portal/receptionist/patients/page.tsx)
-- [ ] [/portal/receptionist/patients/new](src/app/portal/receptionist/patients/new/page.tsx)
-- [ ] [/portal/receptionist/patients/[id]](src/app/portal/receptionist/patients/[id]/page.tsx)
-- [ ] [/patient/patient-profiles](src/app/patient/patient-profiles/page.tsx) — kết nối API vào 5 tabs (info, contact, insurance, history, docs)
+- [x] [/portal/receptionist/patients](src/app/portal/receptionist/patients/page.tsx)
+- [x] [/portal/receptionist/patients/new](src/app/portal/receptionist/patients/new/page.tsx)
+- [x] [/portal/receptionist/patients/[id]](src/app/portal/receptionist/patients/[id]/page.tsx)
+- [x] [/patient/patient-profiles](src/app/patient/patient-profiles/page.tsx) — kết nối API vào 5 tabs (info, contact, insurance, history, docs)
 
 ### Đặc biệt
 - Trang chi tiết hồ sơ bệnh nhân (đã làm UI) cần wire lên:
@@ -230,17 +230,17 @@ Hoàn thiện flow đăng nhập/đăng ký/đổi mật khẩu/quản lý sessi
 - `/api/appointment-changes` (5)
 
 ### Pages
-- [ ] [/(public)/booking](src/app/(public)/booking/page.tsx) — 100% mock hiện tại
-- [ ] [/patient/appointments](src/app/patient/appointments/page.tsx)
-- [ ] [/patient/appointments/[id]](src/app/patient/appointments/[id]/page.tsx)
-- [ ] [/portal/receptionist/appointments](src/app/portal/receptionist/appointments/page.tsx)
-- [ ] [/portal/receptionist/appointments/new](src/app/portal/receptionist/appointments/new/page.tsx)
-- [ ] [/portal/receptionist/reception](src/app/portal/receptionist/reception/page.tsx)
-- [ ] [/portal/receptionist/queue](src/app/portal/receptionist/queue/page.tsx)
-- [ ] [/portal/doctor/appointments](src/app/portal/doctor/appointments/page.tsx)
-- [ ] [/portal/doctor/appointments/new](src/app/portal/doctor/appointments/new/page.tsx)
-- [ ] [/portal/doctor/appointments/manage-slots](src/app/portal/doctor/appointments/manage-slots/page.tsx)
-- [ ] [/portal/doctor/queue](src/app/portal/doctor/queue/page.tsx)
+- [x] [/(public)/booking](src/app/(public)/booking/page.tsx) — 100% mock hiện tại
+- [x] [/patient/appointments](src/app/patient/appointments/page.tsx)
+- [x] [/patient/appointments/[id]](src/app/patient/appointments/[id]/page.tsx)
+- [x] [/portal/receptionist/appointments](src/app/portal/receptionist/appointments/page.tsx)
+- [x] [/portal/receptionist/appointments/new](src/app/portal/receptionist/appointments/new/page.tsx)
+- [x] [/portal/receptionist/reception](src/app/portal/receptionist/reception/page.tsx)
+- [x] [/portal/receptionist/queue](src/app/portal/receptionist/queue/page.tsx)
+- [x] [/portal/doctor/appointments](src/app/portal/doctor/appointments/page.tsx)
+- [x] [/portal/doctor/appointments/new](src/app/portal/doctor/appointments/new/page.tsx)
+- [x] [/portal/doctor/appointments/manage-slots](src/app/portal/doctor/appointments/manage-slots/page.tsx)
+- [x] [/portal/doctor/queue](src/app/portal/doctor/queue/page.tsx)
 
 ### Flow quan trọng
 1. **Booking** (Patient): chọn chuyên khoa → chọn bác sĩ → chọn slot → điền info → xác nhận
@@ -264,11 +264,11 @@ Trung tâm nghiệp vụ — khá phức tạp vì có nhiều submodule.
 - `/api/medical-signoff` (9) — ký số
 
 ### Pages
-- [ ] [/portal/doctor/examination](src/app/portal/doctor/examination/page.tsx) — **quan trọng nhất**
-- [ ] [/portal/doctor/prescriptions](src/app/portal/doctor/prescriptions/page.tsx)
-- [ ] [/portal/doctor/prescriptions/new](src/app/portal/doctor/prescriptions/new/page.tsx) — thay MOCK_PATIENTS
-- [ ] [/portal/doctor/medical-records](src/app/portal/doctor/medical-records/page.tsx)
-- [ ] [/patient/medical-records](src/app/patient/medical-records/page.tsx)
+- [x] [/portal/doctor/examination](src/app/portal/doctor/examination/page.tsx) — **quan trọng nhất**
+- [x] [/portal/doctor/prescriptions](src/app/portal/doctor/prescriptions/page.tsx)
+- [x] [/portal/doctor/prescriptions/new](src/app/portal/doctor/prescriptions/new/page.tsx) — thay MOCK_PATIENTS
+- [x] [/portal/doctor/medical-records](src/app/portal/doctor/medical-records/page.tsx)
+- [x] [/patient/medical-records](src/app/patient/medical-records/page.tsx)
 
 ### Flow khám bệnh end-to-end
 1. Doctor thấy queue → chọn bệnh nhân → Start Exam
@@ -297,20 +297,20 @@ Trung tâm nghiệp vụ — khá phức tạp vì có nhiều submodule.
 - `/api/medication-instructions` (8)
 
 ### Pages
-- [ ] [/admin/medicines](src/app/admin/medicines/page.tsx) — thay MOCK_MEDICINES
-- [ ] [/admin/medicines/new](src/app/admin/medicines/new/page.tsx)
-- [ ] [/admin/medicines/[id]](src/app/admin/medicines/[id]/page.tsx)
-- [ ] [/admin/medicines/stock/[id]](src/app/admin/medicines/stock/[id]/page.tsx)
-- [ ] [/admin/medicines/inventory](src/app/admin/medicines/inventory/page.tsx)
-- [ ] [/admin/medicines/inventory/import](src/app/admin/medicines/inventory/import/page.tsx)
-- [ ] [/admin/medicines/import/[id]](src/app/admin/medicines/import/[id]/page.tsx)
-- [ ] [/admin/medicines/export/[id]](src/app/admin/medicines/export/[id]/page.tsx)
-- [ ] [/admin/medicines/export/create](src/app/admin/medicines/export/create/page.tsx)
-- [ ] [/portal/pharmacist](src/app/portal/pharmacist/page.tsx)
-- [ ] [/portal/pharmacist/prescriptions](src/app/portal/pharmacist/prescriptions/page.tsx)
-- [ ] [/portal/pharmacist/dispensing](src/app/portal/pharmacist/dispensing/page.tsx)
-- [ ] [/portal/pharmacist/inventory](src/app/portal/pharmacist/inventory/page.tsx)
-- [ ] [/portal/pharmacist/inventory/import](src/app/portal/pharmacist/inventory/import/page.tsx)
+- [x] [/admin/medicines](src/app/admin/medicines/page.tsx) — thay MOCK_MEDICINES
+- [x] [/admin/medicines/new](src/app/admin/medicines/new/page.tsx)
+- [x] [/admin/medicines/[id]](src/app/admin/medicines/[id]/page.tsx)
+- [x] [/admin/medicines/stock/[id]](src/app/admin/medicines/stock/[id]/page.tsx)
+- [x] [/admin/medicines/inventory](src/app/admin/medicines/inventory/page.tsx)
+- [x] [/admin/medicines/inventory/import](src/app/admin/medicines/inventory/import/page.tsx)
+- [x] [/admin/medicines/import/[id]](src/app/admin/medicines/import/[id]/page.tsx)
+- [x] [/admin/medicines/export/[id]](src/app/admin/medicines/export/[id]/page.tsx)
+- [x] [/admin/medicines/export/create](src/app/admin/medicines/export/create/page.tsx)
+- [x] [/portal/pharmacist](src/app/portal/pharmacist/page.tsx)
+- [x] [/portal/pharmacist/prescriptions](src/app/portal/pharmacist/prescriptions/page.tsx)
+- [x] [/portal/pharmacist/dispensing](src/app/portal/pharmacist/dispensing/page.tsx)
+- [x] [/portal/pharmacist/inventory](src/app/portal/pharmacist/inventory/page.tsx)
+- [x] [/portal/pharmacist/inventory/import](src/app/portal/pharmacist/inventory/import/page.tsx)
 
 ---
 
@@ -326,9 +326,9 @@ Trung tâm nghiệp vụ — khá phức tạp vì có nhiều submodule.
 - `/api/ehr/data-integration` (10)
 
 ### Pages
-- [ ] [/patient](src/app/patient/page.tsx) — Dashboard, thay MOCK_VITAL_SIGNS
-- [ ] [/patient/health-records](src/app/patient/health-records/page.tsx)
-- [ ] [/patient/medical-records](src/app/patient/medical-records/page.tsx) — đã có 1 phần
+- [x] [/patient](src/app/patient/page.tsx) — Dashboard, thay MOCK_VITAL_SIGNS
+- [x] [/patient/health-records](src/app/patient/health-records/page.tsx)
+- [x] [/patient/medical-records](src/app/patient/medical-records/page.tsx) — đã có 1 phần
 
 ### Việc đặc biệt
 - Kết nối profile selector (đã làm) vào filter EHR theo profile
@@ -362,10 +362,10 @@ Module lớn nhất, chia thành nhiều sub-phase.
 - `/api/billing/cashier-auth/*` (20)
 
 ### 9.5 Pages (0.5 ngày)
-- [ ] [/portal/receptionist/billing](src/app/portal/receptionist/billing/page.tsx)
-- [ ] [/portal/receptionist/billing/new](src/app/portal/receptionist/billing/new/page.tsx)
-- [ ] [/patient/billing](src/app/patient/billing/page.tsx)
-- [ ] [/admin/statistics/revenue](src/app/admin/statistics/revenue/page.tsx)
+- [x] [/portal/receptionist/billing](src/app/portal/receptionist/billing/page.tsx)
+- [x] [/portal/receptionist/billing/new](src/app/portal/receptionist/billing/new/page.tsx)
+- [x] [/patient/billing](src/app/patient/billing/page.tsx)
+- [x] [/admin/statistics/revenue](src/app/admin/statistics/revenue/page.tsx)
 
 ### Mở rộng billingService
 - Hiện tại chỉ có 12 function → cần mở rộng lên ~30 function phủ đầy đủ submodules
@@ -386,8 +386,8 @@ Module lớn nhất, chia thành nhiều sub-phase.
 - `/api/teleconsultation/admin` (13)
 
 ### Pages
-- [ ] [/patient/telemedicine](src/app/patient/telemedicine/page.tsx)
-- [ ] [/portal/doctor/telemedicine](src/app/portal/doctor/telemedicine/page.tsx)
+- [x] [/patient/telemedicine](src/app/patient/telemedicine/page.tsx)
+- [x] [/portal/doctor/telemedicine](src/app/portal/doctor/telemedicine/page.tsx)
 
 ### Mở rộng telemedicineService (hiện 7 function → ~40 function)
 
@@ -416,11 +416,11 @@ Module lớn nhất, chia thành nhiều sub-phase.
 - `/api/master-data/ethnicities`
 
 ### Pages
-- [ ] [/patient/ai-consult](src/app/patient/ai-consult/page.tsx)
-- [ ] [/portal/doctor/ai-assistant](src/app/portal/doctor/ai-assistant/page.tsx)
-- [ ] [/admin/notifications](src/app/admin/notifications/page.tsx)
-- [ ] [/notifications/inbox](src/app/notifications/inbox/page.tsx)
-- [ ] [FloatingChatBox.tsx](src/components/shared/FloatingChatBox.tsx) — chat AI floating
+- [x] [/patient/ai-consult](src/app/patient/ai-consult/page.tsx)
+- [x] [/portal/doctor/ai-assistant](src/app/portal/doctor/ai-assistant/page.tsx)
+- [x] [/admin/notifications](src/app/admin/notifications/page.tsx)
+- [x] [/notifications/inbox](src/app/notifications/inbox/page.tsx)
+- [x] [FloatingChatBox.tsx](src/components/shared/FloatingChatBox.tsx) — chat AI floating
 
 ### Thay thế hardcoded dropdowns bằng master data
 - Dropdown quốc gia, dân tộc, mã ICD-10 trong các form
@@ -430,25 +430,25 @@ Module lớn nhất, chia thành nhiều sub-phase.
 ## PHASE 12 — CLEANUP & TESTING (2 ngày)
 
 ### Xóa mock data
-- [ ] Xóa [src/data/patient-mock.ts](src/data/patient-mock.ts)
-- [ ] Xóa [src/data/doctor.ts](src/data/doctor.ts)
-- [ ] Xóa [src/data/patient-portal-mock.ts](src/data/patient-portal-mock.ts)
-- [ ] Xóa [src/data/medical-services-mock.ts](src/data/medical-services-mock.ts)
-- [ ] Xóa [src/data/medication-reminders-mock.ts](src/data/medication-reminders-mock.ts)
-- [ ] Xóa [src/data/patient-profiles-mock.ts](src/data/patient-profiles-mock.ts)
-- [ ] Xóa [src/lib/mock-data/admin.ts](src/lib/mock-data/admin.ts)
-- [ ] Xóa [src/lib/mock-data/doctor.ts](src/lib/mock-data/doctor.ts)
+- [x] Xóa [src/data/patient-mock.ts](src/data/patient-mock.ts)
+- [x] Xóa [src/data/doctor.ts](src/data/doctor.ts)
+- [x] Xóa [src/data/patient-portal-mock.ts](src/data/patient-portal-mock.ts)
+- [x] Xóa [src/data/medical-services-mock.ts](src/data/medical-services-mock.ts)
+- [x] Xóa [src/data/medication-reminders-mock.ts](src/data/medication-reminders-mock.ts)
+- [x] Xóa [src/data/patient-profiles-mock.ts](src/data/patient-profiles-mock.ts)
+- [x] Xóa [src/lib/mock-data/admin.ts](src/lib/mock-data/admin.ts)
+- [x] Xóa [src/lib/mock-data/doctor.ts](src/lib/mock-data/doctor.ts)
 
 ### Remove fallback code
 - Grep tất cả `// fallback to mock`, `|| MOCK_` và xóa
 - Grep `catch { /* keep mock */ }` và xóa
 
 ### Test end-to-end mỗi role
-- [ ] **Patient**: login → book appointment → xem lịch → check-in → xem kết quả → thanh toán
-- [ ] **Doctor**: login → xem queue → khám bệnh → kê đơn → ký số → hoàn tất
-- [ ] **Receptionist**: login → tiếp nhận bệnh nhân → tạo lịch hẹn → check-in → tạo hóa đơn → thu tiền
-- [ ] **Pharmacist**: login → xem đơn thuốc → kiểm tra tồn kho → cấp phát
-- [ ] **Admin**: login → quản lý users/roles → xem dashboard → cấu hình hệ thống → xem báo cáo
+- [x] **Patient**: login → book appointment → xem lịch → check-in → xem kết quả → thanh toán
+- [x] **Doctor**: login → xem queue → khám bệnh → kê đơn → ký số → hoàn tất
+- [x] **Receptionist**: login → tiếp nhận bệnh nhân → tạo lịch hẹn → check-in → tạo hóa đơn → thu tiền
+- [x] **Pharmacist**: login → xem đơn thuốc → kiểm tra tồn kho → cấp phát
+- [x] **Admin**: login → quản lý users/roles → xem dashboard → cấu hình hệ thống → xem báo cáo
 
 ### Remove dead code
 - Console.log, TODO comments

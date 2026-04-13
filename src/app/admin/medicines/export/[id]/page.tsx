@@ -249,7 +249,7 @@ export default function StockOutDetailPage() {
                                 <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                     <td className="py-3 px-5 text-sm text-[#687582]">{idx + 1}</td>
                                     <td className="py-3 px-5 text-sm font-medium text-[#121417] dark:text-white">{item.drugName}</td>
-                                    <td className="py-3 px-5 text-sm font-bold text-[#121417] dark:text-white text-right">{item.quantity.toLocaleString()}</td>
+                                    <td className="py-3 px-5 text-sm font-bold text-[#121417] dark:text-white text-right">{item.quantity.toLocaleString("vi-VN")}</td>
                                     <td className="py-3 px-5 text-sm text-[#687582]">{item.unit}</td>
                                     <td className="py-3 px-5 text-sm text-[#687582]">{item.lotNumber || "—"}</td>
                                     <td className="py-3 px-5 text-sm text-[#687582]">{item.expiryDate || "—"}</td>

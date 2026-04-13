@@ -215,7 +215,7 @@ export default function InventoryPage() {
                                             </span>
                                         </td>
                                         <td className="px-5 py-3 text-sm font-medium text-[#121417] dark:text-white">{h.name}</td>
-                                        <td className="px-5 py-3 text-sm font-bold text-right text-[#121417] dark:text-white">{h.qty.toLocaleString()} {h.unit}</td>
+                                        <td className="px-5 py-3 text-sm font-bold text-right text-[#121417] dark:text-white">{h.qty.toLocaleString("vi-VN")} {h.unit}</td>
                                         <td className="px-5 py-3 text-sm text-[#687582] dark:text-gray-400">{h.supplier || "—"}</td>
                                         <td className="px-5 py-3 text-sm text-[#687582] dark:text-gray-400">{h.note}</td>
                                         <td className="px-5 py-3 text-sm text-[#687582] dark:text-gray-400">{h.user}</td>

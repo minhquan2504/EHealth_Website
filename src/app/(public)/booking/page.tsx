@@ -212,8 +212,11 @@ function BookingPageInner() {
         && validateName(form.fullName).valid && validatePhone(form.phone).valid;
     const canProceedStep4 = agreedTerms;
 
+    const [submitError, setSubmitError] = useState("");
+
     const handleSubmit = async () => {
         setSubmitting(true);
+        setSubmitError("");
         try {
             const patientId = user?.id || "guest";
             await createAppointment({
@@ -227,16 +230,13 @@ function BookingPageInner() {
             setBookingCode(`EH-${Date.now().toString(36).toUpperCase()}`);
             setStep(5);
         } catch {
-            setBookingCode(`EH-${Date.now().toString(36).toUpperCase()}`);
-            setStep(5);
+            setSubmitError("Đặt lịch thất bại. Vui lòng kiểm tra lại thông tin và thử lại.");
         } finally {
             setSubmitting(false);
         }
     };
 
     const updateForm = (key: keyof PatientForm, value: string) => setForm(prev => ({ ...prev, [key]: value }));
-
-    const getSelectedServiceObj = () => null;
 
     return (
         <div className="min-h-screen bg-gray-50/50">
@@ -631,14 +631,19 @@ function BookingPageInner() {
                                     <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>arrow_forward</span>
                                 </button>
                             ) : (
-                                <button onClick={handleSubmit} disabled={!canProceedStep4 || submitting}
-                                    className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-md shadow-green-500/20 hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-[0.97] flex items-center gap-1.5">
-                                    {submitting ? (
-                                        <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> Đang xử lý...</>
-                                    ) : (
-                                        <>Xác nhận đặt lịch <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>check</span></>
+                                <div className="flex flex-col items-end gap-2">
+                                    {submitError && (
+                                        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-1.5 max-w-xs text-right">{submitError}</p>
                                     )}
-                                </button>
+                                    <button onClick={handleSubmit} disabled={!canProceedStep4 || submitting}
+                                        className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-md shadow-green-500/20 hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-[0.97] flex items-center gap-1.5">
+                                        {submitting ? (
+                                            <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> Đang xử lý...</>
+                                        ) : (
+                                            <>Xác nhận đặt lịch <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>check</span></>
+                                        )}
+                                    </button>
+                                </div>
                             )}
                         </div>
                     )}

@@ -230,6 +230,7 @@ export default function SettingsPage() {
                                     </label>
                                     <input
                                         type="password"
+                                        aria-label="Mật khẩu hiện tại"
                                         className="w-full px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white"
                                         placeholder="••••••••"
                                     />
@@ -240,6 +241,7 @@ export default function SettingsPage() {
                                     </label>
                                     <input
                                         type="password"
+                                        aria-label="Mật khẩu mới"
                                         className="w-full px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white"
                                         placeholder="••••••••"
                                     />
@@ -250,6 +252,7 @@ export default function SettingsPage() {
                                     </label>
                                     <input
                                         type="password"
+                                        aria-label="Xác nhận mật khẩu mới"
                                         className="w-full px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white"
                                         placeholder="••••••••"
                                     />

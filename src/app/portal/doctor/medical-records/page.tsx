@@ -21,7 +21,7 @@ export default function MedicalRecordsPage() {
     const [filterType, setFilterType] = useState("all");
     const [patientFilter, setPatientFilter] = useState("");
     const [loading, setLoading] = useState(false);
-    usePageAIContext({ pageKey: "medical-records", patientId: "BN001", patientName: "Nguyễn Văn An" });
+    usePageAIContext({ pageKey: "medical-records" });
     const [timeline, setTimeline] = useState<any[]>([]);
 
     useEffect(() => {

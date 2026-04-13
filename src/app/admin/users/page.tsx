@@ -10,6 +10,7 @@ import { UserFormModal } from "@/features/users/components/user-form-modal";
 import { PermissionsModal } from "@/features/users/components/permissions-modal";
 import * as userService from "@/services/userService";
 import type { User } from "@/types";
+import { validateFile } from "@/utils/fileValidation";
 
 type SortField = "fullName" | "role" | "createdAt" | "lastAccess" | "status";
 type SortOrder = "asc" | "desc";
@@ -255,6 +256,8 @@ export default function UsersPage() {
                             const file = e.target.files?.[0];
                             if (!file) return;
                             e.target.value = "";
+                            const validation = validateFile(file, { maxSize: 5 * 1024 * 1024, allowedTypes: ["csv", "xlsx", "xls"] });
+                            if (!validation.valid) { alert(validation.message); return; }
                             try {
                                 const res = await userService.importUsers(file);
                                 const count = res?.data?.count ?? res?.count ?? "nhiều";

@@ -165,6 +165,7 @@ export default function NewPrescriptionPage() {
                                             type="text"
                                             value={patientQuery}
                                             onChange={(e) => setPatientQuery(e.target.value)}
+                                            aria-label="Tìm bệnh nhân"
                                             placeholder="Nhập tên hoặc mã bệnh nhân..."
                                             className={`w-full py-2.5 px-4 text-sm bg-gray-50 dark:bg-gray-800 border ${errors.patientId ? "border-red-400" : "border-gray-200 dark:border-gray-700"} rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white pr-8`}
                                         />
@@ -199,7 +200,7 @@ export default function NewPrescriptionPage() {
 
                         <div>
                             <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Mã ICD-10</label>
-                            <input type="text" name="icdCode" value={formData.icdCode} onChange={handleChange} placeholder="VD: J06.9" className="w-full py-2.5 px-4 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
+                            <input type="text" name="icdCode" value={formData.icdCode} onChange={handleChange} aria-label="Mã ICD-10" placeholder="VD: J06.9" className="w-full py-2.5 px-4 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
                         </div>
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Chẩn đoán *</label>
@@ -231,26 +232,26 @@ export default function NewPrescriptionPage() {
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                         <div>
-                                            <input type="text" placeholder="Tên thuốc *" value={med.name} onChange={(e) => handleMedicineChange(idx, "name", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_name`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
+                                            <input type="text" aria-label="Tên thuốc" placeholder="Tên thuốc *" value={med.name} onChange={(e) => handleMedicineChange(idx, "name", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_name`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
                                             {errors[`med_${idx}_name`] && <p className="text-xs text-red-500 mt-0.5">{errors[`med_${idx}_name`]}</p>}
                                         </div>
                                         <div>
-                                            <input type="text" placeholder="Liều lượng (VD: 500mg) *" value={med.dosage} onChange={(e) => handleMedicineChange(idx, "dosage", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_dosage`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
+                                            <input type="text" aria-label="Liều lượng" placeholder="Liều lượng (VD: 500mg) *" value={med.dosage} onChange={(e) => handleMedicineChange(idx, "dosage", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_dosage`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
                                             {errors[`med_${idx}_dosage`] && <p className="text-xs text-red-500 mt-0.5">{errors[`med_${idx}_dosage`]}</p>}
                                         </div>
                                         <div>
-                                            <input type="text" placeholder="Tần suất (VD: 2 lần/ngày) *" value={med.frequency} onChange={(e) => handleMedicineChange(idx, "frequency", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_frequency`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
+                                            <input type="text" aria-label="Tần suất dùng thuốc" placeholder="Tần suất (VD: 2 lần/ngày) *" value={med.frequency} onChange={(e) => handleMedicineChange(idx, "frequency", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_frequency`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
                                             {errors[`med_${idx}_frequency`] && <p className="text-xs text-red-500 mt-0.5">{errors[`med_${idx}_frequency`]}</p>}
                                         </div>
                                         <div>
-                                            <input type="text" placeholder="Số ngày dùng *" value={med.duration} onChange={(e) => handleMedicineChange(idx, "duration", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_duration`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
+                                            <input type="text" aria-label="Số ngày dùng thuốc" placeholder="Số ngày dùng *" value={med.duration} onChange={(e) => handleMedicineChange(idx, "duration", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_duration`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
                                             {errors[`med_${idx}_duration`] && <p className="text-xs text-red-500 mt-0.5">{errors[`med_${idx}_duration`]}</p>}
                                         </div>
                                         <div>
-                                            <input type="text" placeholder="Số lượng" value={med.quantity} onChange={(e) => handleMedicineChange(idx, "quantity", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_quantity`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
+                                            <input type="text" aria-label="Số lượng thuốc" placeholder="Số lượng" value={med.quantity} onChange={(e) => handleMedicineChange(idx, "quantity", e.target.value)} className={`w-full py-2 px-3 text-sm bg-white dark:bg-gray-900 border ${errors[`med_${idx}_quantity`] ? "border-red-400" : "border-gray-200 dark:border-gray-600"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white`} />
                                             {errors[`med_${idx}_quantity`] && <p className="text-xs text-red-500 mt-0.5">{errors[`med_${idx}_quantity`]}</p>}
                                         </div>
-                                        <input type="text" placeholder="Ghi chú (uống sau ăn...)" value={med.note} onChange={(e) => handleMedicineChange(idx, "note", e.target.value)} className="py-2 px-3 text-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
+                                        <input type="text" aria-label="Ghi chú thuốc" placeholder="Ghi chú (uống sau ăn...)" value={med.note} onChange={(e) => handleMedicineChange(idx, "note", e.target.value)} className="py-2 px-3 text-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white" />
                                     </div>
                                 </div>
                             ))}
