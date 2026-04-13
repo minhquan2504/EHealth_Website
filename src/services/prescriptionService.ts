@@ -1,5 +1,5 @@
 import axiosClient from '@/api/axiosClient';
-import { PRESCRIPTION_ENDPOINTS, PATIENT_ENDPOINTS } from '@/api/endpoints';
+import { PRESCRIPTION_ENDPOINTS, PATIENT_ENDPOINTS, PHARMACY_ENDPOINTS } from '@/api/endpoints';
 
 export const prescriptionService = {
     // GET /api/prescriptions/search — danh sách đơn thuốc (dược sĩ dùng)
@@ -51,4 +51,17 @@ export const prescriptionService = {
 
     confirm: (id: string) =>
         axiosClient.post(PRESCRIPTION_ENDPOINTS.CONFIRM(id), {}).then(r => r.data),
+
+    // Tìm kiếm bệnh nhân để kê đơn nhanh
+    searchPatients: (q: string) =>
+        axiosClient.get(PATIENT_ENDPOINTS.LIST, { params: { search: q, limit: 20 } })
+            .then(r => {
+                const items: any[] = r.data?.data?.items ?? r.data?.data ?? r.data ?? [];
+                return items.map((p: any) => ({ id: p.id, name: p.fullName ?? p.name ?? '' }));
+            }),
+
+    // Tìm kiếm thuốc từ danh mục dược
+    searchDrugs: (q: string) =>
+        axiosClient.get(PRESCRIPTION_ENDPOINTS.SEARCH_DRUGS, { params: { q, limit: 20 } })
+            .then(r => r.data?.data ?? r.data ?? []),
 };

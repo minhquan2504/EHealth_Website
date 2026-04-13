@@ -2,6 +2,8 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { reportService } from "@/services/reportService";
+import { billingService } from "@/services/billingService";
+import { unwrap, unwrapList } from "@/api/response";
 import { usePageAIContext } from "@/hooks/usePageAIContext";
 
 /* ──────────────────────────────────────────────────────────────
@@ -117,15 +119,45 @@ export default function RevenuePage() {
     useEffect(() => {
         setSummary(SUMMARY[period]);
         setDeptData(REVENUE_BY_DEPT[period]);
-        reportService.getRevenue({ period })
+
+        // Build date params based on period
+        const now = new Date();
+        const dateParams: Record<string, string> = {};
+        if (period === "month") {
+            const from = new Date(now.getFullYear(), now.getMonth(), 1);
+            dateParams.from = from.toISOString().split("T")[0];
+            dateParams.to   = now.toISOString().split("T")[0];
+        } else if (period === "quarter") {
+            const q = Math.floor(now.getMonth() / 3);
+            const from = new Date(now.getFullYear(), q * 3, 1);
+            dateParams.from = from.toISOString().split("T")[0];
+            dateParams.to   = now.toISOString().split("T")[0];
+        } else {
+            dateParams.from = `${now.getFullYear()}-01-01`;
+            dateParams.to   = now.toISOString().split("T")[0];
+        }
+
+        reportService.getRevenue({ period, ...dateParams })
             .then((res: any) => {
-                const d = res?.data ?? res;
-                if (d?.total !== undefined) setSummary((prev) => ({ ...prev, total: d.total ?? prev.total, totalChange: d.growth ?? prev.totalChange, totalPatients: d.totalPatients ?? prev.totalPatients, patientChange: d.patientGrowth ?? prev.patientChange }));
-                if (Array.isArray(d?.byDepartment) && d.byDepartment.length > 0) {
+                const d = unwrap<any>(res);
+                if (!d) return;
+                const totalMillion = d.total !== undefined
+                    ? (d.total > 10_000_000 ? Math.round(d.total / 1_000_000) : d.total)
+                    : undefined;
+                setSummary(prev => ({
+                    ...prev,
+                    ...(totalMillion !== undefined   ? { total: totalMillion }                    : {}),
+                    ...(d.growth !== undefined       ? { totalChange: d.growth }                  : {}),
+                    ...(d.revenueGrowth !== undefined ? { totalChange: d.revenueGrowth }          : {}),
+                    ...(d.totalPatients !== undefined ? { totalPatients: d.totalPatients }         : {}),
+                    ...(d.patientGrowth !== undefined ? { patientChange: d.patientGrowth }        : {}),
+                    ...(d.avgPerDoctor !== undefined  ? { avgPerDoctor: d.avgPerDoctor }           : {}),
+                }));
+                if (Array.isArray(d.byDepartment) && d.byDepartment.length > 0) {
                     setDeptData(d.byDepartment.map((x: any, i: number) => ({
                         ...REVENUE_BY_DEPT[period][i] ?? REVENUE_BY_DEPT[period][0],
-                        dept: x.departmentName ?? x.dept ?? REVENUE_BY_DEPT[period][i]?.dept ?? "",
-                        revenue: x.revenue ?? x.amount ?? 0,
+                        dept:     x.departmentName ?? x.dept ?? REVENUE_BY_DEPT[period][i]?.dept ?? "",
+                        revenue:  x.revenue > 10_000_000 ? Math.round(x.revenue / 1_000_000) : (x.revenue ?? x.amount ?? 0),
                         patients: x.patientCount ?? x.patients ?? 0,
                     })));
                 }

@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAppointments, type Appointment } from "@/services/appointmentService";
 import { AppointmentStatusBadge } from "@/components/patient/AppointmentStatusBadge";
 import { filterMockAppointments } from "@/data/patient-mock";
-import { MOCK_INVOICES, MOCK_TELE_SESSIONS, MOCK_VITAL_SIGNS } from "@/data/patient-portal-mock";
+import { MOCK_TELE_SESSIONS, MOCK_VITAL_SIGNS, type VitalSign } from "@/data/patient-portal-mock";
 import { MOCK_MEDICATION_REMINDERS, MOCK_MEDICATION_LOGS, getTodaySchedule, getActiveReminders, type MedicationReminder, type MedicationLog } from "@/data/medication-reminders-mock";
 import { loadFromStorage, STORAGE_KEYS } from "@/utils/localStorage";
 import { usePageAIContext } from "@/hooks/usePageAIContext";
 import { AISymptomCheckerWidget, AIHealthCoach, AIAppointmentSuggester } from "@/components/portal/ai";
+import { ehrService } from "@/services/ehrService";
 
 export default function PatientDashboard() {
     const { user } = useAuth();
@@ -18,18 +19,26 @@ export default function PatientDashboard() {
     const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Load medication data from localStorage (synced with medication-reminders page)
+    // Vital signs từ API (fallback mock)
+    const [latestVital, setLatestVital] = useState<VitalSign>(MOCK_VITAL_SIGNS[0]);
+    const [loadingVitals, setLoadingVitals] = useState(true);
+
+    // Thuốc đang dùng từ API
+    const [activeMedCount, setActiveMedCount] = useState<number | null>(null);
+
+    // Medication data from localStorage (synced with medication-reminders page)
     const [reminders, setReminders] = useState<MedicationReminder[]>([]);
     const [medLogs, setMedLogs] = useState<MedicationLog[]>([]);
 
     useEffect(() => {
         loadData();
+        loadEHRData();
         // Load medication data
         const storedRem = loadFromStorage<MedicationReminder[]>(STORAGE_KEYS.MEDICATION_REMINDERS, MOCK_MEDICATION_REMINDERS);
         const storedLogs = loadFromStorage<MedicationLog[]>(STORAGE_KEYS.MEDICATION_LOGS, MOCK_MEDICATION_LOGS);
         setReminders(storedRem);
         setMedLogs(storedLogs);
-    }, []);
+    }, [user?.id]);
 
     const loadData = async () => {
         try {
@@ -42,13 +51,57 @@ export default function PatientDashboard() {
         } finally { setLoading(false); }
     };
 
+    const loadEHRData = async () => {
+        if (!user?.id) return;
+        setLoadingVitals(true);
+        try {
+            const [vitalRes, medRes] = await Promise.allSettled([
+                ehrService.getVitalLatest(user.id),
+                ehrService.getCurrentMedications(user.id),
+            ]);
+
+            // Vital signs
+            if (vitalRes.status === "fulfilled" && vitalRes.value) {
+                const v = vitalRes.value;
+                setLatestVital({
+                    id: v.id ?? v._id ?? "api",
+                    date: v.date ?? v.measuredAt ?? "",
+                    bloodPressureSystolic: v.bloodPressureSystolic ?? v.systolic ?? v.bp_systolic ?? MOCK_VITAL_SIGNS[0].bloodPressureSystolic,
+                    bloodPressureDiastolic: v.bloodPressureDiastolic ?? v.diastolic ?? v.bp_diastolic ?? MOCK_VITAL_SIGNS[0].bloodPressureDiastolic,
+                    heartRate: v.heartRate ?? v.heart_rate ?? v.pulse ?? MOCK_VITAL_SIGNS[0].heartRate,
+                    temperature: v.temperature ?? MOCK_VITAL_SIGNS[0].temperature,
+                    weight: v.weight ?? MOCK_VITAL_SIGNS[0].weight,
+                    height: v.height ?? MOCK_VITAL_SIGNS[0].height,
+                    bmi: v.bmi ?? MOCK_VITAL_SIGNS[0].bmi,
+                    bloodSugar: v.bloodSugar ?? v.blood_sugar ?? v.glucose ?? MOCK_VITAL_SIGNS[0].bloodSugar,
+                    spo2: v.spo2 ?? v.oxygenSaturation ?? MOCK_VITAL_SIGNS[0].spo2,
+                });
+            }
+
+            // Active medications count
+            if (medRes.status === "fulfilled" && medRes.value.data) {
+                const activeMeds = medRes.value.data.filter((m: any) => (m.status ?? "active") === "active");
+                setActiveMedCount(activeMeds.length);
+            }
+        } catch {
+            // giữ fallback mock — không throw
+        } finally {
+            setLoadingVitals(false);
+        }
+    };
+
     const greeting = () => { const h = new Date().getHours(); if (h < 12) return "Chào buổi sáng"; if (h < 18) return "Chào buổi chiều"; return "Chào buổi tối"; };
 
-    const pendingInvoices = MOCK_INVOICES.filter(i => i.status === "pending" || i.status === "overdue");
     const upcomingTele = MOCK_TELE_SESSIONS.filter(s => s.status === "scheduled");
-    const latestVital = MOCK_VITAL_SIGNS[0];
     const todayMeds = getTodaySchedule("pp-001");
     const activeMeds = getActiveReminders("pp-001");
+
+    const vitalCards = [
+        { label: "Huyết áp", value: `${latestVital.bloodPressureSystolic}/${latestVital.bloodPressureDiastolic}`, unit: "mmHg", icon: "bloodtype", ok: latestVital.bloodPressureSystolic <= 130 },
+        { label: "Nhịp tim", value: `${latestVital.heartRate}`, unit: "bpm", icon: "cardiology", ok: true },
+        { label: "BMI", value: latestVital.bmi.toFixed(1), unit: "", icon: "monitor_weight", ok: latestVital.bmi <= 25 },
+        { label: "SpO2", value: `${latestVital.spo2 ?? 98}`, unit: "%", icon: "pulmonology", ok: true },
+    ];
 
     return (
         <div className="space-y-6">
@@ -70,7 +123,7 @@ export default function PatientDashboard() {
                 {[
                     { icon: "calendar_month", label: "Đặt lịch khám", desc: "Đặt lịch mới", href: "/booking", color: "from-[#3C81C6] to-[#2563eb]" },
                     { icon: "event_note", label: "Lịch hẹn", desc: `${upcomingAppointments.length} sắp tới`, href: "/patient/appointments", color: "from-emerald-500 to-emerald-600" },
-                    { icon: "medication", label: "Nhắc thuốc", desc: `${activeMeds.length} thuốc đang dùng`, href: "/patient/medication-reminders", color: "from-violet-500 to-violet-600" },
+                    { icon: "medication", label: "Nhắc thuốc", desc: activeMedCount !== null ? `${activeMedCount} thuốc đang dùng` : `${activeMeds.length} thuốc đang dùng`, href: "/patient/medication-reminders", color: "from-violet-500 to-violet-600" },
                     { icon: "smart_toy", label: "AI tư vấn", desc: "Hỏi triệu chứng", href: "/patient/ai-consult", color: "from-cyan-500 to-teal-600" },
                 ].map(item => (
                     <Link key={item.label} href={item.href}
@@ -84,24 +137,33 @@ export default function PatientDashboard() {
                 ))}
             </div>
 
-            {/* Health Stats Quick View */}
+            {/* Health Stats Quick View — từ API */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {[
-                    { label: "Huyết áp", value: `${latestVital.bloodPressureSystolic}/${latestVital.bloodPressureDiastolic}`, unit: "mmHg", icon: "bloodtype", ok: latestVital.bloodPressureSystolic <= 130 },
-                    { label: "Nhịp tim", value: `${latestVital.heartRate}`, unit: "bpm", icon: "cardiology", ok: true },
-                    { label: "BMI", value: latestVital.bmi.toFixed(1), unit: "", icon: "monitor_weight", ok: latestVital.bmi <= 25 },
-                    { label: "SpO2", value: `${latestVital.spo2}`, unit: "%", icon: "pulmonology", ok: true },
-                ].map(s => (
-                    <div key={s.label} className="bg-white dark:bg-[#1e242b] rounded-xl border border-[#e5e7eb] dark:border-[#2d353e] p-3 flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${s.ok ? "bg-green-50 dark:bg-green-500/10 text-green-600" : "bg-amber-50 dark:bg-amber-500/10 text-amber-600"}`}>
-                            <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>{s.icon}</span>
+                {loadingVitals ? (
+                    Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="bg-white dark:bg-[#1e242b] rounded-xl border border-[#e5e7eb] dark:border-[#2d353e] p-3 animate-pulse">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-lg bg-gray-200 dark:bg-gray-700" />
+                                <div className="space-y-1.5">
+                                    <div className="h-2.5 bg-gray-200 dark:bg-gray-700 rounded w-14" />
+                                    <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-20" />
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-xs text-[#687582]">{s.label}</p>
-                            <p className="text-sm font-bold text-[#121417] dark:text-white">{s.value} <span className="text-xs font-normal text-[#687582]">{s.unit}</span></p>
+                    ))
+                ) : (
+                    vitalCards.map(s => (
+                        <div key={s.label} className="bg-white dark:bg-[#1e242b] rounded-xl border border-[#e5e7eb] dark:border-[#2d353e] p-3 flex items-center gap-3">
+                            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${s.ok ? "bg-green-50 dark:bg-green-500/10 text-green-600" : "bg-amber-50 dark:bg-amber-500/10 text-amber-600"}`}>
+                                <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>{s.icon}</span>
+                            </div>
+                            <div>
+                                <p className="text-xs text-[#687582]">{s.label}</p>
+                                <p className="text-sm font-bold text-[#121417] dark:text-white">{s.value} <span className="text-xs font-normal text-[#687582]">{s.unit}</span></p>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -155,28 +217,6 @@ export default function PatientDashboard() {
 
                 {/* Right Column Widgets */}
                 <div className="space-y-6">
-                    {/* Pending Bills */}
-                    {pendingInvoices.length > 0 && (
-                        <div className="bg-white dark:bg-[#1e242b] rounded-2xl border border-amber-200 dark:border-amber-500/20 p-5">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-bold text-[#121417] dark:text-white flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-amber-500" style={{ fontSize: "20px" }}>receipt_long</span>
-                                    Hóa đơn chờ thanh toán
-                                </h3>
-                                <Link href="/patient/billing" className="text-xs text-[#3C81C6] font-medium hover:underline">Xem tất cả →</Link>
-                            </div>
-                            {pendingInvoices.map(inv => (
-                                <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl bg-amber-50/50 dark:bg-amber-500/5 mb-2 last:mb-0">
-                                    <div>
-                                        <p className="text-sm font-semibold text-[#121417] dark:text-white">{inv.code}</p>
-                                        <p className="text-xs text-[#687582]">{inv.department} • {inv.date}</p>
-                                    </div>
-                                    <span className="text-sm font-bold text-amber-700 dark:text-amber-400">{inv.total.toLocaleString("vi-VN")}đ</span>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
                     {/* Upcoming Tele */}
                     {upcomingTele.length > 0 && (
                         <div className="bg-white dark:bg-[#1e242b] rounded-2xl border border-[#e5e7eb] dark:border-[#2d353e] p-5">
@@ -201,7 +241,7 @@ export default function PatientDashboard() {
                         </div>
                     )}
 
-                    {/* Medication Reminder Widget */}
+                    {/* Medication Reminder Widget — localStorage */}
                     <div className="bg-white dark:bg-[#1e242b] rounded-2xl border border-[#e5e7eb] dark:border-[#2d353e] p-5">
                         <div className="flex items-center justify-between mb-3">
                             <h3 className="text-sm font-bold text-[#121417] dark:text-white flex items-center gap-2">

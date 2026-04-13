@@ -10,7 +10,7 @@ import { TimeSlotPicker } from "@/components/patient/TimeSlotPicker";
 import { DoctorCard } from "@/components/patient/DoctorCard";
 import { getSpecialties, type Specialty } from "@/services/specialtyService";
 import { doctorService, type Doctor } from "@/services/doctorService";
-import { createAppointment } from "@/services/appointmentService";
+import { createAppointment, doctorAvailabilityService } from "@/services/appointmentService";
 import { useAuth } from "@/contexts/AuthContext";
 import { MOCK_SPECIALTIES, filterMockDoctors, getMockDoctorById } from "@/data/patient-mock";
 import { MOCK_MEDICAL_SERVICES, getServicesBySpecialtyId, getSpecialtyIdsByServiceId, SERVICE_CATEGORIES, type MedicalServiceItem } from "@/data/medical-services-mock";
@@ -80,6 +80,7 @@ function BookingPageInner() {
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [selectedDoctorObj, setSelectedDoctorObj] = useState<Doctor | null>(null);
     const [patientProfiles, setPatientProfiles] = useState<PatientProfile[]>([]);
+    const [availableSlots, setAvailableSlots] = useState<string[]>([]);
 
     // Filtered services based on selected specialty or category
     const filteredServices = (() => {
@@ -111,6 +112,24 @@ function BookingPageInner() {
     useEffect(() => { loadSpecialties(); }, []);
     useEffect(() => { if (selectedSpecialty) loadDoctors(); }, [selectedSpecialty]);
     useEffect(() => { if (initDoctorId) loadSelectedDoctor(initDoctorId); }, [initDoctorId]);
+    // Load available slots when doctor + date change (Step 2)
+    useEffect(() => {
+        if (selectedDoctor && selectedDate) {
+            doctorAvailabilityService.getSlots({ doctorId: selectedDoctor, date: selectedDate })
+                .then((slots: any[]) => {
+                    if (slots.length > 0) {
+                        const times = slots
+                            .filter((s: any) => s.available !== false)
+                            .map((s: any) => s.startTime ?? s.time ?? "")
+                            .filter(Boolean);
+                        setAvailableSlots(times);
+                    } else {
+                        setAvailableSlots([]);
+                    }
+                })
+                .catch(() => setAvailableSlots([]));
+        }
+    }, [selectedDoctor, selectedDate]);
     useEffect(() => {
         if (initDoctorName) {
             // Find doctor by name from mock data

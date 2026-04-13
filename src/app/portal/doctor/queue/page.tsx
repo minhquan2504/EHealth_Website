@@ -177,12 +177,19 @@ export default function QueuePage() {
         }
     };
 
-    const handleCallPatient = (patientId: string) => {
-        alert(`Đang gọi bệnh nhân ${patientId}...`);
+    const handleCallPatient = async (patientId: string) => {
+        try {
+            await appointmentStatusService.recall(patientId);
+        } catch { /* local fallback only */ }
     };
 
-    const handleStartExam = (patientId: string) => {
+    const handleStartExam = async (patientId: string) => {
         const patient = queue.find(p => p.id === patientId);
+        // Call API start-exam
+        try {
+            await appointmentStatusService.startExam(patientId);
+        } catch { /* continue anyway */ }
+
         if (patient) {
             setPreExamPatient({ id: patientId, name: patient.fullName });
             // Delay navigation to show AI hint briefly

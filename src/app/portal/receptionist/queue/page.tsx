@@ -83,8 +83,21 @@ export default function ReceptionistQueue() {
     const [transferModal, setTransferModal] = useState<{ id: number; type: "doctor" | "dept" } | null>(null);
     const [transferTarget, setTransferTarget] = useState("");
 
-    const handleCall = (id: number) => setQueue(prev => prev.map(q => q.id === id ? { ...q, status: "examining" } : q));
-    const handleCancel = (id: number) => { if (confirm("Bạn có chắc muốn hủy lượt khám này?")) setQueue(prev => prev.filter(q => q.id !== id)); };
+    const handleCall = async (id: number) => {
+        const q = queue.find(q => q.id === id);
+        if (!q) return;
+        try {
+            await appointmentStatusService.recall(String(id));
+        } catch { /* local update anyway */ }
+        setQueue(prev => prev.map(q => q.id === id ? { ...q, status: "examining" } : q));
+    };
+    const handleCancel = async (id: number) => {
+        if (!confirm("Bạn có chắc muốn hủy lượt khám này?")) return;
+        try {
+            await appointmentStatusService.markNoShow(String(id));
+        } catch { /* local update anyway */ }
+        setQueue(prev => prev.filter(q => q.id !== id));
+    };
 
     const handleTransfer = () => {
         if (!transferModal || !transferTarget) return;

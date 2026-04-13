@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getPatients, createPatient } from "@/services/patientService";
-import { createAppointment } from "@/services/appointmentService";
+import { createAppointment, doctorAvailabilityService } from "@/services/appointmentService";
 import { getDepartments } from "@/services/departmentService";
 import { AITriageAssistant } from "@/components/portal/ai";
 import { AISchedulingOptimizer } from "@/components/portal/ai";
@@ -52,6 +52,7 @@ export default function ReceptionPage() {
     const [serviceType, setServiceType] = useState("regular");
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedSlot, setSelectedSlot] = useState("");
+    const [apiSlots, setApiSlots] = useState<{ time: string; available: boolean }[]>([]);
     const [reason, setReason] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [done, setDone] = useState(false);
@@ -73,6 +74,26 @@ export default function ReceptionPage() {
     }, []);
 
     const dept = departments.find(d => d.id === selectedDept);
+
+    // Load available slots when doctor selected
+    useEffect(() => {
+        if (!selectedDoctor) { setApiSlots([]); return; }
+        const today = new Date().toISOString().split("T")[0];
+        // Find doctorId from department staff list (bestcaffort)
+        const deptObj = departments.find(d => d.id === selectedDept);
+        const doctorId = (deptObj?.doctors as any[])?.find((doc: any) => (doc.fullName ?? doc.name ?? doc) === selectedDoctor)?.id ?? "";
+        if (!doctorId) return;
+        doctorAvailabilityService.getSlots({ doctorId, date: today })
+            .then((slots: any[]) => {
+                if (slots.length > 0) {
+                    setApiSlots(slots.map((s: any) => ({
+                        time: s.startTime ?? s.time ?? "",
+                        available: s.available !== false && (s.bookedCount ?? 0) < (s.maxPatients ?? 999),
+                    })).filter(s => s.time));
+                }
+            })
+            .catch(() => { setApiSlots([]); });
+    }, [selectedDoctor, selectedDept]);
 
     const handleSearch = async () => {
         if (!searchQuery.trim()) return;
@@ -336,7 +357,7 @@ export default function ReceptionPage() {
                                 <div>
                                     <p className="text-sm font-medium text-[#687582] mb-2">Khung giờ hôm nay</p>
                                     <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                                        {TIME_SLOTS.map(slot => (
+                                        {(apiSlots.length > 0 ? apiSlots : TIME_SLOTS).map(slot => (
                                             <button key={slot.time} onClick={() => slot.available && setSelectedSlot(slot.time)} disabled={!slot.available}
                                                 className={`py-2.5 rounded-xl text-sm font-medium transition-all ${selectedSlot === slot.time ? "bg-[#3C81C6] text-white shadow-md" : slot.available ? "bg-gray-50 dark:bg-gray-800 text-[#121417] dark:text-white hover:bg-gray-100" : "bg-gray-100 dark:bg-gray-800/50 text-gray-300 dark:text-gray-600 cursor-not-allowed line-through"}`}>
                                                 {slot.time}

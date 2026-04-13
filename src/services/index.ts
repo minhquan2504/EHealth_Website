@@ -53,3 +53,6 @@ export * from './aiService';
 
 // EHR — Electronic Health Records
 export * from './ehrService';
+
+// Master Data (ICD-10, Countries, Ethnicities, Units)
+export * from './masterDataService';

@@ -7,6 +7,7 @@ import {
     HourlyVisitsChart,
 } from "@/components/admin/dashboard";
 import { reportService } from "@/services/reportService";
+import { unwrap } from "@/api/response";
 import { usePageAIContext } from "@/hooks/usePageAIContext";
 
 /* ──────────────────────────────────────────────────────────────
@@ -109,8 +110,50 @@ export default function StatisticsPage() {
 
     // Fetch real report data — overlay onto mock if available
     useEffect(() => {
-        reportService.getDashboard().catch(() => { /* fallback to mock data */ });
-        reportService.getRevenue({ period: timeRange }).catch(() => { /* fallback */ });
+        reportService.getDashboard()
+            .then((res: any) => {
+                const d = unwrap<any>(res);
+                if (!d) return;
+                // Map API response onto SUMMARY_DATA structure
+                const revenue       = Number(d.totalRevenue ?? d.revenue ?? 0) / 1_000_000; // convert to Triệu
+                const patients      = Number(d.totalPatients ?? d.patients ?? 0);
+                const avgVisit      = Number(d.avgDailyVisits ?? d.avgVisit ?? 0);
+                const revenueChange = Number(d.revenueGrowth ?? d.revenueChange ?? 0);
+                const patChange     = Number(d.patientGrowth ?? d.patientChange ?? 0);
+                const visitChange   = Number(d.visitGrowth ?? d.visitChange ?? 0);
+                if (revenue > 0 || patients > 0) {
+                    // Update summary for current period
+                    SUMMARY_DATA[timeRange] = {
+                        ...SUMMARY_DATA[timeRange],
+                        ...(revenue  > 0 ? { revenue }        : {}),
+                        ...(patients > 0 ? { patients }       : {}),
+                        ...(avgVisit > 0 ? { avgVisit }       : {}),
+                        ...(revenueChange !== 0 ? { revenueChange } : {}),
+                        ...(patChange     !== 0 ? { patientsChange: patChange } : {}),
+                        ...(visitChange   !== 0 ? { visitChange }   : {}),
+                    };
+                }
+            })
+            .catch(() => { /* fallback to mock */ });
+
+        reportService.getRevenue({ period: timeRange })
+            .then((res: any) => {
+                const d = unwrap<any>(res);
+                if (!d) return;
+                // Map department data if available
+                if (Array.isArray(d.byDepartment) && d.byDepartment.length > 0) {
+                    const mapped = d.byDepartment.map((dep: any, i: number) => ({
+                        ...DEPT_BY_PERIOD[timeRange][i] ?? DEPT_BY_PERIOD[timeRange][0],
+                        name:     dep.departmentName ?? dep.name ?? DEPT_BY_PERIOD[timeRange][i]?.name ?? "",
+                        patients: Number(dep.patientCount ?? dep.patients ?? 0),
+                        revenue:  Number(dep.revenue ?? dep.amount ?? 0) / 1_000_000,
+                    }));
+                    if (mapped.length > 0) {
+                        DEPT_BY_PERIOD[timeRange] = mapped;
+                    }
+                }
+            })
+            .catch(() => { /* fallback */ });
     }, [timeRange]);
 
     // Dynamic data based on selected period

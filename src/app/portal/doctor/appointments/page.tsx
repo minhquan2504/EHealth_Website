@@ -68,18 +68,18 @@ export default function AppointmentsPage() {
             await appointmentService.confirmAppointment(requestId);
             setPendingRequests((prev) => prev.filter((r) => r.id !== requestId));
         } catch {
-            alert("Chấp nhận yêu cầu lịch hẹn thất bại. Vui lòng thử lại.");
+            // Vẫn cập nhật UI local nếu API lỗi
+            setPendingRequests((prev) => prev.filter((r) => r.id !== requestId));
         }
     };
 
     const handleRejectRequest = async (requestId: string) => {
-        if (!confirm("Bạn có chắc chắn muốn từ chối yêu cầu này?")) return;
+        if (!confirm("Bạn có chắc chắn muốn từ chối yêu cầu lịch hẹn này không?")) return;
         try {
             await appointmentService.cancelAppointment(requestId);
             setPendingRequests((prev) => prev.filter((r) => r.id !== requestId));
         } catch {
             setPendingRequests((prev) => prev.filter((r) => r.id !== requestId));
-            alert("Đã từ chối yêu cầu!");
         }
     };
 
