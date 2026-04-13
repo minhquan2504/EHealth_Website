@@ -32,4 +32,23 @@ export const prescriptionService = {
     // Backward-compat alias
     getList: (params?: Record<string, any>) =>
         axiosClient.get(PRESCRIPTION_ENDPOINTS.SEARCH, { params }).then(r => r.data),
+
+    // PATCH status — chuyển trạng thái đơn thuốc (pending → checking → dispensed)
+    // Dùng CONFIRM endpoint hoặc update tùy API
+    updateStatus: (id: string, status: 'checking' | 'dispensed' | 'cancelled', note?: string) => {
+        if (status === 'dispensed') {
+            return axiosClient.post(PRESCRIPTION_ENDPOINTS.CONFIRM(id), { note }).then(r => r.data);
+        }
+        if (status === 'cancelled') {
+            return axiosClient.post(PRESCRIPTION_ENDPOINTS.CANCEL(id), { reason: note }).then(r => r.data);
+        }
+        // checking — dùng update
+        return axiosClient.put(PRESCRIPTION_ENDPOINTS.UPDATE(id), { status: 'CHECKING', note }).then(r => r.data);
+    },
+
+    cancel: (id: string, reason?: string) =>
+        axiosClient.post(PRESCRIPTION_ENDPOINTS.CANCEL(id), { reason }).then(r => r.data),
+
+    confirm: (id: string) =>
+        axiosClient.post(PRESCRIPTION_ENDPOINTS.CONFIRM(id), {}).then(r => r.data),
 };

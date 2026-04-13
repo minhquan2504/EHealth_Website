@@ -5,9 +5,13 @@ import { useSearchParams } from "next/navigation";
 import { PatientNavbar } from "@/components/patient/PatientNavbar";
 import { PatientFooter } from "@/components/patient/PatientFooter";
 import { DoctorCard } from "@/components/patient/DoctorCard";
-import { doctorService, type Doctor } from "@/services/doctorService";
+import { staffService, unwrapStaffList, type StaffMember } from "@/services/staffService";
 import { getSpecialties, type Specialty } from "@/services/specialtyService";
 import { MOCK_SPECIALTIES, filterMockDoctors } from "@/data/patient-mock";
+import type { Doctor } from "@/services/doctorService";
+
+// PublicDoctor kết hợp Doctor và StaffMember để dùng trong page này
+type PublicDoctor = Doctor & Pick<StaffMember, 'code' | 'qualification' | 'departmentId'>;
 
 const PRICE_RANGES = [
     { label: "Tất cả", min: 0, max: 999999 },
@@ -21,7 +25,7 @@ function DoctorsPageInner() {
     const rawSpecialty = searchParams.get("specialtyId");
     const initialSpecialty = rawSpecialty && rawSpecialty !== "undefined" && rawSpecialty !== "null" ? rawSpecialty : "";
 
-    const [doctors, setDoctors] = useState<Doctor[]>([]);
+    const [doctors, setDoctors] = useState<PublicDoctor[]>([]);
     const [specialties, setSpecialties] = useState<Specialty[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
@@ -63,21 +67,39 @@ function DoctorsPageInner() {
     const loadDoctors = async () => {
         try {
             setLoading(true);
-            const res = await doctorService.getList({
+            const res = await staffService.getList({
                 page,
                 limit: 12,
                 search: search || undefined,
+                role: 'DOCTOR',
                 departmentId: selectedSpecialty || undefined,
             });
-            if (res.data && res.data.length > 0) {
-                setDoctors(res.data);
-                if (res.pagination) setTotalPages(res.pagination.totalPages);
+            const items = unwrapStaffList(res);
+            if (items.length > 0) {
+                // Map StaffMember → PublicDoctor shape dùng trong DoctorCard
+                const mapped: PublicDoctor[] = items.map((d) => ({
+                    id: d.id,
+                    code: d.code ?? '',
+                    fullName: d.fullName,
+                    departmentId: d.departmentId ?? '',
+                    departmentName: d.departmentName ?? '',
+                    specialization: d.specialization ?? '',
+                    qualification: d.qualification ?? '',
+                    phone: d.phone,
+                    email: d.email,
+                    rating: d.rating ?? 0,
+                    status: d.status === 'ACTIVE' ? 'active' : 'inactive' as any,
+                    avatar: d.avatar,
+                    experience: d.experience ?? 0,
+                }));
+                setDoctors(mapped);
+                // Pagination từ response gốc
+                const pagination = (res as any)?.data?.pagination ?? (res as any)?.pagination;
+                if (pagination?.totalPages) setTotalPages(pagination.totalPages);
             } else {
-                // API returned empty — switch to mock
                 setUsingMock(true);
             }
         } catch {
-            // API failed — switch to mock
             setUsingMock(true);
         } finally {
             setLoading(false);
@@ -92,7 +114,7 @@ function DoctorsPageInner() {
             page,
             limit: 12,
         });
-        setDoctors(result.data);
+        setDoctors(result.data as PublicDoctor[]);
         setTotalPages(result.pagination.totalPages);
         setLoading(false);
     };

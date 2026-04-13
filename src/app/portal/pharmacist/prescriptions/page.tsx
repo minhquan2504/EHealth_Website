@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { prescriptionService } from "@/services/prescriptionService";
+import { usePageAIContext } from "@/hooks/usePageAIContext";
 
 type RxStatus = "pending" | "checking" | "dispensed";
 
@@ -26,19 +27,34 @@ const INTERACTION_WARNINGS: Record<string, { drugs: string[]; warning: string; s
 };
 
 export default function PharmacistPrescriptions() {
+    usePageAIContext({ pageKey: 'prescriptions' });
     const [rxs, setRxs] = useState(MOCK_RX);
 
     useEffect(() => {
+        const mapStatus = (s: string): RxStatus => {
+            const lower = (s ?? "").toLowerCase();
+            if (lower === "pending" || lower === "created") return "pending";
+            if (lower === "dispensed" || lower === "completed") return "dispensed";
+            return "checking";
+        };
         prescriptionService.search({ limit: 100 })
             .then(res => {
                 const items: any[] = res?.data?.data ?? res?.data ?? res ?? [];
                 if (Array.isArray(items) && items.length > 0) {
                     const mapped = items.map((p: any) => ({
-                        id: p.id, patient: p.patientName ?? "", doctor: p.doctorName ?? "",
-                        dept: p.departmentName ?? "", date: p.createdAt?.split("T")[0] ?? "",
-                        medicines: p.items ?? p.medicines ?? [], diagnosis: p.diagnosis ?? "",
-                        status: (p.status === "PENDING" ? "pending" : p.status === "DISPENSED" ? "dispensed" : "checking") as RxStatus,
-                        priority: p.priority === "urgent" || p.priority === true,
+                        id: p.id,
+                        patient: p.patientName ?? p.patient?.fullName ?? "",
+                        doctor: p.doctorName ?? p.doctor?.fullName ?? "",
+                        dept: p.departmentName ?? p.department?.name ?? "",
+                        date: (p.createdAt ?? p.date ?? "").split("T")[0],
+                        medicines: Array.isArray(p.items) ? p.items.map((it: any) => ({
+                            name: it.drugName ?? it.name ?? "",
+                            qty: `${it.quantity ?? ""} ${it.unit ?? ""}`.trim(),
+                            dosage: it.dosage ?? it.instructions ?? "",
+                        })) : (p.medicines ?? []),
+                        diagnosis: p.diagnosis ?? p.clinicalNote ?? "",
+                        status: mapStatus(p.status),
+                        priority: p.priority === "urgent" || p.priority === true || p.isUrgent === true,
                     }));
                     setRxs(mapped);
                 }
@@ -53,8 +69,14 @@ export default function PharmacistPrescriptions() {
         r.patient.toLowerCase().includes(search.toLowerCase()) || r.id.includes(search)
     ), [rxs, search]);
 
-    const moveToChecking = (id: string) => setRxs(prev => prev.map(r => r.id === id ? { ...r, status: "checking" as RxStatus } : r));
-    const moveToDispensed = (id: string) => setRxs(prev => prev.map(r => r.id === id ? { ...r, status: "dispensed" as RxStatus } : r));
+    const moveToChecking = async (id: string) => {
+        setRxs(prev => prev.map(r => r.id === id ? { ...r, status: "checking" as RxStatus } : r));
+        prescriptionService.updateStatus(id, "checking").catch(() => {/* keep local state */});
+    };
+    const moveToDispensed = async (id: string) => {
+        setRxs(prev => prev.map(r => r.id === id ? { ...r, status: "dispensed" as RxStatus } : r));
+        prescriptionService.updateStatus(id, "dispensed").catch(() => {/* keep local state */});
+    };
 
     const detailRx = rxs.find(r => r.id === detail);
     const interactionWarning = detail ? INTERACTION_WARNINGS[detail] : null;

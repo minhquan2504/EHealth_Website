@@ -8,8 +8,8 @@ import { DOCTOR_STATUS } from "@/constants/status";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { DoctorFormModal } from "@/features/doctors/components/doctor-form-modal";
 import { TimeSlotModal } from "@/features/doctors/components/time-slot-modal";
-import { staffService } from "@/services/staffService";
-import { getDepartments } from "@/services/departmentService";
+import { staffService, unwrapStaffList } from "@/services/staffService";
+import { getDepartments, unwrapDepartments } from "@/services/departmentService";
 import type { Doctor } from "@/types";
 
 type SortField = "fullName" | "departmentName" | "rating" | "status";
@@ -19,6 +19,7 @@ export default function DoctorsPage() {
     // State
     const router = useRouter();
     const [doctors, setDoctors] = useState<Doctor[]>(MOCK_DOCTORS);
+    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [departmentFilter, setDepartmentFilter] = useState<string>("all");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,38 +32,42 @@ export default function DoctorsPage() {
     const [departments, setDepartments] = useState(MOCK_DEPARTMENTS);
 
     useEffect(() => {
+        setIsLoading(true);
         // Dùng /api/staff?role=DOCTOR — endpoint chính xác từ Swagger
-        staffService.getList({ role: "DOCTOR", limit: 200 })
-            .then((res: any) => {
-                const items: any[] = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? [];
-                if (Array.isArray(items) && items.length > 0) {
-                    setDoctors(items.map((d: any) => ({
+        Promise.allSettled([
+            staffService.getList({ role: "DOCTOR", limit: 200 }),
+            getDepartments({ limit: 100 }),
+        ]).then(([doctorsResult, deptsResult]) => {
+            if (doctorsResult.status === 'fulfilled') {
+                const items = unwrapStaffList(doctorsResult.value);
+                if (items.length > 0) {
+                    setDoctors(items.map((d) => ({
                         ...MOCK_DOCTORS[0],
-                        id: d.id ?? d.staff_id ?? "",
-                        userId: d.userId ?? d.user_id ?? "",
-                        code: d.code ?? d.staff_id ?? d.id ?? "",
-                        fullName: d.fullName ?? d.full_name ?? d.name ?? "",
-                        departmentId: d.departmentId ?? d.department_id ?? "",
-                        departmentName: d.departmentName ?? d.department_name ?? "",
-                        specialization: d.specialization ?? d.position ?? "",
+                        id: d.id,
+                        userId: d.id,
+                        code: d.code ?? d.id,
+                        fullName: d.fullName,
+                        departmentId: d.departmentId ?? "",
+                        departmentName: d.departmentName ?? "",
+                        specialization: d.specialization ?? "",
                         phone: d.phone ?? "",
                         email: d.email ?? "",
                         rating: d.rating ?? 0,
-                        status: (d.status === "ACTIVE" ? "active" : d.status === "INACTIVE" ? "inactive" : d.status ?? "active"),
+                        status: d.status === "ACTIVE" ? "active" : d.status === "INACTIVE" ? "inactive" : "active",
                         avatar: d.avatar,
                         experience: d.experience ?? 0,
-                    })) as typeof MOCK_DOCTORS);
-                    const active = items.filter((d: any) => d.status === "ACTIVE" || d.status === "active").length;
+                    })) as unknown as typeof MOCK_DOCTORS);
+                    const active = items.filter(d => d.status === "ACTIVE").length;
                     setStats(prev => ({ ...prev, totalDoctors: items.length, activeDoctors: active }));
                 }
-            })
-            .catch(() => {/* keep mock */});
-        getDepartments()
-            .then(res => {
-                const items: any[] = (res as any)?.data ?? res ?? [];
-                if (Array.isArray(items) && items.length > 0) setDepartments(items.map((d: any) => ({ ...MOCK_DEPARTMENTS[0], id: d.id, name: d.name })) as typeof MOCK_DEPARTMENTS);
-            })
-            .catch(() => {/* keep mock */});
+            }
+            if (deptsResult.status === 'fulfilled') {
+                const items = unwrapDepartments(deptsResult.value);
+                if (items.length > 0) {
+                    setDepartments(items.map(d => ({ ...MOCK_DEPARTMENTS[0], id: d.id, name: d.name })) as typeof MOCK_DEPARTMENTS);
+                }
+            }
+        }).finally(() => setIsLoading(false));
     }, []);
 
     // Filtered and sorted doctors
@@ -339,7 +344,14 @@ export default function DoctorsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#dde0e4] dark:divide-[#2d353e]">
-                            {filteredDoctors.length === 0 ? (
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={6} className="py-12 text-center text-[#687582] dark:text-gray-400">
+                                        <div className="w-8 h-8 border-4 border-[#3C81C6]/20 border-t-[#3C81C6] rounded-full animate-spin mx-auto mb-2" />
+                                        Đang tải danh sách bác sĩ...
+                                    </td>
+                                </tr>
+                            ) : filteredDoctors.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="py-12 text-center text-[#687582] dark:text-gray-400">
                                         <span className="material-symbols-outlined text-4xl mb-2 block">search_off</span>

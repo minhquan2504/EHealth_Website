@@ -6,6 +6,10 @@ import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { prescriptionService } from "@/services/prescriptionService";
 import { getDrugs } from "@/services/medicineService";
+import { dispensingService } from "@/services/dispensingService";
+import { inventoryService } from "@/services/inventoryService";
+import { usePageAIContext } from "@/hooks/usePageAIContext";
+import { AIInventoryPredictor } from "@/components/portal/ai";
 
 // ==================== MOCK DATA ====================
 const STATS = [
@@ -55,10 +59,12 @@ function getCurrentDate(): string {
 // ==================== PAGE ====================
 export default function PharmacistDashboard() {
     const router = useRouter();
+    usePageAIContext({ pageKey: 'dashboard' });
     const [filter, setFilter] = useState<"all" | "urgent">("all");
     const [pendingPrescriptions, setPendingPrescriptions] = useState(PENDING_PRESCRIPTIONS);
     const [lowStock, setLowStock] = useState(LOW_STOCK);
     const [stats, setStats] = useState(STATS);
+    const [recentDispenses, setRecentDispenses] = useState(RECENT_DISPENSES);
 
     useEffect(() => {
         prescriptionService.getList({ status: "pending", limit: 20 })
@@ -82,6 +88,30 @@ export default function PharmacistDashboard() {
                     setLowStock(items.map((d: any) => ({ name: d.name, stock: d.quantity, min: d.minQuantity, unit: d.unit })));
                     setStats(prev => prev.map((s, i) => i === 2 ? { ...s, value: String(items.length) } : s));
                 }
+            })
+            .catch(() => {});
+        // Lịch sử cấp phát gần đây
+        dispensingService.getHistory({ limit: 4 })
+            .then(res => {
+                const items: any[] = res?.data?.data ?? res?.data ?? [];
+                if (Array.isArray(items) && items.length > 0) {
+                    setRecentDispenses(items.map((d: any) => ({
+                        id: d.id,
+                        patient: d.patientName ?? "",
+                        medicines: d.itemCount ?? d.items?.length ?? 0,
+                        time: d.dispensedAt?.split("T")[1]?.slice(0, 5) ?? d.createdAt?.split("T")[1]?.slice(0, 5) ?? "",
+                        total: d.totalAmount ? `${Number(d.totalAmount).toLocaleString("vi-VN")}₫` : "",
+                    })));
+                    setStats(prev => prev.map((s, i) => i === 1 ? { ...s, value: String(items.length) } : s));
+                }
+            })
+            .catch(() => {});
+        // Tổng thuốc trong kho
+        inventoryService.getList({ limit: 500 })
+            .then(res => {
+                const items: any[] = res?.data?.data ?? res?.data ?? res ?? [];
+                const total = res?.pagination?.total ?? res?.data?.pagination?.total ?? items.length;
+                if (total) setStats(prev => prev.map((s, i) => i === 3 ? { ...s, value: Number(total).toLocaleString() } : s));
             })
             .catch(() => {});
     }, []);
@@ -115,7 +145,7 @@ export default function PharmacistDashboard() {
 
                 {/* ===== STATS ===== */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-                    {STATS.map((s) => (
+                    {stats.map((s) => (
                         <div key={s.label} className="bg-white dark:bg-[#1e242b] p-5 rounded-2xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm flex flex-col justify-between group hover:shadow-md hover:border-[#3C81C6]/40 dark:hover:border-[#3C81C6]/30 transition-all cursor-pointer">
                             <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1 min-w-0">
@@ -134,6 +164,9 @@ export default function PharmacistDashboard() {
                         </div>
                     ))}
                 </div>
+
+                {/* ===== AI INVENTORY PREDICTOR ===== */}
+                <AIInventoryPredictor />
 
                 {/* ===== MAIN GRID ===== */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -204,7 +237,7 @@ export default function PharmacistDashboard() {
                                     </div>
                                     <div>
                                         <h3 className="text-sm font-bold text-[#121417] dark:text-white">Thuốc sắp hết</h3>
-                                        <p className="text-xs text-[#687582] dark:text-gray-500">{LOW_STOCK.length} loại cần nhập</p>
+                                        <p className="text-xs text-[#687582] dark:text-gray-500">{lowStock.length} loại cần nhập</p>
                                     </div>
                                 </div>
                                 <Link href={ROUTES.PORTAL.PHARMACIST.INVENTORY} className="text-xs text-[#3C81C6] hover:underline font-medium">
@@ -212,7 +245,7 @@ export default function PharmacistDashboard() {
                                 </Link>
                             </div>
                             <div className="divide-y divide-[#f0f1f3] dark:divide-[#2d353e]">
-                                {LOW_STOCK.map((med) => (
+                                {lowStock.map((med) => (
                                     <div key={med.name} className="px-5 py-3">
                                         <div className="flex items-center justify-between mb-1.5">
                                             <p className="text-sm font-medium text-[#121417] dark:text-white">{med.name}</p>
@@ -242,7 +275,7 @@ export default function PharmacistDashboard() {
                                 </div>
                             </div>
                             <div className="divide-y divide-[#f0f1f3] dark:divide-[#2d353e]">
-                                {RECENT_DISPENSES.map((d) => (
+                                {recentDispenses.map((d) => (
                                     <div key={d.id} className="px-5 py-3 flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">

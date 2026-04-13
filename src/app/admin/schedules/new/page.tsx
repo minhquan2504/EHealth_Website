@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { scheduleService } from "@/services/scheduleService";
-import { staffService } from "@/services/staffService";
-import { getDepartments } from "@/services/departmentService";
+import { staffService, unwrapStaffList } from "@/services/staffService";
+import { getDepartments, unwrapDepartments } from "@/services/departmentService";
 
 const FALLBACK_DOCTORS = [
     { id: "1", name: "BS. Nguyễn Văn An" }, { id: "2", name: "BS. Trần Thị Bình" },
@@ -27,19 +27,19 @@ export default function NewSchedulePage() {
     });
 
     useEffect(() => {
-        staffService.getList({ limit: 200 })
+        staffService.getList({ role: 'DOCTOR', limit: 200 })
             .then((res: any) => {
-                const items: any[] = res?.data ?? res ?? [];
-                if (Array.isArray(items) && items.length > 0) {
-                    setDoctorList(items.map((d: any) => ({ id: d.id, name: d.full_name ?? d.fullName ?? d.name ?? "" })));
+                const items = unwrapStaffList(res);
+                if (items.length > 0) {
+                    setDoctorList(items.map(d => ({ id: d.id, name: d.fullName })));
                 }
             })
             .catch(() => {});
-        getDepartments()
+        getDepartments({ limit: 100 })
             .then((res: any) => {
-                const items: any[] = res?.data?.data ?? res?.data ?? res ?? [];
-                if (Array.isArray(items) && items.length > 0) {
-                    setDeptList(items.map((d: any) => d.name ?? d));
+                const items = unwrapDepartments(res);
+                if (items.length > 0) {
+                    setDeptList(items.map(d => d.name));
                 }
             })
             .catch(() => {});

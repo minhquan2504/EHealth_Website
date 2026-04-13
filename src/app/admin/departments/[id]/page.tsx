@@ -3,22 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { MOCK_DEPARTMENTS } from "@/lib/mock-data/admin";
 import { DEPARTMENT_STATUS } from "@/constants/status";
 import type { Department } from "@/types";
+import { getDepartmentById, getStaffByDepartment } from "@/services/departmentService";
 
 const TABS = [
     { key: "info", label: "Thông tin", icon: "info" },
     { key: "staff", label: "Nhân sự", icon: "groups" },
-];
-
-// Mock doctors for the department
-const MOCK_DEPT_DOCTORS = [
-    { id: "1", name: "BS. Nguyễn Văn An", position: "Trưởng khoa", specialization: "Nội tổng quát", experience: 15, status: "active", avatar: null },
-    { id: "2", name: "BS. Trần Thị Bình", position: "Phó khoa", specialization: "Tim mạch", experience: 12, status: "active", avatar: null },
-    { id: "3", name: "BS. Lê Văn Cường", position: "Bác sĩ điều trị", specialization: "Nội tổng quát", experience: 8, status: "active", avatar: null },
-    { id: "4", name: "BS. Phạm Thị Dung", position: "Bác sĩ điều trị", specialization: "Siêu âm tim", experience: 6, status: "on_leave", avatar: null },
-    { id: "5", name: "BS. Hoàng Văn Em", position: "Bác sĩ nội trú", specialization: "Nội tổng quát", experience: 2, status: "active", avatar: null },
 ];
 
 const MOCK_EQUIPMENT = [
@@ -29,17 +20,84 @@ const MOCK_EQUIPMENT = [
     { name: "Máy thở CPAP", quantity: 2, status: "active" },
 ];
 
+interface DeptStaff {
+    id: string;
+    name: string;
+    position: string;
+    specialization: string;
+    experience: number;
+    status: string;
+    avatar: string | null;
+}
+
 export default function DepartmentDetailPage() {
     const router = useRouter();
     const params = useParams();
     const deptId = params.id as string;
     const [activeTab, setActiveTab] = useState("info");
     const [department, setDepartment] = useState<Department | null>(null);
+    const [staff, setStaff] = useState<DeptStaff[]>([]);
+    const [staffLoading, setStaffLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const found = MOCK_DEPARTMENTS.find((d) => d.id === deptId);
-        setDepartment(found || null);
+        if (!deptId) return;
+        setLoading(true);
+        getDepartmentById(deptId)
+            .then((d: any) => {
+                if (d && (d.id || d.departments_id)) {
+                    setDepartment({
+                        id: d.id ?? d.departments_id ?? deptId,
+                        code: d.code ?? '',
+                        name: d.name ?? '',
+                        nameEn: (d.name_en ?? d.nameEn ?? '') as string,
+                        description: (d.description ?? '') as string,
+                        icon: (d.icon ?? '') as string,
+                        color: (d.color ?? '') as string,
+                        location: (d.location ?? d.floor ?? '') as string,
+                        capacity: (d.capacity ?? d.max_capacity ?? 0) as number,
+                        doctorCount: (d.doctor_count ?? d.doctorCount ?? 0) as number,
+                        patientCount: (d.patient_count ?? d.patientCount ?? 0) as number,
+                        appointmentToday: (d.appointment_today ?? d.appointmentToday ?? 0) as number,
+                        status: (d.status ?? 'ACTIVE').toUpperCase() as any,
+                        createdAt: d.created_at ?? d.createdAt ?? '',
+                        updatedAt: d.updated_at ?? d.updatedAt ?? '',
+                    } as Department);
+                }
+            })
+            .catch(() => { /* department giữ null */ })
+            .finally(() => setLoading(false));
     }, [deptId]);
+
+    // Load nhân sự khi chuyển tab staff
+    useEffect(() => {
+        if (activeTab === 'staff' && deptId && staff.length === 0) {
+            setStaffLoading(true);
+            getStaffByDepartment(deptId)
+                .then((items: any[]) => {
+                    setStaff(items.map((d: any) => ({
+                        id: d.id ?? '',
+                        name: d.fullName ?? d.full_name ?? d.name ?? '',
+                        position: d.position ?? d.role ?? 'Bác sĩ',
+                        specialization: d.specialization ?? '',
+                        experience: d.experience ?? 0,
+                        status: (d.status ?? 'ACTIVE').toLowerCase() === 'active' ? 'active' : 'inactive',
+                        avatar: d.avatar ?? null,
+                    })));
+                })
+                .catch(() => { /* giữ empty */ })
+                .finally(() => setStaffLoading(false));
+        }
+    }, [activeTab, deptId]);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20">
+                <div className="w-10 h-10 border-4 border-[#3C81C6]/20 border-t-[#3C81C6] rounded-full animate-spin mb-4" />
+                <p className="text-sm text-[#687582]">Đang tải...</p>
+            </div>
+        );
+    }
 
     if (!department) {
         return (
@@ -136,7 +194,7 @@ export default function DepartmentDetailPage() {
 
             {/* Tab Content */}
             {activeTab === "info" && <InfoTab department={department} />}
-            {activeTab === "staff" && <StaffTab />}
+            {activeTab === "staff" && <StaffTab staff={staff} loading={staffLoading} />}
         </>
     );
 }
@@ -207,55 +265,74 @@ function InfoTab({ department }: { department: Department }) {
     );
 }
 
-function StaffTab() {
+function StaffTab({ staff, loading }: { staff: DeptStaff[]; loading: boolean }) {
+    if (loading) {
+        return (
+            <div className="bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl shadow-sm p-10 flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-[#3C81C6]/20 border-t-[#3C81C6] rounded-full animate-spin" />
+            </div>
+        );
+    }
+
     return (
         <div className="bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl shadow-sm overflow-hidden">
             <div className="p-4 border-b border-[#dde0e4] dark:border-[#2d353e] flex items-center justify-between">
                 <h2 className="text-lg font-bold text-[#121417] dark:text-white flex items-center gap-2">
                     <span className="material-symbols-outlined text-[#3C81C6]">groups</span>
-                    Danh sách nhân sự ({MOCK_DEPT_DOCTORS.length})
+                    Danh sách nhân sự ({staff.length})
                 </h2>
             </div>
-            <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50/50 dark:bg-gray-800/50 border-b border-[#dde0e4] dark:border-[#2d353e]">
-                        <tr>
-                            <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Bác sĩ</th>
-                            <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Chức vụ</th>
-                            <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Chuyên ngành</th>
-                            <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Kinh nghiệm</th>
-                            <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#dde0e4] dark:divide-[#2d353e]">
-                        {MOCK_DEPT_DOCTORS.map((doc) => (
-                            <tr key={doc.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                <td className="py-4 px-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-[#3C81C6]/10 flex items-center justify-center text-[#3C81C6]">
-                                            <span className="material-symbols-outlined">person</span>
-                                        </div>
-                                        <span className="text-sm font-bold text-[#121417] dark:text-white">{doc.name}</span>
-                                    </div>
-                                </td>
-                                <td className="py-4 px-6">
-                                    <span className={`text-sm font-medium ${doc.position.includes("Trưởng") ? "text-[#3C81C6]" : "text-[#121417] dark:text-white"}`}>
-                                        {doc.position}
-                                    </span>
-                                </td>
-                                <td className="py-4 px-6 text-sm text-[#687582] dark:text-gray-400">{doc.specialization}</td>
-                                <td className="py-4 px-6 text-sm text-[#121417] dark:text-white">{doc.experience} năm</td>
-                                <td className="py-4 px-6">
-                                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${doc.status === "active" ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"}`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full ${doc.status === "active" ? "bg-green-500" : "bg-orange-500"}`} />
-                                        {doc.status === "active" ? "Đang làm" : "Nghỉ phép"}
-                                    </span>
-                                </td>
+            {staff.length === 0 ? (
+                <div className="p-12 text-center text-[#687582] dark:text-gray-400">
+                    <span className="material-symbols-outlined text-4xl mb-2 block">person_off</span>
+                    Chưa có nhân sự trong khoa này
+                </div>
+            ) : (
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-gray-50/50 dark:bg-gray-800/50 border-b border-[#dde0e4] dark:border-[#2d353e]">
+                            <tr>
+                                <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Bác sĩ</th>
+                                <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Chức vụ</th>
+                                <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Chuyên ngành</th>
+                                <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Kinh nghiệm</th>
+                                <th className="py-3 px-6 text-xs font-semibold text-[#687582] uppercase">Trạng thái</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody className="divide-y divide-[#dde0e4] dark:divide-[#2d353e]">
+                            {staff.map((doc) => (
+                                <tr key={doc.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <td className="py-4 px-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-[#3C81C6]/10 flex items-center justify-center text-[#3C81C6] overflow-hidden">
+                                                {doc.avatar ? (
+                                                    <img src={doc.avatar} alt={doc.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <span className="material-symbols-outlined">person</span>
+                                                )}
+                                            </div>
+                                            <span className="text-sm font-bold text-[#121417] dark:text-white">{doc.name}</span>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-6">
+                                        <span className={`text-sm font-medium ${(doc.position || '').includes("Trưởng") ? "text-[#3C81C6]" : "text-[#121417] dark:text-white"}`}>
+                                            {doc.position || '—'}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-6 text-sm text-[#687582] dark:text-gray-400">{doc.specialization || '—'}</td>
+                                    <td className="py-4 px-6 text-sm text-[#121417] dark:text-white">{doc.experience > 0 ? `${doc.experience} năm` : '—'}</td>
+                                    <td className="py-4 px-6">
+                                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${doc.status === "active" ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"}`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${doc.status === "active" ? "bg-green-500" : "bg-orange-500"}`} />
+                                            {doc.status === "active" ? "Đang làm" : "Nghỉ phép"}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 }

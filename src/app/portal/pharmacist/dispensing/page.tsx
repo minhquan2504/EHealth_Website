@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { dispensingService } from "@/services/dispensingService";
+import { usePageAIContext } from "@/hooks/usePageAIContext";
+import { AIDispensingAssistant } from "@/components/portal/ai";
 
 const MOCK_DISPENSING = {
     id: "DT003", patient: "Trần Văn Cường", patientId: "BN-24933", age: 58, gender: "Nam", phone: "0903 *** 789",
@@ -21,21 +23,26 @@ export default function DispensingPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const prescriptionId = searchParams.get("id");
+    usePageAIContext({ pageKey: 'dispensing' });
     const [checkedMeds, setCheckedMeds] = useState<Record<number, boolean>>({});
     const [patientConfirmed, setPatientConfirmed] = useState(false);
     const [dispensing, setDispensing] = useState(false);
     const [completed, setCompleted] = useState(false);
+    const [dispenseError, setDispenseError] = useState("");
+    const [loading, setLoading] = useState(false);
     const [rx, setRx] = useState(MOCK_DISPENSING);
 
     useEffect(() => {
         if (!prescriptionId) return;
+        setLoading(true);
         // Dùng /api/dispensing/{prescriptionId} — đúng Swagger
         dispensingService.getPrescription(prescriptionId)
             .then(res => {
                 const data = res?.data ?? res;
-                if (data) setRx(data);
+                if (data && data.id) setRx(prev => ({ ...prev, ...data }));
             })
-            .catch(() => {/* keep mock */});
+            .catch(() => {/* keep mock */})
+            .finally(() => setLoading(false));
     }, [prescriptionId]);
 
     const allChecked = rx.medicines.every((_, i) => checkedMeds[i]);
@@ -47,16 +54,30 @@ export default function DispensingPage() {
     const handleDispense = async () => {
         if (!allChecked || !patientConfirmed) return;
         setDispensing(true);
+        setDispenseError("");
         try {
             const id = prescriptionId || rx.id;
             await dispensingService.dispense(id, {
                 items: rx.medicines.map((m, i) => ({ ...m, dispensed: checkedMeds[i] })),
+                note: `Cấp phát cho ${rx.patient}`,
             });
             setCompleted(true);
-        } catch {
-            alert("Cấp phát thuốc thất bại. Vui lòng thử lại.");
+        } catch (err: any) {
+            const msg = err?.response?.data?.message || err?.message || "Cấp phát thuốc thất bại. Vui lòng thử lại.";
+            setDispenseError(msg);
         } finally {
             setDispensing(false);
+        }
+    };
+
+    const handleCancel = async () => {
+        if (!confirm("Bạn có chắc muốn hủy đơn thuốc này?")) return;
+        try {
+            const id = prescriptionId || rx.id;
+            await dispensingService.cancel(id, "Hủy bởi dược sĩ");
+            router.back();
+        } catch {
+            alert("Hủy đơn thất bại. Vui lòng thử lại.");
         }
     };
 
@@ -82,6 +103,14 @@ export default function DispensingPage() {
         );
     }
 
+    if (loading) {
+        return (
+            <div className="p-6 flex items-center justify-center py-20">
+                <div className="w-8 h-8 border-4 border-[#3C81C6] border-t-transparent rounded-full animate-spin" />
+            </div>
+        );
+    }
+
     return (
         <div className="p-6 md:p-8"><div className="max-w-4xl mx-auto space-y-6">
             {/* Header */}
@@ -93,10 +122,29 @@ export default function DispensingPage() {
                     </h1>
                     <p className="text-sm text-[#687582] mt-1">Kiểm tra và xác nhận cấp phát từng thuốc</p>
                 </div>
-                <button onClick={() => router.back()} className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1e242b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">arrow_back</span>Quay lại
-                </button>
+                <div className="flex items-center gap-2">
+                    <button onClick={handleCancel} className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors">
+                        <span className="material-symbols-outlined text-[18px]">cancel</span>Hủy đơn
+                    </button>
+                    <button onClick={() => router.back()} className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1e242b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
+                        <span className="material-symbols-outlined text-[18px]">arrow_back</span>Quay lại
+                    </button>
+                </div>
             </div>
+
+            {/* Error Banner */}
+            {dispenseError && (
+                <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                    <span className="material-symbols-outlined text-red-600 text-[20px] mt-0.5">error</span>
+                    <div>
+                        <p className="text-sm font-bold text-red-700 dark:text-red-400">Cấp phát thất bại</p>
+                        <p className="text-sm text-red-600 dark:text-red-300 mt-0.5">{dispenseError}</p>
+                    </div>
+                    <button onClick={() => setDispenseError("")} className="ml-auto text-red-400 hover:text-red-600">
+                        <span className="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+            )}
 
             {/* Patient Info */}
             <div className="bg-white dark:bg-[#1e242b] rounded-xl border border-[#dde0e4] dark:border-[#2d353e] p-5">
@@ -112,6 +160,9 @@ export default function DispensingPage() {
                     </div>
                 )}
             </div>
+
+            {/* AI Drug Interaction Checker */}
+            <AIDispensingAssistant />
 
             {/* Medicine Checklist */}
             <div className="bg-white dark:bg-[#1e242b] rounded-xl border border-[#dde0e4] dark:border-[#2d353e] overflow-hidden">
@@ -155,10 +206,14 @@ export default function DispensingPage() {
                 <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-[#1e242b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-[#687582] hover:bg-gray-50 transition-colors">
                     <span className="material-symbols-outlined text-[18px]">print</span>In nhãn thuốc
                 </button>
-                <button onClick={handleDispense} disabled={!allChecked || !patientConfirmed || dispensing}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-bold transition-colors disabled:opacity-40 shadow-md shadow-green-200 dark:shadow-none">
-                    {dispensing ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Đang xử lý...</> : <><span className="material-symbols-outlined text-[18px]">done_all</span>Hoàn thành cấp phát</>}
-                </button>
+                <div className="flex items-center gap-2">
+                    {!allChecked && <p className="text-xs text-amber-600">Chưa kiểm tra đủ thuốc</p>}
+                    {!patientConfirmed && allChecked && <p className="text-xs text-amber-600">Chưa xác nhận bệnh nhân</p>}
+                    <button onClick={handleDispense} disabled={!allChecked || !patientConfirmed || dispensing}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-bold transition-colors disabled:opacity-40 shadow-md shadow-green-200 dark:shadow-none">
+                        {dispensing ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Đang xử lý...</> : <><span className="material-symbols-outlined text-[18px]">done_all</span>Hoàn thành cấp phát</>}
+                    </button>
+                </div>
             </div>
         </div></div>
     );

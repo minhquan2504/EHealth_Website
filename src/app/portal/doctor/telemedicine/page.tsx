@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { telemedicineService } from "@/services/telemedicineService";
 import { useAuth } from "@/contexts/AuthContext";
+import { AITelemedicineBrief } from "@/components/portal/ai";
+import { usePageAIContext } from "@/hooks/usePageAIContext";
 
 const MOCK_SESSIONS = [
     { id: "TM001", patient: "Nguyễn Văn An", patientId: "BN001", doctor: "BS. Trần Văn Minh", date: "28/02/2025", time: "14:00", status: "scheduled", department: "Tim mạch", reason: "Tái khám tăng huyết áp" },
@@ -20,10 +22,21 @@ const statusMap: Record<string, { label: string; style: string }> = {
 };
 
 export default function TelemedicinePage() {
+    usePageAIContext({ pageKey: 'telemedicine' });
     const { user } = useAuth();
     const [sessions, setSessions] = useState(MOCK_SESSIONS);
     const [filter, setFilter] = useState("all");
     const [showRoom, setShowRoom] = useState<string | null>(null);
+    const [briefingSession, setBriefingSession] = useState<typeof MOCK_SESSIONS[0] | null>(null);
+
+    const handleJoinSession = (sessionId: string) => {
+        const session = sessions.find(s => s.id === sessionId);
+        if (session) {
+            setBriefingSession(session);
+        } else {
+            setShowRoom(sessionId);
+        }
+    };
 
     useEffect(() => {
         telemedicineService.getList({ doctorId: user?.id, limit: 50 })
@@ -188,12 +201,12 @@ export default function TelemedicinePage() {
                         </div>
                         <div className="flex items-center gap-2">
                             {s.status === "scheduled" && (
-                                <button onClick={() => setShowRoom(s.id)} className="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors">
+                                <button onClick={() => handleJoinSession(s.id)} className="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors">
                                     <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>videocam</span>Bắt đầu
                                 </button>
                             )}
                             {s.status === "in_progress" && (
-                                <button onClick={() => setShowRoom(s.id)} className="flex items-center gap-1.5 px-4 py-2 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-lg text-sm font-medium transition-colors">
+                                <button onClick={() => handleJoinSession(s.id)} className="flex items-center gap-1.5 px-4 py-2 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-lg text-sm font-medium transition-colors">
                                     <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>login</span>Vào phòng
                                 </button>
                             )}
@@ -206,6 +219,22 @@ export default function TelemedicinePage() {
                     </div>
                 ))}
             </div>
+
+            {/* AI Pre-Session Briefing Modal */}
+            {briefingSession && (
+                <AITelemedicineBrief
+                    patientId={briefingSession.patientId}
+                    patientName={briefingSession.patient}
+                    sessionReason={briefingSession.reason}
+                    visible={!!briefingSession}
+                    onAcknowledge={() => {
+                        const sessionId = briefingSession.id;
+                        setBriefingSession(null);
+                        setShowRoom(sessionId);
+                    }}
+                    onClose={() => setBriefingSession(null)}
+                />
+            )}
         </div></div>
     );
 }

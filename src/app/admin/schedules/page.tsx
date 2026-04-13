@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { scheduleService } from "@/services/scheduleService";
+import { scheduleService, unwrapSchedules } from "@/services/scheduleService";
 
 interface Schedule {
     id: string;
@@ -118,18 +118,9 @@ export default function SchedulesPage() {
             limit: 500,
         })
             .then((res: any) => {
-                const items: any[] = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? [];
-                if (Array.isArray(items) && items.length > 0) {
-                    setSchedules(items.map((s: any) => ({
-                        id: s.id ?? s.schedule_id ?? "",
-                        doctorId: s.doctorId ?? s.doctor_id ?? "",
-                        doctorName: s.doctorName ?? s.doctor_name ?? s.full_name ?? "",
-                        department: s.department ?? s.departmentName ?? s.department_name ?? "",
-                        shift: s.shift ?? "MORNING",
-                        date: s.date ?? s.workDate ?? s.work_date ?? "",
-                        status: s.status ?? "SCHEDULED",
-                        avatar: s.avatar,
-                    })));
+                const items = unwrapSchedules(res);
+                if (items.length > 0) {
+                    setSchedules(items);
                 }
             })
             .catch(() => {/* keep mock */});

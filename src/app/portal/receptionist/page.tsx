@@ -6,6 +6,8 @@ import { ROUTES } from "@/constants/routes";
 import { getAppointments } from "@/services/appointmentService";
 import { getPatients } from "@/services/patientService";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePageAIContext } from "@/hooks/usePageAIContext";
+import { AIQueuePredictor } from "@/components/portal/ai";
 
 // ==================== MOCK DATA ====================
 const STATS = [
@@ -57,21 +59,30 @@ function getCurrentDate(): string {
 // ==================== PAGE ====================
 export default function ReceptionistDashboard() {
     const { user } = useAuth();
+    usePageAIContext({ pageKey: 'dashboard' });
     const [filter, setFilter] = useState<"all" | "waiting" | "checked_in">("all");
     const [appointments, setAppointments] = useState(APPOINTMENTS);
     const [stats, setStats] = useState(STATS);
 
     useEffect(() => {
         const today = new Date().toISOString().split("T")[0];
+        // Lấy lịch hẹn hôm nay
         getAppointments({ date: today, limit: 100 })
             .then(res => {
-                const items: any[] = res?.data ?? [];
+                // Unwrap: res?.data?.data ?? res?.data ?? res
+                const raw = (res as any);
+                const items: any[] = raw?.data?.data ?? raw?.data?.items ?? raw?.data ?? [];
                 if (items.length > 0) {
                     const mapped = items.map((a: any) => ({
-                        id: a.id, patient: a.patientName ?? "", time: a.time ?? "",
-                        doctor: a.doctorName ?? "", dept: a.departmentName ?? "",
-                        status: a.status === "confirmed" ? "waiting" : a.status,
-                        phone: a.phone ?? "",
+                        id: a.id ?? a.appointment_id,
+                        patient: a.patientName ?? a.patient_name ?? a.full_name ?? "",
+                        time: a.time ?? a.appointment_time ?? a.start_time ?? "",
+                        doctor: a.doctorName ?? a.doctor_name ?? "",
+                        dept: a.departmentName ?? a.department_name ?? "",
+                        status: (a.status === "confirmed" || a.status === "CONFIRMED") ? "waiting"
+                            : (a.status === "checked_in" || a.status === "CHECKED_IN") ? "checked_in"
+                            : a.status,
+                        phone: a.phone ?? a.phone_number ?? "",
                     }));
                     setAppointments(mapped);
                     const waiting = mapped.filter((a: any) => a.status === "waiting").length;
@@ -85,10 +96,14 @@ export default function ReceptionistDashboard() {
                 }
             })
             .catch(() => {/* keep mock */});
+
+        // Lấy tổng số bệnh nhân đăng ký
         getPatients({ limit: 1 })
             .then(res => {
                 const total = res?.data?.pagination?.total_items;
-                if (total) setStats(prev => prev.map((s, i) => i === 3 ? { ...s, value: String(total) } : s));
+                if (total !== undefined) {
+                    setStats(prev => prev.map((s, i) => i === 3 ? { ...s, value: String(total) } : s));
+                }
             })
             .catch(() => {});
     }, []);
@@ -147,6 +162,9 @@ export default function ReceptionistDashboard() {
                         </div>
                     ))}
                 </div>
+
+                {/* ===== AI QUEUE PREDICTOR ===== */}
+                <AIQueuePredictor />
 
                 {/* ===== MAIN GRID ===== */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

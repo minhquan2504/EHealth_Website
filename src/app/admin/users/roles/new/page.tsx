@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createRole } from "@/services/permissionService";
+import { createRole, assignPermissions } from "@/services/permissionService";
 
 // Permission groups — Tương ứng bảng `permissions` (module, code, description)
 const PERMISSION_MODULES = [
@@ -142,6 +142,7 @@ const ROLE_TEMPLATES = [
 export default function NewRolePage() {
     const router = useRouter();
     const [saving, setSaving] = useState(false);
+    const [apiError, setApiError] = useState<string | null>(null);
     const [fd, setFd] = useState({ name: "", code: "", description: "", isSystem: false });
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
     const [expandedModules, setExpandedModules] = useState<string[]>(PERMISSION_MODULES.map((m) => m.module));
@@ -178,17 +179,28 @@ export default function NewRolePage() {
         e.preventDefault();
         if (!fd.name.trim() || !fd.code.trim()) { alert("Vui lòng nhập tên và mã vai trò"); return; }
         setSaving(true);
+        setApiError(null);
         try {
-            await createRole({
-                name: fd.code,
+            const res = await createRole({
+                name: fd.code.toUpperCase(),
                 displayName: fd.name,
+                code: fd.code.toUpperCase(),
                 description: fd.description,
-                permissions: selectedPermissions,
                 isSystem: fd.isSystem,
-            });
+            } as any);
+            // Lấy id của role vừa tạo và gán permissions
+            const roleId = (res as any)?.data?.id ?? (res as any)?.id;
+            if (roleId && selectedPermissions.length > 0) {
+                try {
+                    await assignPermissions(roleId, selectedPermissions);
+                } catch (permErr: any) {
+                    // Gán quyền thất bại nhưng role đã tạo — vẫn redirect nhưng báo lỗi
+                    console.warn("Gán quyền thất bại:", permErr?.message);
+                }
+            }
             router.push("/admin/users/roles");
-        } catch {
-            alert("Tạo vai trò thất bại. Vui lòng thử lại.");
+        } catch (err: any) {
+            setApiError(err?.message || "Tạo vai trò thất bại. Vui lòng thử lại.");
         } finally {
             setSaving(false);
         }
@@ -208,6 +220,12 @@ export default function NewRolePage() {
             </div>
 
             <form onSubmit={handleSubmit}>
+                {apiError && (
+                    <div className="flex items-center gap-3 px-4 py-3 mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                        <span className="material-symbols-outlined text-[18px] text-red-600">error</span>
+                        <p className="text-sm text-red-700 dark:text-red-400">{apiError}</p>
+                    </div>
+                )}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left: Role info */}
                     <div className="space-y-6">
