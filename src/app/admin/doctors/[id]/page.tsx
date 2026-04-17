@@ -23,7 +23,7 @@ export default function DoctorDetailPage() {
                 const d = res?.data ?? res;
                 if (d && (d.id || d.staff_id)) {
                     setDoctor({
-                        id: d.id ?? d.staff_id ?? doctorId,
+                        id: String(d.id ?? d.staff_id ?? doctorId),
                         fullName: d.full_name ?? d.fullName ?? "",
                         email: d.email ?? "",
                         phone: d.phone_number ?? d.phone ?? "",

@@ -94,7 +94,8 @@ export default function NewSchedulePage() {
                         <div>
                             <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Khoa</label>
                             <select name="department" value={formData.department} onChange={handleChange} className="w-full py-2.5 px-4 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white">
-                                {deptList.map((d) => <option key={d} value={d}>{d}</option>)}
+                                <option value="">-- Chọn khoa --</option>
+                                {deptList.filter(d => d).map((d, idx) => <option key={`dept-${idx}-${d}`} value={d}>{d}</option>)}
                             </select>
                         </div>
                         <div>

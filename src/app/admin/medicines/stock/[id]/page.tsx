@@ -129,7 +129,7 @@ export default function StockBatchDetailPage() {
                     </div>
                     <p className="text-sm text-[#687582] dark:text-gray-400">Mã: {batch.drugCode} | Lô: {batch.lotNumber}</p>
                 </div>
-                <button onClick={() => router.push("/admin/medicines/inventory/import")}
+                <button onClick={() => router.push("/admin/medicines/import")}
                     className="flex items-center gap-2 px-4 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-[#3C81C6]/20">
                     <span className="material-symbols-outlined text-[18px]">add</span> Nhập thêm
                 </button>

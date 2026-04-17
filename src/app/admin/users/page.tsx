@@ -37,7 +37,7 @@ export default function UsersPage() {
                 const items = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? [];
                 if (Array.isArray(items) && items.length > 0) {
                     setUsers(items.map((u: Record<string, unknown>) => ({
-                        id: u.users_id ?? u.id ?? "",
+                        id: String(u.users_id ?? u.id ?? ""),
                         fullName: (u as Record<string, unknown> & { profile?: { full_name?: string } }).profile?.full_name ?? u.full_name ?? u.fullName ?? u.email ?? "",
                         email: u.email ?? "",
                         phone: u.phone ?? u.phone_number ?? "",
@@ -268,7 +268,7 @@ export default function UsersPage() {
                                 const items = reloadRes?.data?.items ?? reloadRes?.items ?? reloadRes?.data?.data ?? reloadRes?.data ?? reloadRes ?? [];
                                 if (Array.isArray(items)) {
                                     setUsers(items.map((u: Record<string, unknown>) => ({
-                                        id: u.users_id ?? u.id ?? "",
+                                        id: String(u.users_id ?? u.id ?? ""),
                                         fullName: (u as any).profile?.full_name ?? u.full_name ?? u.fullName ?? u.email ?? "",
                                         email: u.email ?? "",
                                         phone: u.phone ?? u.phone_number ?? "",
@@ -443,7 +443,7 @@ export default function UsersPage() {
                                 </tr>
                             ) : (
                                 filteredUsers.map((user) => {
-                                    const roleColor = ROLE_COLORS[user.role as Role];
+                                    const roleColor = ROLE_COLORS[user.role?.toUpperCase() as Role] ?? ROLE_COLORS[user.role as Role] ?? { bg: "bg-gray-100 dark:bg-gray-700", text: "text-gray-700 dark:text-gray-300", dot: "bg-gray-500" };
                                     return (
                                         <tr key={user.id} className={`group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${user.status === USER_STATUS.LOCKED ? "opacity-60" : ""}`}>
                                             <td className="py-4 px-6">

@@ -51,7 +51,7 @@ export function unwrapStaffList(res: any): StaffMember[] {
     const raw = res?.data?.data ?? res?.data?.items ?? res?.data ?? res?.items ?? res ?? [];
     if (!Array.isArray(raw)) return [];
     return raw.map((d: any): StaffMember => ({
-        id: d.id ?? d.staff_id ?? '',
+        id: String(d.id ?? d.staff_id ?? ''),
         code: d.code ?? d.staff_code ?? d.employee_code ?? '',
         fullName: d.fullName ?? d.full_name ?? d.name ?? '',
         email: d.email ?? '',

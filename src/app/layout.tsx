@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { FloatingChatBox } from "@/components/shared/FloatingChatBox";
+import DebugFetchInterceptor from "@/components/debug/DebugFetchInterceptor";
 
 export const metadata: Metadata = {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001"),

@@ -256,7 +256,7 @@ function adaptVital(v: any): VitalSign {
         bloodPressureSystolic: toNumber(v.bloodPressureSystolic ?? v.blood_pressure_systolic ?? v.systolic ?? v.bp_systolic, 0),
         bloodPressureDiastolic: toNumber(v.bloodPressureDiastolic ?? v.blood_pressure_diastolic ?? v.diastolic ?? v.bp_diastolic, 0),
         heartRate: toNumber(v.heartRate ?? v.heart_rate ?? v.pulse, 0),
-        temperature: toNumber(v.temperature ?? v.bodyTemperature, 36.5),
+        temperature: toNumber(v.temperature ?? v.bodyTemperature, 0),
         weight,
         height,
         bmi,
@@ -731,6 +731,31 @@ function hasMeasuredValue(value: number | null | undefined) {
     return Number.isFinite(value) && Number(value) > 0;
 }
 
+function createMetricStatus(
+    hasValue: boolean,
+    isNormal: boolean,
+    normalLabel = "Bình thường",
+    warningLabel = "Cần theo dõi",
+) {
+    if (!hasValue) {
+        return {
+            ok: false,
+            label: "Chưa có dữ liệu",
+            tone: "bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-300",
+            icon: "info",
+        };
+    }
+
+    return {
+        ok: isNormal,
+        label: isNormal ? normalLabel : warningLabel,
+        tone: isNormal
+            ? "bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400"
+            : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400",
+        icon: isNormal ? "check_circle" : "warning",
+    };
+}
+
 // ─── Loading Skeleton ─────────────────────────────────────────────────────────
 
 function Skeleton({ rows = 3 }: { rows?: number }) {
@@ -1184,7 +1209,14 @@ function OverviewTab({
     recentTimeline: HealthTimelineItem[];
     overview: OverviewState;
 }) {
+    const hasBloodPressure =
+        hasMeasuredValue(vital?.bloodPressureSystolic) &&
+        hasMeasuredValue(vital?.bloodPressureDiastolic);
+    const hasHeartRate = hasMeasuredValue(vital?.heartRate);
+    const hasBmi = hasMeasuredValue(vital?.bmi);
+    const hasSpo2 = hasMeasuredValue(vital?.spo2);
     const hasBloodSugar = hasMeasuredValue(vital?.bloodSugar);
+    const hasTemperature = hasMeasuredValue(vital?.temperature);
     const bloodSugarValue = hasBloodSugar ? `${vital?.bloodSugar}` : "—";
     const bloodSugarStatus = !hasBloodSugar
         ? {
@@ -1210,6 +1242,41 @@ function OverviewTab({
         { label: "Đường huyết", value: bloodSugarValue, unit: "mg/dL", icon: "water_drop", color: "from-amber-500 to-orange-500", ok: bloodSugarStatus.ok, statusLabel: bloodSugarStatus.label, statusTone: bloodSugarStatus.tone, statusIcon: bloodSugarStatus.icon },
         { label: "Nhiệt độ", value: vital ? toNumber(vital.temperature, 36.5).toFixed(1) : "—", unit: "°C", icon: "thermostat", color: "from-green-500 to-emerald-600", ok: true },
     ];
+    const metricStatuses: Record<string, ReturnType<typeof createMetricStatus>> = {
+        "Huyết áp": createMetricStatus(
+            hasBloodPressure,
+            toNumber(vital?.bloodPressureSystolic, 0) <= 130 && toNumber(vital?.bloodPressureDiastolic, 0) <= 85,
+        ),
+        "Nhịp tim": createMetricStatus(
+            hasHeartRate,
+            toNumber(vital?.heartRate, 0) >= 60 && toNumber(vital?.heartRate, 0) <= 100,
+        ),
+        BMI: createMetricStatus(
+            hasBmi,
+            toNumber(vital?.bmi, 0) >= 18.5 && toNumber(vital?.bmi, 0) < 25,
+        ),
+        SpO2: createMetricStatus(
+            hasSpo2,
+            toNumber(vital?.spo2, 0) >= 95,
+        ),
+        "Nhiệt độ": createMetricStatus(
+            hasTemperature,
+            toNumber(vital?.temperature, 0) >= 35.5 && toNumber(vital?.temperature, 0) <= 37.5,
+        ),
+    };
+    const normalizedHealthCards = healthCards.map((card) => {
+        const metricStatus = metricStatuses[card.label];
+        if (!metricStatus) return card;
+
+        return {
+            ...card,
+            value: metricStatus.label === "Chưa có dữ liệu" ? "—" : card.value,
+            ok: metricStatus.ok,
+            statusLabel: metricStatus.label,
+            statusTone: metricStatus.tone,
+            statusIcon: metricStatus.icon,
+        };
+    });
     const summaryCards = [
         { label: "Mức nguy cơ", value: translateRiskLevel(overview.summary?.risk_level), icon: "monitoring", tone: "bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300" },
         { label: "Lượt khám", value: overview.summary?.total_encounters ?? "—", icon: "stethoscope", tone: "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300" },
@@ -1220,7 +1287,7 @@ function OverviewTab({
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {healthCards.map(c => (
+                {normalizedHealthCards.map(c => (
                     <div key={c.label} className="bg-white dark:bg-[#1e242b] rounded-2xl border border-[#e5e7eb] dark:border-[#2d353e] p-5 hover:shadow-lg hover:border-[#3C81C6]/20 transition-all">
                         <div className="flex items-center gap-3 mb-3">
                             <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${c.color} flex items-center justify-center shadow-lg`}>

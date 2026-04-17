@@ -1,5 +1,6 @@
 import axiosClient from '@/api/axiosClient';
 import { AI_ENDPOINTS } from '@/api/endpoints';
+import type { AISearchResponsePayload } from '@/utils/aiSearch';
 
 // ============================================
 // Health Chat endpoints (local constants — không có trong endpoints.ts)
@@ -309,7 +310,10 @@ export const aiService = {
 
     /** AI-powered semantic search */
     semanticSearch: (data: { query: string; role: string; types?: string[] }) =>
-        axiosClient.post(AI_ENDPOINTS.CHAT, { message: data.query, context: { type: 'search', role: data.role, types: data.types } }),
+        axiosClient.post<AISearchResponsePayload>(AI_ENDPOINTS.CHAT, {
+            message: data.query,
+            context: { type: 'search', role: data.role, types: data.types },
+        }),
 
     /** OCR / image analysis */
     analyzeImage: (data: { imageBase64: string; context?: string }) =>

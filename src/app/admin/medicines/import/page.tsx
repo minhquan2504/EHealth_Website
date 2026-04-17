@@ -68,7 +68,7 @@ export default function MedicineImportPage() {
                     <h1 className="text-3xl font-black tracking-tight text-[#121417] dark:text-white">Nhập kho</h1>
                     <p className="text-[#687582] dark:text-gray-400">Quản lý phiếu nhập kho thuốc và vật tư y tế</p>
                 </div>
-                <button onClick={() => router.push("/admin/medicines/inventory/import")} className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all">
+                <button onClick={() => router.push("/admin/medicines/import")} className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all">
                     <span className="material-symbols-outlined text-[20px]">add_circle</span>
                     Tạo phiếu nhập
                 </button>

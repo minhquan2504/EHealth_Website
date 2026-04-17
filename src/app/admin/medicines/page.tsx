@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UI_TEXT } from "@/constants/ui-text";
 import { getDrugs } from "@/services/medicineService";
@@ -9,17 +9,18 @@ import { validateFile } from "@/utils/fileValidation";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { MedicineFormModal } from "@/features/medicines/components/medicine-form-modal";
 import { AddStockModal } from "@/features/medicines/components/add-stock-modal";
+import { mapApiDrugToMedicine } from "@/features/medicines/utils/adminMedicineMappers";
 import type { Medicine } from "@/types";
 
 const MEDICINE_CATEGORIES = [
-    "Kháng sinh",
-    "Giảm đau",
-    "Vitamin & Khoáng chất",
-    "Hô hấp",
-    "Tiêu hóa",
-    "Tim mạch",
-    "Thần kinh",
-    "Da liễu",
+    "Khang sinh",
+    "Giam dau",
+    "Vitamin va Khoang chat",
+    "Ho hap",
+    "Tieu hoa",
+    "Tim mach",
+    "Than kinh",
+    "Da lieu",
 ];
 
 type SortField = "code" | "name" | "price" | "stock" | "status";
@@ -27,13 +28,29 @@ type SortOrder = "asc" | "desc";
 
 function formatCurrency(num: number): string {
     if (num >= 1_000_000_000) {
-        return `${(num / 1_000_000_000).toFixed(1)} Tỷ`;
+        return `${(num / 1_000_000_000).toFixed(1)} Ty`;
     }
-    return num.toLocaleString("vi-VN") + "₫";
+    return `${num.toLocaleString("vi-VN")}d`;
 }
 
+const isWithinNextDays = (dateValue: string | undefined, days: number): boolean => {
+    if (!dateValue) {
+        return false;
+    }
+
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) {
+        return false;
+    }
+
+    const now = new Date();
+    const cutoff = new Date();
+    cutoff.setDate(now.getDate() + days);
+
+    return date >= now && date <= cutoff;
+};
+
 export default function MedicinesPage() {
-    // State
     const router = useRouter();
     const [medicines, setMedicines] = useState<Medicine[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
@@ -45,65 +62,46 @@ export default function MedicinesPage() {
     const [sortField, setSortField] = useState<SortField>("name");
     const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
-    const [stats, setStats] = useState({ expiringSoon: 0 });
+    const loadMedicines = async () => {
+        const response = await getDrugs({ limit: 200 });
+        const items = Array.isArray(response?.data) ? response.data : [];
+        setMedicines(
+            items
+                .map((item) => mapApiDrugToMedicine(item))
+                .filter((item): item is Medicine => item !== null)
+        );
+    };
 
     useEffect(() => {
-        getDrugs({ limit: 200 })
-            .then(res => {
-                const items: any[] = res?.data ?? [];
-                if (items.length > 0) {
-                    setMedicines(items.map((d: any) => ({
-                        id: d.id,
-                        code: d.code ?? d.id,
-                        name: d.name ?? "",
-                        category: d.category ?? "",
-                        unit: d.unit ?? "",
-                        price: d.price ?? 0,
-                        stock: d.quantity ?? d.stock ?? 0,
-                        stockLevel: d.stockLevel ?? "NORMAL",
-                        minStock: d.minQuantity ?? d.minStock ?? 0,
-                        manufacturer: d.manufacturer ?? "",
-                        expiryDate: d.expiryDate ?? d.expiry_date ?? "",
-                        activeIngredient: d.activeIngredient ?? d.active_ingredient ?? "",
-                        status: d.status ?? "IN_BUSINESS",
-                        description: d.description ?? "",
-                        createdAt: d.createdAt ?? d.created_at ?? "",
-                        updatedAt: d.updatedAt ?? d.updated_at ?? "",
-                    })) as Medicine[]);
-                    const total = items.length;
-                    const lowStock = items.filter((d: any) => d.status === "low_stock").length;
-                    const outOfStock = items.filter((d: any) => d.status === "out_of_stock").length;
-                    setStats(prev => ({ ...prev, totalMedicines: total, lowStockCount: lowStock, outOfStockCount: outOfStock }));
-                }
-            })
-            .catch(() => { /* API không khả dụng, hiển thị trống */ });
+        loadMedicines().catch(() => {
+            setMedicines([]);
+        });
     }, []);
 
-    // Filtered and sorted medicines
     const filteredMedicines = useMemo(() => {
-        let result = medicines.filter((medicine) => {
+        const result = medicines.filter((medicine) => {
             const matchesSearch =
                 searchQuery === "" ||
-                (medicine.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (medicine.code || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (medicine.activeIngredient || "").toLowerCase().includes(searchQuery.toLowerCase());
+                medicine.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                medicine.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                medicine.activeIngredient.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesCategory =
                 categoryFilter === "all" || medicine.category === categoryFilter;
             return matchesSearch && matchesCategory;
         });
 
-        result.sort((a, b) => {
+        result.sort((left, right) => {
             let comparison = 0;
             if (sortField === "code") {
-                comparison = (a.code || "").localeCompare(b.code || "");
+                comparison = left.code.localeCompare(right.code);
             } else if (sortField === "name") {
-                comparison = (a.name || "").localeCompare(b.name || "");
+                comparison = left.name.localeCompare(right.name);
             } else if (sortField === "price") {
-                comparison = (a.price || 0) - (b.price || 0);
+                comparison = left.price - right.price;
             } else if (sortField === "stock") {
-                comparison = (a.stock || 0) - (b.stock || 0);
+                comparison = left.stock - right.stock;
             } else if (sortField === "status") {
-                comparison = (a.status || "").localeCompare(b.status || "");
+                comparison = left.status.localeCompare(right.status);
             }
             return sortOrder === "asc" ? comparison : -comparison;
         });
@@ -111,7 +109,6 @@ export default function MedicinesPage() {
         return result;
     }, [medicines, searchQuery, categoryFilter, sortField, sortOrder]);
 
-    // Toggle sort
     const toggleSort = (field: SortField) => {
         if (sortField === field) {
             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -121,7 +118,6 @@ export default function MedicinesPage() {
         }
     };
 
-    // Export to CSV
     const handleExport = async () => {
         try {
             const { exportDrugs } = await import("@/services/medicineService");
@@ -133,13 +129,17 @@ export default function MedicinesPage() {
             link.click();
             URL.revokeObjectURL(url);
         } catch {
-            // fallback: CSV từ dữ liệu hiện có
-            const headers = ["Mã", "Tên", "Hoạt chất", "Đơn vị", "Giá", "Tồn kho", "Trạng thái"];
-            const rows = filteredMedicines.map((m) => [
-                m.code, m.name, m.activeIngredient, m.unit,
-                m.price.toString(), m.stock.toString(), m.status,
+            const headers = ["Ma", "Ten", "Hoat chat", "Don vi", "Gia", "Ton kho", "Trang thai"];
+            const rows = filteredMedicines.map((medicine) => [
+                medicine.code,
+                medicine.name,
+                medicine.activeIngredient,
+                medicine.unit,
+                medicine.price.toString(),
+                medicine.stock.toString(),
+                medicine.status,
             ]);
-            const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+            const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
@@ -150,26 +150,24 @@ export default function MedicinesPage() {
         }
     };
 
-    // Handlers
-    const handleAddMedicine = () => {
-        setEditingMedicine(null);
-        setIsModalOpen(true);
-    };
-
     const handleEditMedicine = (medicine: Medicine) => {
         setEditingMedicine(medicine);
         setIsModalOpen(true);
     };
 
     const handleDeleteMedicine = async (medicineId: string) => {
-        if (!confirm("Bạn có chắc chắn muốn xóa thuốc này?")) return;
+        if (!confirm("Ban co chac chan muon xoa thuoc nay?")) {
+            return;
+        }
+
         try {
             const { deleteDrug } = await import("@/services/medicineService");
             await deleteDrug(medicineId);
         } catch {
-            // keep local even if API fails
+            // Keep local fallback.
         }
-        setMedicines((prev) => prev.filter((m) => m.id !== medicineId));
+
+        setMedicines((current) => current.filter((medicine) => medicine.id !== medicineId));
     };
 
     const handleAddStock = (medicine: Medicine) => {
@@ -178,22 +176,25 @@ export default function MedicinesPage() {
     };
 
     const handleStockSubmit = async (medicineId: string, quantity: number, note: string) => {
-        // Cập nhật local state ngay
-        setMedicines((prev) =>
-            prev.map((m) =>
-                m.id === medicineId
-                    ? { ...m, stock: m.stock + quantity, updatedAt: new Date().toISOString().split("T")[0] }
-                    : m
+        setMedicines((current) =>
+            current.map((medicine) =>
+                medicine.id === medicineId
+                    ? {
+                        ...medicine,
+                        stock: medicine.stock + quantity,
+                        stockLevel: medicine.stock + quantity > 100 ? "HIGH" : medicine.stock + quantity > 50 ? "NORMAL" : "LOW",
+                    }
+                    : medicine
             )
         );
-        // Gọi API nhập kho
+
         try {
             const { inventoryService } = await import("@/services/inventoryService");
             await inventoryService.createStockIn({
                 items: [{ drugId: medicineId, quantity, note: note || undefined }],
             });
         } catch {
-            // fallback: local state đã cập nhật rồi
+            // Local optimistic update is enough.
         }
     };
 
@@ -201,45 +202,56 @@ export default function MedicinesPage() {
         try {
             const { createDrug, updateDrug } = await import("@/services/medicineService");
             if (editingMedicine) {
-                await updateDrug(editingMedicine.id, {
+                const updated = await updateDrug(editingMedicine.id, {
                     name: medicineData.name,
                     unit: medicineData.unit,
                     price: medicineData.price,
                     category: medicineData.category,
                     activeIngredient: medicineData.activeIngredient,
-                } as any).catch(() => null);
-                setMedicines((prev) =>
-                    prev.map((m) => (m.id === editingMedicine.id ? { ...m, ...medicineData } : m))
+                    quantity: medicineData.stock,
+                }).catch(() => null);
+
+                const mapped = updated ? mapApiDrugToMedicine(updated) : null;
+                setMedicines((current) =>
+                    current.map((medicine) =>
+                        medicine.id === editingMedicine.id
+                            ? (mapped ?? { ...medicine, ...medicineData })
+                            : medicine
+                    )
                 );
                 return;
             }
+
             const created = await createDrug({
                 name: medicineData.name || "",
-                unit: medicineData.unit || "Hộp",
+                unit: medicineData.unit || "Hop",
                 price: medicineData.price || 0,
                 category: medicineData.category,
                 activeIngredient: medicineData.activeIngredient,
                 quantity: medicineData.stock,
-                minQuantity: (medicineData as any).minStock,
-            } as any).catch(() => null);
-            const newMedicine: Medicine = {
-                id: (created as any)?.id ?? String(Date.now()),
-                code: (created as any)?.code ?? `SP-${new Date().getFullYear()}-${String(medicines.length + 1).padStart(3, "0")}`,
+            }).catch(() => null);
+
+            const mapped = created ? mapApiDrugToMedicine(created) : null;
+            const newMedicine: Medicine = mapped ?? {
+                id: String(Date.now()),
+                code: `SP-${new Date().getFullYear()}-${String(medicines.length + 1).padStart(3, "0")}`,
                 name: medicineData.name || "",
                 activeIngredient: medicineData.activeIngredient || "",
-                unit: medicineData.unit || "Hộp",
+                unit: medicineData.unit || "Hop",
                 unitDetail: medicineData.unitDetail,
                 price: medicineData.price || 0,
                 stock: medicineData.stock || 0,
                 stockLevel: medicineData.stockLevel || "NORMAL",
                 category: medicineData.category || "",
                 status: MEDICINE_STATUS.IN_BUSINESS,
-                createdAt: new Date().toISOString().split("T")[0],
-                updatedAt: new Date().toISOString().split("T")[0],
+                expiryDate: medicineData.expiryDate,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
             };
-            setMedicines((prev) => [newMedicine, ...prev]);
+
+            setMedicines((current) => [newMedicine, ...current]);
         } catch {
-            // keep local state
+            // Keep local state only.
         }
     };
 
@@ -271,18 +283,16 @@ export default function MedicinesPage() {
         }
     };
 
-    // Calculate dynamic stats
     const dynamicStats = {
         total: medicines.length,
-        lowStock: medicines.filter((m) => m.stockLevel === "LOW" || m.stockLevel === "OUT").length,
-        expiringSoon: stats.expiringSoon,
-        totalValue: medicines.reduce((sum, m) => sum + m.price * m.stock, 0),
+        lowStock: medicines.filter((medicine) => medicine.stockLevel === "LOW" || medicine.stockLevel === "OUT").length,
+        expiringSoon: medicines.filter((medicine) => isWithinNextDays(medicine.expiryDate, 30)).length,
+        totalValue: medicines.reduce((sum, medicine) => sum + medicine.price * medicine.stock, 0),
     };
 
     return (
         <>
-            {/* Page Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black tracking-tight text-[#121417] dark:text-white">
                         {UI_TEXT.ADMIN.MEDICINES.TITLE}
@@ -299,32 +309,33 @@ export default function MedicinesPage() {
                             input.accept = ".xlsx,.xls,.csv";
                             input.onchange = async (e) => {
                                 const file = (e.target as HTMLInputElement).files?.[0];
-                                if (!file) return;
+                                if (!file) {
+                                    return;
+                                }
                                 const validation = validateFile(file, { maxSize: 5 * 1024 * 1024, allowedTypes: ["csv", "xlsx", "xls"] });
-                                if (!validation.valid) { alert(validation.message); return; }
+                                if (!validation.valid) {
+                                    alert(validation.message);
+                                    return;
+                                }
                                 try {
                                     const { importDrugs } = await import("@/services/medicineService");
                                     const result = await importDrugs(file);
-                                    alert(`Nhập thành công${result?.imported ? `: ${result.imported} thuốc` : ""}!`);
-                                    // Reload danh sách
-                                    getDrugs({ limit: 200 }).then(res => {
-                                        const items: any[] = res?.data ?? [];
-                                        if (items.length > 0) setMedicines(items.map((d: any) => ({ ...medicines[0], id: d.id, code: d.code ?? d.id, name: d.name ?? "", category: d.category ?? "", unit: d.unit ?? "", price: d.price ?? 0, stock: d.quantity ?? 0, minStock: d.minQuantity ?? 0, manufacturer: d.manufacturer ?? "", expiryDate: d.expiryDate ?? "", activeIngredient: d.activeIngredient ?? "", status: d.status ?? "available", description: d.description ?? "" })) as Medicine[]);
-                                    }).catch(() => {});
+                                    alert(`Nhap thanh cong${result?.imported ? `: ${result.imported} thuoc` : ""}!`);
+                                    await loadMedicines();
                                 } catch {
-                                    alert("Nhập file thất bại. Vui lòng thử lại.");
+                                    alert("Nhap file that bai. Vui long thu lai.");
                                 }
                             };
                             input.click();
                         }}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] text-[#121417] dark:text-white rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        className="flex items-center gap-2 rounded-xl border border-[#dde0e4] bg-white px-5 py-2.5 text-sm font-bold text-[#121417] shadow-sm transition-colors hover:bg-gray-50 dark:border-[#2d353e] dark:bg-[#1e242b] dark:text-white dark:hover:bg-gray-800"
                     >
                         <span className="material-symbols-outlined text-[20px]">upload_file</span>
                         {UI_TEXT.ADMIN.MEDICINES.IMPORT_EXCEL}
                     </button>
                     <button
                         onClick={() => router.push("/admin/medicines/new")}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all transform hover:-translate-y-0.5"
+                        className="flex items-center gap-2 rounded-xl bg-[#3C81C6] px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-blue-200 transition-all hover:-translate-y-0.5 hover:bg-[#2a6da8] dark:shadow-none"
                     >
                         <span className="material-symbols-outlined text-[20px]">add_circle</span>
                         {UI_TEXT.ADMIN.MEDICINES.ADD_MEDICINE}
@@ -332,10 +343,9 @@ export default function MedicinesPage() {
                 </div>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="flex items-center gap-4 rounded-xl border border-[#dde0e4] bg-white p-4 shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-900/20">
                         <span className="material-symbols-outlined">medication</span>
                     </div>
                     <div>
@@ -344,8 +354,8 @@ export default function MedicinesPage() {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-orange-600">
+                <div className="flex items-center gap-4 rounded-xl border border-[#dde0e4] bg-white p-4 shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-900/20">
                         <span className="material-symbols-outlined">inventory_2</span>
                     </div>
                     <div>
@@ -354,8 +364,8 @@ export default function MedicinesPage() {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-600">
+                <div className="flex items-center gap-4 rounded-xl border border-[#dde0e4] bg-white p-4 shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-50 text-red-600 dark:bg-red-900/20">
                         <span className="material-symbols-outlined">schedule</span>
                     </div>
                     <div>
@@ -364,8 +374,8 @@ export default function MedicinesPage() {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600">
+                <div className="flex items-center gap-4 rounded-xl border border-[#dde0e4] bg-white p-4 shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-50 text-green-600 dark:bg-green-900/20">
                         <span className="material-symbols-outlined">payments</span>
                     </div>
                     <div>
@@ -375,11 +385,9 @@ export default function MedicinesPage() {
                 </div>
             </div>
 
-            {/* Medicines Table */}
-            <div className="bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl shadow-sm">
-                {/* Table Header */}
-                <div className="p-4 border-b border-[#dde0e4] dark:border-[#2d353e] flex flex-col sm:flex-row justify-between gap-4 items-center">
-                    <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap">
+            <div className="rounded-xl border border-[#dde0e4] bg-white shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b]">
+                <div className="flex flex-col items-center justify-between gap-4 border-b border-[#dde0e4] p-4 sm:flex-row dark:border-[#2d353e]">
+                    <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
                         <div className="relative w-full sm:w-72">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#687582]">
                                 <span className="material-symbols-outlined text-[20px]">search</span>
@@ -388,19 +396,19 @@ export default function MedicinesPage() {
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full py-2.5 pl-10 pr-4 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 focus:border-[#3C81C6] transition-all dark:text-white placeholder:text-gray-400"
+                                className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm transition-all placeholder:text-gray-400 focus:border-[#3C81C6] focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                 placeholder={UI_TEXT.ADMIN.MEDICINES.SEARCH_PLACEHOLDER}
                             />
                         </div>
                         <select
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="py-2.5 pl-3 pr-10 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 transition-all text-[#687582] dark:text-gray-400 cursor-pointer"
+                            className="cursor-pointer rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-3 pr-10 text-sm text-[#687582] transition-all focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
                         >
                             <option value="all">{UI_TEXT.ADMIN.MEDICINES.ALL_CATEGORIES}</option>
-                            {MEDICINE_CATEGORIES.map((cat) => (
-                                <option key={cat} value={cat}>
-                                    {cat}
+                            {MEDICINE_CATEGORIES.map((category) => (
+                                <option key={category} value={category}>
+                                    {category}
                                 </option>
                             ))}
                         </select>
@@ -408,8 +416,8 @@ export default function MedicinesPage() {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleExport}
-                            className="p-2.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-[#687582] transition-colors"
-                            title="Xuất dữ liệu"
+                            className="rounded-xl border border-gray-200 p-2.5 text-[#687582] transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                            title="Xuat du lieu"
                         >
                             <span className="material-symbols-outlined text-[20px]">download</span>
                         </button>
@@ -418,130 +426,126 @@ export default function MedicinesPage() {
                                 setSearchQuery("");
                                 setCategoryFilter("all");
                             }}
-                            className="p-2.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-[#687582] transition-colors"
-                            title="Xóa bộ lọc"
+                            className="rounded-xl border border-gray-200 p-2.5 text-[#687582] transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                            title="Xoa bo loc"
                         >
                             <span className="material-symbols-outlined text-[20px]">filter_list_off</span>
                         </button>
                     </div>
                 </div>
 
-                {/* Table Content */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50 dark:bg-gray-800/50 border-b border-[#dde0e4] dark:border-[#2d353e]">
+                        <thead className="border-b border-[#dde0e4] bg-gray-50/50 dark:border-[#2d353e] dark:bg-gray-800/50">
                             <tr>
-                                <th onClick={() => toggleSort("code")} className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase cursor-pointer hover:text-[#3C81C6] select-none">
+                                <th onClick={() => toggleSort("code")} className="cursor-pointer select-none px-6 py-4 text-xs font-semibold uppercase text-[#687582] hover:text-[#3C81C6] dark:text-gray-400">
                                     <span className="flex items-center gap-1">
-                                        Mã thuốc
+                                        Ma thuoc
                                         {sortField === "code" && <span className="material-symbols-outlined text-[14px]">{sortOrder === "asc" ? "arrow_upward" : "arrow_downward"}</span>}
                                     </span>
                                 </th>
-                                <th onClick={() => toggleSort("name")} className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase cursor-pointer hover:text-[#3C81C6] select-none">
+                                <th onClick={() => toggleSort("name")} className="cursor-pointer select-none px-6 py-4 text-xs font-semibold uppercase text-[#687582] hover:text-[#3C81C6] dark:text-gray-400">
                                     <span className="flex items-center gap-1">
-                                        Tên thuốc
+                                        Ten thuoc
                                         {sortField === "name" && <span className="material-symbols-outlined text-[14px]">{sortOrder === "asc" ? "arrow_upward" : "arrow_downward"}</span>}
                                     </span>
                                 </th>
-                                <th className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase">Hoạt chất</th>
-                                <th className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase">Đơn vị</th>
-                                <th onClick={() => toggleSort("price")} className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase cursor-pointer hover:text-[#3C81C6] select-none">
+                                <th className="px-6 py-4 text-xs font-semibold uppercase text-[#687582] dark:text-gray-400">Hoat chat</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase text-[#687582] dark:text-gray-400">Don vi</th>
+                                <th onClick={() => toggleSort("price")} className="cursor-pointer select-none px-6 py-4 text-xs font-semibold uppercase text-[#687582] hover:text-[#3C81C6] dark:text-gray-400">
                                     <span className="flex items-center gap-1">
-                                        Giá bán
+                                        Gia ban
                                         {sortField === "price" && <span className="material-symbols-outlined text-[14px]">{sortOrder === "asc" ? "arrow_upward" : "arrow_downward"}</span>}
                                     </span>
                                 </th>
-                                <th onClick={() => toggleSort("stock")} className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase cursor-pointer hover:text-[#3C81C6] select-none">
+                                <th onClick={() => toggleSort("stock")} className="cursor-pointer select-none px-6 py-4 text-xs font-semibold uppercase text-[#687582] hover:text-[#3C81C6] dark:text-gray-400">
                                     <span className="flex items-center gap-1">
-                                        Tồn kho
+                                        Ton kho
                                         {sortField === "stock" && <span className="material-symbols-outlined text-[14px]">{sortOrder === "asc" ? "arrow_upward" : "arrow_downward"}</span>}
                                     </span>
                                 </th>
-                                <th onClick={() => toggleSort("status")} className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase cursor-pointer hover:text-[#3C81C6] select-none">
+                                <th onClick={() => toggleSort("status")} className="cursor-pointer select-none px-6 py-4 text-xs font-semibold uppercase text-[#687582] hover:text-[#3C81C6] dark:text-gray-400">
                                     <span className="flex items-center gap-1">
-                                        Trạng thái
+                                        Trang thai
                                         {sortField === "status" && <span className="material-symbols-outlined text-[14px]">{sortOrder === "asc" ? "arrow_upward" : "arrow_downward"}</span>}
                                     </span>
                                 </th>
-                                <th className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase text-right">{UI_TEXT.COMMON.ACTIONS}</th>
+                                <th className="px-6 py-4 text-right text-xs font-semibold uppercase text-[#687582] dark:text-gray-400">{UI_TEXT.COMMON.ACTIONS}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#dde0e4] dark:divide-[#2d353e]">
                             {filteredMedicines.length === 0 ? (
                                 <tr>
                                     <td colSpan={8} className="py-12 text-center text-[#687582] dark:text-gray-400">
-                                        <span className="material-symbols-outlined text-4xl mb-2 block">search_off</span>
+                                        <span className="material-symbols-outlined mb-2 block text-4xl">search_off</span>
                                         {UI_TEXT.TABLE.NO_RESULTS}
                                     </td>
                                 </tr>
-                            ) : (
-                                filteredMedicines.map((medicine) => {
-                                    const statusStyle = getStatusStyle(medicine.status);
-                                    return (
-                                        <tr key={medicine.id} className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                            <td className="py-4 px-6">
-                                                <span className="text-sm font-mono text-[#3C81C6]">{medicine.code}</span>
-                                            </td>
-                                            <td className="py-4 px-6">
-                                                <p className="text-sm font-bold text-[#121417] dark:text-white">{medicine.name}</p>
-                                                <p className="text-xs text-[#687582] dark:text-gray-400">{medicine.category}</p>
-                                            </td>
-                                            <td className="py-4 px-6">
-                                                <p className="text-sm text-[#121417] dark:text-gray-200 max-w-[200px] truncate">{medicine.activeIngredient}</p>
-                                            </td>
-                                            <td className="py-4 px-6">
-                                                <p className="text-sm text-[#121417] dark:text-gray-200">{medicine.unit}</p>
-                                                {medicine.unitDetail && (
-                                                    <p className="text-xs text-[#687582] dark:text-gray-400">{medicine.unitDetail}</p>
-                                                )}
-                                            </td>
-                                            <td className="py-4 px-6">
-                                                <p className="text-sm font-semibold text-[#121417] dark:text-white">
-                                                    {medicine.price.toLocaleString("vi-VN")}₫
-                                                </p>
-                                            </td>
-                                            <td className="py-4 px-6">
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${getStockStyle(medicine.stockLevel)}`}>
-                                                    {medicine.stock.toLocaleString("vi-VN")}
-                                                </span>
-                                            </td>
-                                            <td className="py-4 px-6">
-                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${statusStyle.bg} ${statusStyle.text}`}>
-                                                    {statusStyle.label}
-                                                </span>
-                                            </td>
-                                            <td className="py-4 px-6 text-right">
-                                                <DropdownMenu
-                                                    items={[
-                                                        {
-                                                            label: "Chỉnh sửa",
-                                                            icon: "edit",
-                                                            onClick: () => handleEditMedicine(medicine),
-                                                        },
-                                                        {
-                                                            label: "Nhập thêm kho",
-                                                            icon: "add_box",
-                                                            onClick: () => handleAddStock(medicine),
-                                                        },
-                                                        {
-                                                            label: "Xóa",
-                                                            icon: "delete",
-                                                            onClick: () => handleDeleteMedicine(medicine.id),
-                                                            variant: "danger",
-                                                        },
-                                                    ]}
-                                                />
-                                            </td>
-                                        </tr>
-                                    );
-                                })
-                            )}
+                            ) : filteredMedicines.map((medicine) => {
+                                const statusStyle = getStatusStyle(medicine.status);
+                                return (
+                                    <tr key={medicine.id} className="group transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                        <td className="px-6 py-4">
+                                            <span className="font-mono text-sm text-[#3C81C6]">{medicine.code}</span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-sm font-bold text-[#121417] dark:text-white">{medicine.name}</p>
+                                            <p className="text-xs text-[#687582] dark:text-gray-400">{medicine.category}</p>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="max-w-[200px] truncate text-sm text-[#121417] dark:text-gray-200">{medicine.activeIngredient}</p>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-sm text-[#121417] dark:text-gray-200">{medicine.unit}</p>
+                                            {medicine.unitDetail && (
+                                                <p className="text-xs text-[#687582] dark:text-gray-400">{medicine.unitDetail}</p>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-sm font-semibold text-[#121417] dark:text-white">
+                                                {medicine.price.toLocaleString("vi-VN")}d
+                                            </p>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center rounded-lg px-2 py-1 text-xs font-medium ${getStockStyle(medicine.stockLevel)}`}>
+                                                {medicine.stock.toLocaleString("vi-VN")}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${statusStyle.bg} ${statusStyle.text}`}>
+                                                {statusStyle.label}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <DropdownMenu
+                                                items={[
+                                                    {
+                                                        label: "Chinh sua",
+                                                        icon: "edit",
+                                                        onClick: () => handleEditMedicine(medicine),
+                                                    },
+                                                    {
+                                                        label: "Nhap them kho",
+                                                        icon: "add_box",
+                                                        onClick: () => handleAddStock(medicine),
+                                                    },
+                                                    {
+                                                        label: "Xoa",
+                                                        icon: "delete",
+                                                        onClick: () => handleDeleteMedicine(medicine.id),
+                                                        variant: "danger",
+                                                    },
+                                                ]}
+                                            />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Medicine Form Modal */}
             <MedicineFormModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -550,7 +554,6 @@ export default function MedicinesPage() {
                 mode={editingMedicine ? "edit" : "create"}
             />
 
-            {/* Add Stock Modal */}
             {stockMedicine && (
                 <AddStockModal
                     isOpen={isStockModalOpen}

@@ -97,6 +97,8 @@ export interface Invoice {
     appointmentId?: string;
     doctorName?: string;
     department?: string;
+    facilityName?: string;
+    encounterType?: string;
 }
 
 export interface Transaction {
@@ -113,8 +115,11 @@ export interface Transaction {
 export interface ServicePrice {
     id: string;
     category: string;
+    serviceGroup: string;
+    serviceCode?: string;
     name: string;
     price: number;
+    insurancePrice: number;
     insuranceRate: number;
     description: string;
 }

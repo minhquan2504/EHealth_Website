@@ -41,9 +41,9 @@ export default function DoctorsPage() {
                 const items = unwrapStaffList(doctorsResult.value);
                 if (items.length > 0) {
                     setDoctors(items.map((d) => ({
-                        id: d.id,
-                        userId: d.id,
-                        code: d.code ?? d.id,
+                        id: String(d.id || ''),
+                        userId: String(d.id || ''),
+                        code: d.code ?? String(d.id || ''),
                         fullName: d.fullName,
                         departmentId: d.departmentId ?? "",
                         departmentName: d.departmentName ?? "",

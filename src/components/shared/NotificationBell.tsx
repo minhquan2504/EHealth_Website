@@ -147,13 +147,15 @@ export function NotificationBell() {
                                 <p className="text-sm">Chưa có thông báo</p>
                             </div>
                         ) : (
-                            items.map(n => {
+                            items.map((n, idx) => {
                                 const isRead = n.isRead ?? n.is_read ?? false;
                                 const cat = n.category ?? n.type ?? "system";
                                 const icon = CATEGORY_ICONS[cat] ?? CATEGORY_ICONS.system;
                                 const time = timeAgo(n.createdAt ?? n.created_at);
-                                const url = n.actionUrl ?? n.action_url;
+                                const rawUrl = n.actionUrl ?? n.action_url;
+                                const url = typeof rawUrl === 'string' && rawUrl.startsWith('/') ? rawUrl : undefined;
                                 const content = n.content ?? n.body ?? "";
+                                const itemKey = String(n.id || `notification-${idx}`);
 
                                 const inner = (
                                     <div className={`flex gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-[#13191f] transition-colors cursor-pointer border-b border-gray-50 dark:border-[#2d353e]/50 ${!isRead ? "bg-blue-50/30 dark:bg-blue-900/10" : ""}`}>
@@ -174,11 +176,11 @@ export function NotificationBell() {
                                 );
 
                                 return url ? (
-                                    <Link href={url} key={n.id} onClick={() => { handleMarkRead(n.id); setOpen(false); }}>
+                                    <Link href={url} key={itemKey} onClick={() => { handleMarkRead(n.id); setOpen(false); }}>
                                         {inner}
                                     </Link>
                                 ) : (
-                                    <div key={n.id} onClick={() => handleMarkRead(n.id)}>
+                                    <div key={itemKey} onClick={() => handleMarkRead(n.id)}>
                                         {inner}
                                     </div>
                                 );

@@ -1,112 +1,144 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     TopDiseasesChart,
     GenderDistribution,
     HourlyVisitsChart,
 } from "@/components/admin/dashboard";
 import { reportService } from "@/services/reportService";
-import { unwrap } from "@/api/response";
+import {
+    emptyDashboardReport,
+    emptyRevenueReport,
+    type DashboardReportDto,
+    type RevenueReportDto,
+} from "@/features/admin/reports/reportAdapters";
 import { usePageAIContext } from "@/hooks/usePageAIContext";
-
-const EMPTY_SUMMARY = { revenue: 0, revenueChange: 0, patients: 0, patientsChange: 0, avgVisit: 0, visitChange: 0, rating: 0, ratingTrend: "flat" };
 
 type Period = "month" | "quarter" | "year";
 
-/* ──────────────────────────────────────────────────────────────
-   COMPONENT
-   ────────────────────────────────────────────────────────────── */
+const EMPTY_SUMMARY = {
+    revenue: 0,
+    revenueChange: 0,
+    patients: 0,
+    patientsChange: 0,
+    avgVisit: 0,
+    visitChange: 0,
+    rating: 0,
+    ratingTrend: "flat" as const,
+};
+
+const DEPT_COLORS = ["#3C81C6", "#22c55e", "#f59e0b", "#ec4899", "#8b5cf6", "#14b8a6"];
+
+const toMillion = (amount: number): number => Math.round(amount / 1_000_000);
+
+const formatCompactRevenue = (amountInMillions: number): string =>
+    amountInMillions >= 1000 ? `${(amountInMillions / 1000).toFixed(1)} Ty` : `${amountInMillions} Tr`;
+
 export default function StatisticsPage() {
-    usePageAIContext({ pageKey: 'statistics' });
+    usePageAIContext({ pageKey: "statistics" });
+
     const [timeRange, setTimeRange] = useState<Period>("month");
-    const [summary, setSummary] = useState(EMPTY_SUMMARY);
-    const [chartData, setChartData] = useState<{ label: string; value: number }[]>([]);
-    const [departments, setDepartments] = useState<{ name: string; patients: number; revenue: number; color: string }[]>([]);
-    const [topDoctors, setTopDoctors] = useState<{ name: string; dept: string; patients: number; rating: number }[]>([]);
+    const [dashboardReport, setDashboardReport] = useState<DashboardReportDto>(emptyDashboardReport());
+    const [revenueReport, setRevenueReport] = useState<RevenueReportDto>(emptyRevenueReport());
 
     useEffect(() => {
-        reportService.getDashboard()
-            .then((res: any) => {
-                const d = unwrap<any>(res);
-                if (!d) return;
-                const revenue       = Number(d.totalRevenue ?? d.revenue ?? 0) / 1_000_000;
-                const patients      = Number(d.totalPatients ?? d.patients ?? 0);
-                const avgVisit      = Number(d.avgDailyVisits ?? d.avgVisit ?? 0);
-                const revenueChange = Number(d.revenueGrowth ?? d.revenueChange ?? 0);
-                const patChange     = Number(d.patientGrowth ?? d.patientChange ?? 0);
-                const visitChange   = Number(d.visitGrowth ?? d.visitChange ?? 0);
-                if (revenue > 0 || patients > 0) {
-                    setSummary(prev => ({
-                        ...prev,
-                        ...(revenue  > 0 ? { revenue }        : {}),
-                        ...(patients > 0 ? { patients }       : {}),
-                        ...(avgVisit > 0 ? { avgVisit }       : {}),
-                        ...(revenueChange !== 0 ? { revenueChange } : {}),
-                        ...(patChange     !== 0 ? { patientsChange: patChange } : {}),
-                        ...(visitChange   !== 0 ? { visitChange }   : {}),
-                    }));
-                }
-            })
-            .catch(() => { /* API không khả dụng */ });
+        let active = true;
 
-        reportService.getRevenue({ period: timeRange })
-            .then((res: any) => {
-                const d = unwrap<any>(res);
-                if (!d) return;
-                if (Array.isArray(d.byDepartment) && d.byDepartment.length > 0) {
-                    const DEPT_COLORS = ["#3C81C6", "#22c55e", "#f59e0b", "#ec4899", "#8b5cf6", "#14b8a6"];
-                    setDepartments(d.byDepartment.map((dep: any, i: number) => ({
-                        name: dep.departmentName ?? dep.name ?? "",
-                        patients: Number(dep.patientCount ?? dep.patients ?? 0),
-                        revenue: Number(dep.revenue ?? dep.amount ?? 0) / 1_000_000,
-                        color: DEPT_COLORS[i % DEPT_COLORS.length],
-                    })));
+        Promise.all([
+            reportService.getDashboard(),
+            reportService.getRevenue({ period: timeRange }),
+        ])
+            .then(([dashboard, revenue]) => {
+                if (!active) {
+                    return;
                 }
-                if (Array.isArray(d.chartData) && d.chartData.length > 0) {
-                    setChartData(d.chartData.map((c: any) => ({ label: c.label ?? "", value: Number(c.value ?? 0) })));
-                }
-                if (Array.isArray(d.topDoctors) && d.topDoctors.length > 0) {
-                    setTopDoctors(d.topDoctors.map((doc: any) => ({
-                        name: doc.name ?? doc.fullName ?? "",
-                        dept: doc.department ?? doc.dept ?? "",
-                        patients: Number(doc.patientCount ?? doc.patients ?? 0),
-                        rating: Number(doc.rating ?? 0),
-                    })));
-                }
+
+                setDashboardReport(dashboard);
+                setRevenueReport(revenue);
             })
-            .catch(() => { /* API không khả dụng */ });
+            .catch(() => {
+                if (!active) {
+                    return;
+                }
+
+                setDashboardReport(emptyDashboardReport());
+                setRevenueReport(emptyRevenueReport());
+            });
+
+        return () => {
+            active = false;
+        };
     }, [timeRange]);
 
-    const totalPatients = departments.reduce((s, d) => s + d.patients, 0);
-    const maxChartValue = chartData.length > 0 ? Math.max(...chartData.map(d => d.value)) : 0;
+    const summary = useMemo(() => ({
+        revenue: toMillion(dashboardReport.stats.totalRevenue),
+        revenueChange: dashboardReport.stats.revenueChange,
+        patients: dashboardReport.overview.totalPatients,
+        patientsChange: dashboardReport.overview.patientChange,
+        avgVisit: dashboardReport.overview.avgDailyVisits,
+        visitChange: dashboardReport.overview.visitChange,
+        rating: dashboardReport.overview.rating,
+        ratingTrend: dashboardReport.overview.ratingTrend,
+    }), [dashboardReport]);
 
-    const periodLabel = timeRange === "month" ? "tháng trước" : timeRange === "quarter" ? "quý trước" : "năm trước";
-    const chartTitle = timeRange === "month" ? "Doanh thu theo tháng (Triệu VND)" : timeRange === "quarter" ? "Doanh thu theo quý (Triệu VND)" : "Doanh thu theo năm (Triệu VND)";
+    const chartData = useMemo(
+        () => revenueReport.chartData.map((item) => ({ label: item.label, value: toMillion(item.value) })),
+        [revenueReport]
+    );
 
-    // Export handler — includes all current data
+    const departments = useMemo(
+        () => revenueReport.byDepartment.map((department, index) => ({
+            name: department.departmentName,
+            patients: department.patientCount,
+            revenue: toMillion(department.revenue),
+            color: DEPT_COLORS[index % DEPT_COLORS.length],
+        })),
+        [revenueReport]
+    );
+
+    const topDoctors = useMemo(
+        () => revenueReport.topDoctors.map((doctor) => ({
+            name: doctor.name,
+            dept: doctor.departmentName,
+            patients: doctor.patientCount,
+            revenue: toMillion(doctor.revenue),
+        })),
+        [revenueReport]
+    );
+
+    const totalPatients = departments.reduce((sum, department) => sum + department.patients, 0);
+    const maxChartValue = chartData.length > 0 ? Math.max(...chartData.map((item) => item.value)) : 0;
+
+    const periodLabel = timeRange === "month" ? "thang truoc" : timeRange === "quarter" ? "quy truoc" : "nam truoc";
+    const chartTitle = timeRange === "month"
+        ? "Doanh thu theo thang (Trieu VND)"
+        : timeRange === "quarter"
+            ? "Doanh thu theo quy (Trieu VND)"
+            : "Doanh thu theo nam (Trieu VND)";
+
     const handleExport = () => {
-        const periodName = timeRange === "month" ? "THÁNG" : timeRange === "quarter" ? "QUÝ" : "NĂM";
+        const periodName = timeRange === "month" ? "THANG" : timeRange === "quarter" ? "QUY" : "NAM";
         const lines = [
-            `BÁO CÁO THỐNG KÊ - THEO ${periodName}`,
-            `Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
+            `BAO CAO THONG KE - THEO ${periodName}`,
+            `Ngay xuat: ${new Date().toLocaleDateString("vi-VN")}`,
             "",
-            `Tổng doanh thu: ${summary.revenue} Triệu VND`,
-            `Tổng bệnh nhân: ${summary.patients.toLocaleString("vi-VN")}`,
-            `Lượt khám TB/ngày: ${summary.avgVisit}`,
-            `Đánh giá trung bình: ${summary.rating}/5`,
+            `Tong doanh thu: ${summary.revenue} Trieu VND`,
+            `Tong benh nhan: ${summary.patients.toLocaleString("vi-VN")}`,
+            `Luot kham TB/ngay: ${summary.avgVisit}`,
+            `Danh gia trung binh: ${summary.rating}/5`,
             "",
-            "DOANH THU CHI TIẾT",
-            "Kỳ,Doanh thu (Triệu VND)",
-            ...chartData.map(d => `${d.label},${d.value}`),
+            "DOANH THU CHI TIET",
+            "Ky,Doanh thu (Trieu VND)",
+            ...chartData.map((item) => `${item.label},${item.value}`),
             "",
-            "PHÂN BỐ THEO KHOA",
-            "Khoa,Bệnh nhân,Doanh thu (Triệu VND)",
-            ...departments.map(d => `${d.name},${d.patients},${d.revenue}`),
+            "PHAN BO THEO KHOA",
+            "Khoa,Benh nhan,Doanh thu (Trieu VND)",
+            ...departments.map((department) => `${department.name},${department.patients},${department.revenue}`),
             "",
-            "TOP BÁC SĨ",
-            "Bác sĩ,Khoa,Bệnh nhân,Đánh giá",
-            ...topDoctors.map(d => `${d.name},${d.dept},${d.patients},${d.rating}`),
+            "TOP BAC SI",
+            "Bac si,Khoa,Benh nhan,Doanh thu (Trieu VND)",
+            ...topDoctors.map((doctor) => `${doctor.name},${doctor.dept},${doctor.patients},${doctor.revenue}`),
         ];
         const csv = lines.join("\n");
         const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -120,202 +152,215 @@ export default function StatisticsPage() {
 
     return (
         <>
-            {/* ── Page Header ── */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black tracking-tight text-[#121417] dark:text-white">
-                        Thống kê & Báo cáo
+                        Thong ke va Bao cao
                     </h1>
                     <p className="text-[#687582] dark:text-gray-400">
-                        Tổng quan hoạt động và hiệu suất phòng khám
+                        Tong quan hoat dong va hieu suat phong kham
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    {/* Time range filter */}
-                    <div className="flex rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div className="flex overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
                         {(["month", "quarter", "year"] as const).map((range) => (
                             <button
                                 key={range}
                                 onClick={() => setTimeRange(range)}
-                                className={`px-4 py-2 text-sm font-medium transition-colors ${timeRange === range ? "bg-[#3C81C6] text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
+                                className={`px-4 py-2 text-sm font-medium transition-colors ${timeRange === range ? "bg-[#3C81C6] text-white" : "bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"}`}
                             >
-                                {range === "month" ? "Tháng" : range === "quarter" ? "Quý" : "Năm"}
+                                {range === "month" ? "Thang" : range === "quarter" ? "Quy" : "Nam"}
                             </button>
                         ))}
                     </div>
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] text-[#121417] dark:text-white rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        className="flex items-center gap-2 rounded-xl border border-[#dde0e4] bg-white px-5 py-2.5 text-sm font-bold text-[#121417] shadow-sm transition-colors hover:bg-gray-50 dark:border-[#2d353e] dark:bg-[#1e242b] dark:text-white dark:hover:bg-gray-800"
                     >
                         <span className="material-symbols-outlined text-[20px]">download</span>
-                        Xuất báo cáo
+                        Xuat bao cao
                     </button>
                 </div>
             </div>
 
-            {/* ── AI Insight Card ── */}
-            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-[#3C81C6]/5 to-indigo-500/5 border border-[#3C81C6]/20 dark:border-[#3C81C6]/30 rounded-2xl">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3C81C6] to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-[#3C81C6]/20">
+            <div className="flex items-start gap-4 rounded-2xl border border-[#3C81C6]/20 bg-gradient-to-r from-[#3C81C6]/5 to-indigo-500/5 p-4 dark:border-[#3C81C6]/30">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#3C81C6] to-indigo-600 shadow-md shadow-[#3C81C6]/20">
                     <span className="material-symbols-outlined text-white" style={{ fontSize: "20px" }}>auto_awesome</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-[#121417] dark:text-white flex items-center gap-1.5 mb-1">
-                        AI phân tích thống kê
-                        <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[#3C81C6] text-white rounded-md">AI</span>
+                <div className="min-w-0 flex-1">
+                    <p className="mb-1 flex items-center gap-1.5 text-sm font-bold text-[#121417] dark:text-white">
+                        AI phan tich thong ke
+                        <span className="rounded-md bg-[#3C81C6] px-1.5 py-0.5 text-[10px] font-bold text-white">AI</span>
                     </p>
-                    <p className="text-sm text-[#374151] dark:text-[#d1d5db] leading-relaxed">
-                        Doanh thu giảm 8% do giảm khám ngoại trú trong tháng. Khoa Tim mạch có tỷ lệ tái khám cao nhất (65%). <strong className="text-[#3C81C6]">Gợi ý:</strong> Tăng slot khám online và triển khai chương trình tái khám nhắc nhở tự động để cải thiện doanh thu.
+                    <p className="text-sm leading-relaxed text-[#374151] dark:text-[#d1d5db]">
+                        Doanh thu hien tai dang o muc {formatCompactRevenue(summary.revenue)}. Muc tang truong la {summary.revenueChange}%,
+                        tong benh nhan la {summary.patients.toLocaleString("vi-VN")}. Cac widget AI mo rong se duoc bo sung khi co them nguon du lieu.
                     </p>
                 </div>
-                <span className="text-xs text-[#687582] whitespace-nowrap">AI phân tích</span>
+                <span className="whitespace-nowrap text-xs text-[#687582]">AI phan tich</span>
             </div>
 
-            {/* ── Summary Cards ── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <SummaryCard
-                    label="Tổng doanh thu"
-                    value={summary.revenue >= 1000 ? `${(summary.revenue / 1000).toFixed(1)} Tỷ` : `${summary.revenue} Tr`}
-                    change={`+${summary.revenueChange}% so với ${periodLabel}`}
-                    changeColor="text-green-600"
+                    label="Tong doanh thu"
+                    value={formatCompactRevenue(summary.revenue)}
+                    change={`${summary.revenueChange >= 0 ? "+" : ""}${summary.revenueChange}% so voi ${periodLabel}`}
+                    changeColor={summary.revenueChange >= 0 ? "text-green-600" : "text-red-500"}
                     icon="payments"
                     iconBg="bg-green-50 dark:bg-green-900/20"
                     iconColor="text-green-600"
-                    trendIcon="trending_up"
+                    trendIcon={summary.revenueChange >= 0 ? "trending_up" : "trending_down"}
                 />
                 <SummaryCard
-                    label="Tổng bệnh nhân"
+                    label="Tong benh nhan"
                     value={summary.patients.toLocaleString("vi-VN")}
-                    change={`+${summary.patientsChange}% so với ${periodLabel}`}
-                    changeColor="text-blue-600"
+                    change={`${summary.patientsChange >= 0 ? "+" : ""}${summary.patientsChange}% so voi ${periodLabel}`}
+                    changeColor={summary.patientsChange >= 0 ? "text-blue-600" : "text-red-500"}
                     icon="group"
                     iconBg="bg-blue-50 dark:bg-blue-900/20"
                     iconColor="text-blue-600"
-                    trendIcon="trending_up"
+                    trendIcon={summary.patientsChange >= 0 ? "trending_up" : "trending_down"}
                 />
                 <SummaryCard
-                    label="Lượt khám TB/ngày"
+                    label="Luot kham TB/ngay"
                     value={summary.avgVisit.toString()}
-                    change={`+${summary.visitChange}% so với ${periodLabel}`}
-                    changeColor="text-orange-600"
+                    change={`${summary.visitChange >= 0 ? "+" : ""}${summary.visitChange}% so voi ${periodLabel}`}
+                    changeColor={summary.visitChange >= 0 ? "text-orange-600" : "text-red-500"}
                     icon="vital_signs"
                     iconBg="bg-orange-50 dark:bg-orange-900/20"
                     iconColor="text-orange-600"
-                    trendIcon="trending_up"
+                    trendIcon={summary.visitChange >= 0 ? "trending_up" : "trending_down"}
                 />
                 <SummaryCard
-                    label="Đánh giá trung bình"
+                    label="Danh gia trung binh"
                     value={`${summary.rating}/5`}
-                    change={summary.ratingTrend === "up" ? "+0.1 so với kỳ trước" : "Ổn định"}
-                    changeColor={summary.ratingTrend === "up" ? "text-yellow-600" : "text-yellow-600"}
+                    change={summary.ratingTrend === "up" ? "+0.1 so voi ky truoc" : summary.ratingTrend === "down" ? "-0.1 so voi ky truoc" : "On dinh"}
+                    changeColor={summary.ratingTrend === "down" ? "text-red-500" : "text-yellow-600"}
                     icon="star"
                     iconBg="bg-yellow-50 dark:bg-yellow-900/20"
                     iconColor="text-yellow-600"
-                    trendIcon={summary.ratingTrend === "up" ? "trending_up" : "trending_flat"}
+                    trendIcon={summary.ratingTrend === "down" ? "trending_down" : summary.ratingTrend === "up" ? "trending_up" : "trending_flat"}
                 />
             </div>
 
-            {/* ── Analysis charts ── */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                 <TopDiseasesChart />
                 <GenderDistribution />
                 <HourlyVisitsChart />
             </div>
 
-            {/* ── Revenue Chart + Department Distribution ── */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Revenue Bar Chart */}
-                <div className="lg:col-span-2 bg-white dark:bg-[#1e242b] p-6 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="rounded-xl border border-[#dde0e4] bg-white p-6 shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b] lg:col-span-2">
+                    <div className="mb-6 flex items-center justify-between">
                         <h3 className="text-lg font-bold text-[#121417] dark:text-white">{chartTitle}</h3>
-                        <span className="text-xs text-[#687582] px-2 py-1 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            Tổng: {chartData.reduce((s, d) => s + d.value, 0).toLocaleString("vi-VN")} Tr
+                        <span className="rounded-lg bg-gray-50 px-2 py-1 text-xs text-[#687582] dark:bg-gray-800">
+                            Tong: {chartData.reduce((sum, item) => sum + item.value, 0).toLocaleString("vi-VN")} Tr
                         </span>
                     </div>
-                    <div className="h-64 flex items-end justify-between gap-2">
-                        {chartData.map((item, index) => (
-                            <div key={item.label} className="group flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                                <div className="relative w-full">
-                                    <div
-                                        className={`w-full rounded-t transition-all duration-500 ${index === chartData.length - 1 ? "bg-gradient-to-t from-[#3C81C6] to-[#60a5fa]" : "bg-[#3C81C6]/25 group-hover:bg-[#3C81C6]/60"}`}
-                                        style={{ height: `${(item.value / maxChartValue) * 200}px` }}
-                                    >
-                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                            {item.value.toLocaleString("vi-VN")} Tr
+                    {chartData.length === 0 ? (
+                        <div className="flex h-64 flex-col items-center justify-center text-center">
+                            <span className="material-symbols-outlined mb-2 text-4xl text-gray-300 dark:text-gray-600">inbox</span>
+                            <p className="text-sm text-[#687582] dark:text-gray-400">Chua co du lieu</p>
+                        </div>
+                    ) : (
+                        <div className="flex h-64 items-end justify-between gap-2">
+                            {chartData.map((item, index) => (
+                                <div key={item.label} className="group flex h-full flex-1 flex-col items-center justify-end gap-2">
+                                    <div className="relative w-full">
+                                        <div
+                                            className={`w-full rounded-t transition-all duration-500 ${index === chartData.length - 1 ? "bg-gradient-to-t from-[#3C81C6] to-[#60a5fa]" : "bg-[#3C81C6]/25 group-hover:bg-[#3C81C6]/60"}`}
+                                            style={{ height: `${maxChartValue > 0 ? (item.value / maxChartValue) * 200 : 0}px` }}
+                                        >
+                                            <div className="absolute left-1/2 top-[-2rem] z-10 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-700">
+                                                {item.value.toLocaleString("vi-VN")} Tr
+                                            </div>
                                         </div>
                                     </div>
+                                    <span className="text-xs font-medium text-gray-400">{item.label}</span>
                                 </div>
-                                <span className="text-xs text-gray-400 font-medium">{item.label}</span>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
-                {/* Department Distribution */}
-                <div className="bg-white dark:bg-[#1e242b] p-6 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm">
-                    <h3 className="text-lg font-bold text-[#121417] dark:text-white mb-6">Phân bố theo khoa</h3>
+                <div className="rounded-xl border border-[#dde0e4] bg-white p-6 shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b]">
+                    <h3 className="mb-6 text-lg font-bold text-[#121417] dark:text-white">Phan bo theo khoa</h3>
                     <div className="space-y-4">
-                        {departments.map((dept) => (
-                            <div key={dept.name} className="space-y-1.5">
+                        {departments.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-10 text-center">
+                                <span className="material-symbols-outlined mb-2 text-4xl text-gray-300 dark:text-gray-600">inbox</span>
+                                <p className="text-sm text-[#687582] dark:text-gray-400">Chua co du lieu</p>
+                            </div>
+                        ) : departments.map((department) => (
+                            <div key={department.name} className="space-y-1.5">
                                 <div className="flex justify-between text-sm">
-                                    <span className="font-medium text-[#121417] dark:text-white">{dept.name}</span>
-                                    <span className="text-[#687582]">{dept.patients.toLocaleString("vi-VN")} BN</span>
+                                    <span className="font-medium text-[#121417] dark:text-white">{department.name}</span>
+                                    <span className="text-[#687582]">{department.patients.toLocaleString("vi-VN")} BN</span>
                                 </div>
-                                <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                <div className="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
                                     <div
                                         className="h-full rounded-full transition-all duration-500"
-                                        style={{ width: `${(dept.patients / totalPatients) * 100}%`, backgroundColor: dept.color }}
-                                    ></div>
+                                        style={{ width: `${totalPatients > 0 ? (department.patients / totalPatients) * 100 : 0}%`, backgroundColor: department.color }}
+                                    />
                                 </div>
-                                <p className="text-[10px] text-[#687582]">Doanh thu: {dept.revenue} Tr</p>
+                                <p className="text-[10px] text-[#687582]">Doanh thu: {department.revenue} Tr</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
 
-            {/* ── Top Doctors Table ── */}
-            <div className="bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-[#dde0e4] dark:border-[#2d353e] flex items-center justify-between">
+            <div className="overflow-hidden rounded-xl border border-[#dde0e4] bg-white shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b]">
+                <div className="flex items-center justify-between border-b border-[#dde0e4] p-6 dark:border-[#2d353e]">
                     <h3 className="text-lg font-bold text-[#121417] dark:text-white">
-                        Bác sĩ có hiệu suất cao nhất
-                        <span className="text-xs font-normal text-[#687582] ml-2">
-                            ({timeRange === "month" ? "Tháng này" : timeRange === "quarter" ? "Quý này" : "Năm nay"})
+                        Bac si co hieu suat cao nhat
+                        <span className="ml-2 text-xs font-normal text-[#687582]">
+                            ({timeRange === "month" ? "Thang nay" : timeRange === "quarter" ? "Quy nay" : "Nam nay"})
                         </span>
                     </h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50 dark:bg-gray-800/50 border-b border-[#dde0e4] dark:border-[#2d353e]">
+                        <thead className="border-b border-[#dde0e4] bg-gray-50/50 dark:border-[#2d353e] dark:bg-gray-800/50">
                             <tr>
-                                <th className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase">Xếp hạng</th>
-                                <th className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase">Bác sĩ</th>
-                                <th className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase">Khoa</th>
-                                <th className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase">Bệnh nhân</th>
-                                <th className="py-4 px-6 text-xs font-semibold text-[#687582] dark:text-gray-400 uppercase">Đánh giá</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase text-[#687582] dark:text-gray-400">Xep hang</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase text-[#687582] dark:text-gray-400">Bac si</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase text-[#687582] dark:text-gray-400">Khoa</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase text-[#687582] dark:text-gray-400">Benh nhan</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase text-[#687582] dark:text-gray-400">Doanh thu</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#dde0e4] dark:divide-[#2d353e]">
-                            {topDoctors.map((doc, index) => (
-                                <tr key={doc.name} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                    <td className="py-4 px-6">
-                                        <span className={`w-8 h-8 rounded-full inline-flex items-center justify-center text-sm font-bold ${index === 0 ? "bg-yellow-100 text-yellow-700" : index === 1 ? "bg-gray-100 text-gray-600" : index === 2 ? "bg-orange-100 text-orange-700" : "bg-gray-50 text-gray-500"}`}>
+                            {topDoctors.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-10 text-center">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <span className="material-symbols-outlined text-4xl text-gray-300 dark:text-gray-600">inbox</span>
+                                            <p className="text-sm text-[#687582] dark:text-gray-400">Chua co du lieu</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : topDoctors.map((doctor, index) => (
+                                <tr key={`${doctor.name}-${doctor.dept}`} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                    <td className="px-6 py-4">
+                                        <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${index === 0 ? "bg-yellow-100 text-yellow-700" : index === 1 ? "bg-gray-100 text-gray-600" : index === 2 ? "bg-orange-100 text-orange-700" : "bg-gray-50 text-gray-500"}`}>
                                             {index + 1}
                                         </span>
                                     </td>
-                                    <td className="py-4 px-6">
+                                    <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-[#3C81C6]/10 flex items-center justify-center text-[#3C81C6]">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3C81C6]/10 text-[#3C81C6]">
                                                 <span className="material-symbols-outlined">person</span>
                                             </div>
-                                            <span className="text-sm font-bold text-[#121417] dark:text-white">{doc.name}</span>
+                                            <span className="text-sm font-bold text-[#121417] dark:text-white">{doctor.name}</span>
                                         </div>
                                     </td>
-                                    <td className="py-4 px-6 text-sm text-[#687582] dark:text-gray-400">{doc.dept}</td>
-                                    <td className="py-4 px-6 text-sm font-semibold text-[#121417] dark:text-white">{doc.patients}</td>
-                                    <td className="py-4 px-6">
+                                    <td className="px-6 py-4 text-sm text-[#687582] dark:text-gray-400">{doctor.dept}</td>
+                                    <td className="px-6 py-4 text-sm font-semibold text-[#121417] dark:text-white">{doctor.patients}</td>
+                                    <td className="px-6 py-4">
                                         <div className="flex items-center gap-1">
-                                            <span className="material-symbols-outlined text-yellow-500 text-[18px]">star</span>
-                                            <span className="text-sm font-medium text-[#121417] dark:text-white">{doc.rating}</span>
+                                            <span className="material-symbols-outlined text-[18px] text-emerald-600">payments</span>
+                                            <span className="text-sm font-medium text-[#121417] dark:text-white">{doctor.revenue} Tr</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -328,24 +373,29 @@ export default function StatisticsPage() {
     );
 }
 
-/* ──────── Summary Card Component ──────── */
 function SummaryCard({ label, value, change, changeColor, icon, iconBg, iconColor, trendIcon }: {
-    label: string; value: string; change: string; changeColor: string;
-    icon: string; iconBg: string; iconColor: string; trendIcon: string;
+    label: string;
+    value: string;
+    change: string;
+    changeColor: string;
+    icon: string;
+    iconBg: string;
+    iconColor: string;
+    trendIcon: string;
 }) {
     return (
-        <div className="bg-white dark:bg-[#1e242b] p-5 rounded-xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm">
+        <div className="rounded-xl border border-[#dde0e4] bg-white p-5 shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b]">
             <div className="flex items-center justify-between">
                 <div>
                     <p className="text-sm text-[#687582] dark:text-gray-400">{label}</p>
-                    <p className="text-2xl font-bold text-[#121417] dark:text-white mt-1">{value}</p>
+                    <p className="mt-1 text-2xl font-bold text-[#121417] dark:text-white">{value}</p>
                 </div>
-                <div className={`w-12 h-12 rounded-lg ${iconBg} flex items-center justify-center ${iconColor}`}>
+                <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${iconBg} ${iconColor}`}>
                     <span className="material-symbols-outlined">{icon}</span>
                 </div>
             </div>
             <div className={`mt-3 flex items-center text-xs ${changeColor}`}>
-                <span className="material-symbols-outlined text-[14px] mr-1">{trendIcon}</span>
+                <span className="material-symbols-outlined mr-1 text-[14px]">{trendIcon}</span>
                 {change}
             </div>
         </div>

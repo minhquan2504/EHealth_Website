@@ -413,31 +413,33 @@ export default function MedicationRemindersPage() {
             </div>
 
             {profiles.length > 0 ? (
-                <div className="-mx-2 flex gap-3 overflow-x-auto px-2 pb-2 snap-x">
-                    {profiles.map((profile) => (
-                        <div
-                            key={profile.id}
-                            onClick={() => handleProfileChange(profile.id)}
-                            className={`flex min-w-[240px] cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-all snap-start ${
-                                selectedProfileId === profile.id
-                                    ? "border-[#3C81C6] bg-blue-50/50 shadow-sm dark:bg-blue-900/20"
-                                    : "border-gray-200 bg-white hover:border-blue-300 dark:border-gray-700 dark:bg-[#1e242b] dark:hover:border-blue-800"
-                            }`}
-                        >
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#3C81C6] to-[#60a5fa] text-sm font-bold text-white shadow-md shadow-[#3C81C6]/20">
-                                {profile.fullName?.charAt(0)?.toUpperCase() || "U"}
+                <div className="-mx-2 overflow-x-auto px-2 pb-2 hide-scrollbar">
+                    <div className="flex min-w-max gap-3 pr-4 snap-x">
+                        {profiles.map((profile) => (
+                            <div
+                                key={profile.id}
+                                onClick={() => handleProfileChange(profile.id)}
+                                className={`flex min-w-[240px] cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-all snap-start ${
+                                    selectedProfileId === profile.id
+                                        ? "border-[#3C81C6] bg-blue-50/50 shadow-sm dark:bg-blue-900/20"
+                                        : "border-gray-200 bg-white hover:border-blue-300 dark:border-gray-700 dark:bg-[#1e242b] dark:hover:border-blue-800"
+                                }`}
+                            >
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#3C81C6] to-[#60a5fa] text-sm font-bold text-white shadow-md shadow-[#3C81C6]/20">
+                                    {profile.fullName?.charAt(0)?.toUpperCase() || "U"}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className={`truncate text-sm font-bold ${selectedProfileId === profile.id ? "text-[#3C81C6]" : "text-gray-900 dark:text-white"}`}>
+                                        {profile.fullName}
+                                    </p>
+                                    <p className="truncate text-xs text-gray-500 dark:text-gray-400">{profile.phone || "Chưa có SĐT"}</p>
+                                </div>
+                                {selectedProfileId === profile.id ? (
+                                    <span className="material-symbols-outlined text-[#3C81C6] shrink-0" style={{ fontSize: "20px" }}>check_circle</span>
+                                ) : null}
                             </div>
-                            <div className="min-w-0 flex-1">
-                                <p className={`truncate text-sm font-bold ${selectedProfileId === profile.id ? "text-[#3C81C6]" : "text-gray-900 dark:text-white"}`}>
-                                    {profile.fullName}
-                                </p>
-                                <p className="truncate text-xs text-gray-500 dark:text-gray-400">{profile.relationshipLabel || "Hồ sơ bệnh nhân"}</p>
-                            </div>
-                            {selectedProfileId === profile.id ? (
-                                <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "20px" }}>check_circle</span>
-                            ) : null}
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             ) : null}
 

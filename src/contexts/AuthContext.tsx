@@ -157,7 +157,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 const primaryRole = rolesRaw[0] || 'patient';
 
                 const userData: User = {
-                    id: apiUser.userId,
+                    id: String(apiUser.userId ?? ''),
                     email: apiUser.email || email,
                     fullName: apiUser.name || email.split('@')[0],
                     role: primaryRole,

@@ -61,12 +61,16 @@ export const billingService = {
         axiosClient.post(BILLING_ENDPOINTS.PAY_ONLINE, data),
 
     /** Create SePay QR code for payment */
-    createQR: (data: { invoiceId: string; amount: number; description?: string }) =>
-        axiosClient.post('/api/billing/payments/create-qr', data),
+    createQR: (data: { invoiceId: string; amount?: number; description?: string }) =>
+        axiosClient.post('/api/billing/payments/qr-generate', {
+            invoice_id: data.invoiceId,
+            amount: data.amount,
+            description: data.description,
+        }),
 
     /** Poll payment status by orderId */
     getQRStatus: (orderId: string) =>
-        axiosClient.get(`/api/billing/payments/${orderId}/status`),
+        axiosClient.get(`/api/billing/payments/orders/${orderId}/status`),
 
     /** List payments with optional filters */
     getPayments: (params?: Record<string, any>) =>
@@ -115,9 +119,17 @@ export const billingService = {
         axiosClient.post(`/api/billing/documents/${invoiceId}/send-email`, { email }),
 
     // ─── Pricing ────────────────────────────────────────────────────────────
-    /** Get pricing catalog */
+    /** Get pricing catalog (general, no prices) */
     getCatalog: (params?: Record<string, any>) =>
         axiosClient.get('/api/billing/pricing/catalog', { params }),
+
+    /** Get facility-specific pricing catalog with base_price, insurance_price, service_group */
+    getCatalogByFacility: (facilityId: string, params?: Record<string, any>) =>
+        axiosClient.get(`/api/billing/pricing/catalog/${facilityId}`, { params }),
+
+    /** Get payment gateway config (bank account, account holder, etc.) */
+    getGatewayConfig: () =>
+        axiosClient.get('/api/billing/payments/gateway/config'),
 
     /** Resolve price for a specific service */
     resolvePrice: (serviceId: string, params?: Record<string, any>) =>

@@ -4,14 +4,13 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import axiosClient from "@/api/axiosClient";
-import { PROFILE_ENDPOINTS, PATIENT_ENDPOINTS } from "@/api/endpoints";
+import { PROFILE_ENDPOINTS } from "@/api/endpoints";
 import { getProfileSessions, deleteProfileSession } from "@/services/authService";
-import { validateName, validatePhone, validateDob, validateIdNumber, validateBHYT } from "@/utils/validation";
+import { validateName, validatePhone, validateDob, validateIdNumber } from "@/utils/validation";
 
 const TABS = [
     { id: "personal", label: "Thông tin cá nhân", icon: "person" },
     { id: "family", label: "Người thân", icon: "group" },
-    { id: "insurance", label: "Bảo hiểm", icon: "health_and_safety" },
     { id: "security", label: "Bảo mật", icon: "lock" },
 ];
 
@@ -22,7 +21,6 @@ interface ProfileData {
     dob: string;
     gender: string;
     idNumber: string;
-    insuranceNumber: string;
     address: string;
     avatar?: string;
 }
@@ -49,7 +47,6 @@ export default function ProfilePage() {
         dob: "",
         gender: "MALE",
         idNumber: "",
-        insuranceNumber: "",
         address: "",
     });
     const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
@@ -79,10 +76,6 @@ export default function ProfilePage() {
         if (profile.idNumber) {
             const idRes = validateIdNumber(profile.idNumber);
             if (!idRes.valid) errs.idNumber = idRes.message;
-        }
-        if (profile.insuranceNumber) {
-            const bhytRes = validateBHYT(profile.insuranceNumber);
-            if (!bhytRes.valid) errs.insuranceNumber = bhytRes.message;
         }
         setErrors(errs);
         return Object.keys(errs).length === 0;
@@ -138,7 +131,6 @@ export default function ProfilePage() {
                     dob: data.dob || data.dateOfBirth || "",
                     gender: data.gender || "MALE",
                     idNumber: data.identity_card_number || data.idNumber || data.citizenId || "",
-                    insuranceNumber: data.insuranceNumber || data.healthInsuranceId || "",
                     address: data.address || "",
                     avatar: data.avatar_url?.[0]?.url || data.avatar,
                 });
@@ -197,7 +189,7 @@ export default function ProfilePage() {
         if (!newFamily.name || !newFamily.relation) return;
         try {
             if (user?.id) {
-                await axiosClient.post(PATIENT_ENDPOINTS.ADD_RELATION(user.id), newFamily);
+                showToast("Quản lý người thân được thực hiện trong mục Hồ sơ BN.", "error");
             }
             setFamilyMembers(prev => [...prev, { ...newFamily, id: `fm-${Date.now()}` } as FamilyMember]);
             setShowAddFamily(false);
@@ -241,19 +233,13 @@ export default function ProfilePage() {
                                 {profile.phone}
                             </span>
                         )}
-                        {profile.insuranceNumber && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg">
-                                <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>health_and_safety</span>
-                                BHYT
-                            </span>
-                        )}
                     </div>
                 </div>
             </div>
 
             {/* Tabs */}
             <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide">
-                {TABS.map(tab => (
+                {TABS.filter(tab => tab.id !== "family").map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all
                         ${activeTab === tab.id ? "bg-[#3C81C6] text-white shadow-sm shadow-[#3C81C6]/20" : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"}`}>
@@ -305,7 +291,6 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <ProfileField label="CCCD/CMND" icon="badge" value={profile.idNumber} onChange={v => { updateProfile("idNumber", v); setErrors(e => ({ ...e, idNumber: "" })); }} disabled={!editing} error={errors.idNumber} />
-                            <ProfileField label="Số thẻ BHYT" icon="health_and_safety" value={profile.insuranceNumber} onChange={v => { updateProfile("insuranceNumber", v); setErrors(e => ({ ...e, insuranceNumber: "" })); }} disabled={!editing} error={errors.insuranceNumber} />
                             <div className="sm:col-span-2">
                                 <ProfileField label="Địa chỉ" icon="location_on" value={profile.address} onChange={v => updateProfile("address", v)} disabled={!editing} />
                             </div>
@@ -386,32 +371,6 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         )}
-                    </div>
-                )}
-
-                {/* ===== Insurance ===== */}
-                {activeTab === "insurance" && (
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">Thông tin bảo hiểm</h3>
-                        <div className="space-y-4">
-                            {profile.insuranceNumber ? (
-                                <div className="p-5 border border-green-200 bg-green-50 rounded-xl">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <span className="material-symbols-outlined text-green-600" style={{ fontSize: "22px" }}>verified</span>
-                                        <div>
-                                            <p className="font-semibold text-green-800">Thẻ BHYT đã đăng ký</p>
-                                            <p className="text-sm text-green-600">Số thẻ: {profile.insuranceNumber}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="text-center py-12">
-                                    <span className="material-symbols-outlined text-gray-300 mb-3" style={{ fontSize: "56px" }}>health_and_safety</span>
-                                    <p className="text-gray-500 font-medium">Chưa có thông tin bảo hiểm</p>
-                                    <p className="text-gray-400 text-sm mt-1">Thêm số thẻ BHYT tại tab &quot;Thông tin cá nhân&quot;</p>
-                                </div>
-                            )}
-                        </div>
                     </div>
                 )}
 
