@@ -21,21 +21,21 @@ export default function DoctorDetailPage() {
         staffService.getById(doctorId)
             .then((res: any) => {
                 const d = res?.data ?? res;
-                if (d && (d.id || d.staff_id)) {
+                if (d && (d.users_id || d.id || d.staff_id)) {
                     setDoctor({
-                        id: String(d.id ?? d.staff_id ?? doctorId),
+                        id: String(d.users_id ?? d.id ?? d.staff_id ?? doctorId),
                         fullName: d.full_name ?? d.fullName ?? "",
                         email: d.email ?? "",
-                        phone: d.phone_number ?? d.phone ?? "",
-                        code: d.staff_code ?? d.employee_code ?? d.code ?? doctorId,
-                        departmentName: d.department?.name ?? d.departmentName ?? d.department_name ?? "",
+                        phone: d.phone ?? d.phone_number ?? "",
+                        code: d.staff_code ?? d.employee_code ?? d.code ?? String(d.users_id ?? doctorId),
+                        departmentName: d.specialty_name ?? d.department?.name ?? d.departmentName ?? d.department_name ?? "",
                         departmentId: d.department?.id ?? d.departmentId ?? d.department_id ?? "",
-                        specialization: d.specialization ?? "",
+                        specialization: d.specialty_name ?? d.specialization ?? "",
                         status: d.status?.toLowerCase() === "active" ? DOCTOR_STATUS.ACTIVE : d.status ?? DOCTOR_STATUS.ACTIVE,
                         rating: d.rating ?? 0,
                         reviewCount: d.reviewCount ?? d.review_count ?? 0,
                         experience: d.experience ?? 0,
-                        avatar: d.avatar ?? d.avatar_url ?? "",
+                        avatar: d.avatar_url ?? d.avatar ?? "",
                         createdAt: d.created_at?.split("T")[0] ?? d.createdAt ?? "",
                         workingSchedule: d.workingSchedule ?? [],
                     } as Doctor);

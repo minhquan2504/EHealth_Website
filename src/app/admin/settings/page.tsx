@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { UI_TEXT } from "@/constants/ui-text";
-import axiosClient from "@/api/axiosClient";
-import { PROFILE_ENDPOINTS } from "@/api/endpoints";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
+import { getProfile, updateProfile, changePassword } from "@/services/userService";
 
 interface UserProfile {
     fullName: string;
@@ -35,42 +34,83 @@ export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState<"profile" | "security" | "preferences">("profile");
     const [saving, setSaving] = useState(false);
 
+    // Password form state
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [changingPassword, setChangingPassword] = useState(false);
+
     useEffect(() => {
-        axiosClient.get(PROFILE_ENDPOINTS.ME)
-            .then(res => {
-                const d = res?.data?.data ?? res?.data;
+        const fetchProfile = async () => {
+            try {
+                const d = await getProfile();
                 if (d) {
                     const profile: UserProfile = {
-                        fullName: d.fullName ?? d.full_name ?? "",
-                        email: d.email ?? "",
-                        phone: d.phone ?? "",
-                        avatar: d.avatar,
-                        role: d.roleName ?? d.role ?? "",
-                        department: d.departmentName ?? d.department ?? "",
-                        createdAt: d.createdAt?.split("T")[0] ?? "",
+                        fullName: (d as any).fullName ?? (d as any).full_name ?? "",
+                        email: (d as any).email ?? "",
+                        phone: (d as any).phone ?? (d as any).phoneNumber ?? "",
+                        avatar: (d as any).avatar,
+                        role: (d as any).roleName ?? (d as any).role ?? "",
+                        department: (d as any).departmentName ?? (d as any).department ?? "",
+                        createdAt: (d as any).createdAt?.split("T")[0] ?? "",
                     };
                     setUser(profile);
                     setEditForm(profile);
                 }
-            })
-            .catch(() => { /* API không khả dụng, hiển thị trống */ });
+            } catch {
+                /* API không khả dụng, hiển thị trống */
+            }
+        };
+        fetchProfile();
     }, []);
 
     const handleSave = async () => {
         setSaving(true);
         try {
-            await axiosClient.put(PROFILE_ENDPOINTS.ME, {
+            await updateProfile({
                 fullName: editForm.fullName,
-                phone: editForm.phone,
+                phoneNumber: editForm.phone,
             });
             setUser(editForm);
             if (updateUser) updateUser({ fullName: editForm.fullName });
             toast.success("Đã lưu thông tin thành công!");
-        } catch {
-            toast.error("Có lỗi khi lưu thông tin. Vui lòng thử lại.");
+        } catch (err: any) {
+            toast.error(err.message || "Có lỗi khi lưu thông tin. Vui lòng thử lại.");
         } finally {
             setSaving(false);
             setIsEditing(false);
+        }
+    };
+
+    const handleChangePassword = async () => {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            toast.error("Vui lòng nhập đầy đủ thông tin mật khẩu.");
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            toast.error("Mật khẩu mới và xác nhận không khớp.");
+            return;
+        }
+        if (newPassword.length < 6) {
+            toast.error("Mật khẩu mới phải có ít nhất 6 ký tự.");
+            return;
+        }
+
+        setChangingPassword(true);
+        try {
+            const result = await changePassword(currentPassword, newPassword);
+            if (result.success) {
+                toast.success("Đã cập nhật mật khẩu thành công!");
+                setCurrentPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+            } else {
+                toast.error(result.message || "Đổi mật khẩu thất bại.");
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Có lỗi khi đổi mật khẩu.");
+        } finally {
+            setChangingPassword(false);
         }
     };
 
@@ -230,6 +270,8 @@ export default function SettingsPage() {
                                     </label>
                                     <input
                                         type="password"
+                                        value={currentPassword}
+                                        onChange={(e) => setCurrentPassword(e.target.value)}
                                         aria-label="Mật khẩu hiện tại"
                                         className="w-full px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white"
                                         placeholder="••••••••"
@@ -241,6 +283,8 @@ export default function SettingsPage() {
                                     </label>
                                     <input
                                         type="password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
                                         aria-label="Mật khẩu mới"
                                         className="w-full px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white"
                                         placeholder="••••••••"
@@ -252,13 +296,26 @@ export default function SettingsPage() {
                                     </label>
                                     <input
                                         type="password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
                                         aria-label="Xác nhận mật khẩu mới"
                                         className="w-full px-4 py-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 dark:text-white"
                                         placeholder="••••••••"
                                     />
                                 </div>
-                                <button className="px-5 py-2.5 text-sm font-bold text-white bg-[#3C81C6] hover:bg-[#2a6da8] rounded-xl shadow-md transition-all">
-                                    Cập nhật mật khẩu
+                                <button
+                                    onClick={handleChangePassword}
+                                    disabled={changingPassword}
+                                    className="px-5 py-2.5 text-sm font-bold text-white bg-[#3C81C6] hover:bg-[#2a6da8] rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center gap-2"
+                                >
+                                    {changingPassword ? (
+                                        <>
+                                            <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                                            Đang cập nhật...
+                                        </>
+                                    ) : (
+                                        "Cập nhật mật khẩu"
+                                    )}
                                 </button>
                             </div>
                         </div>

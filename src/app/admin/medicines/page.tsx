@@ -10,6 +10,7 @@ import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { MedicineFormModal } from "@/features/medicines/components/medicine-form-modal";
 import { AddStockModal } from "@/features/medicines/components/add-stock-modal";
 import { mapApiDrugToMedicine } from "@/features/medicines/utils/adminMedicineMappers";
+import { inventoryService } from "@/services/inventoryService";
 import type { Medicine } from "@/types";
 
 const MEDICINE_CATEGORIES = [
@@ -63,11 +64,81 @@ export default function MedicinesPage() {
     const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
     const loadMedicines = async () => {
-        const response = await getDrugs({ limit: 200 });
+        const [response, inventoryResponse] = await Promise.all([
+            getDrugs({ limit: 200 }),
+            inventoryService.getList({ limit: 500 }).catch(() => null),
+        ]);
+
         const items = Array.isArray(response?.data) ? response.data : [];
+        const inventoryPayload = (inventoryResponse as { data?: { data?: Record<string, unknown>[] } | Record<string, unknown>[] } | null)?.data;
+        const inventoryItems: Record<string, unknown>[] = Array.isArray((inventoryPayload as { data?: Record<string, unknown>[] })?.data)
+            ? (((inventoryPayload as { data?: Record<string, unknown>[] }).data ?? []) as Record<string, unknown>[])
+            : Array.isArray(inventoryPayload)
+                ? (inventoryPayload as Record<string, unknown>[])
+                : [];
+
+        const inventoryByDrug = new Map<string, { stock: number; minStock: number; latestPrice: number; expiryDate: string }>();
+
+        for (const item of inventoryItems) {
+            const drugId = String(item.drug_id ?? "");
+            if (!drugId) {
+                continue;
+            }
+
+            const current = inventoryByDrug.get(drugId) ?? {
+                stock: 0,
+                minStock: 0,
+                latestPrice: 0,
+                expiryDate: "",
+            };
+
+            const stock = Number(item.stock_quantity ?? 0);
+            const minStock = Number(item.low_stock_threshold ?? 0);
+            const unitPrice = Number(item.unit_price ?? 0);
+            const expiryDate = String(item.expiry_date ?? "");
+
+            inventoryByDrug.set(drugId, {
+                stock: current.stock + (Number.isFinite(stock) ? stock : 0),
+                minStock: Math.max(current.minStock, Number.isFinite(minStock) ? minStock : 0),
+                latestPrice: Number.isFinite(unitPrice) && unitPrice > 0 ? unitPrice : current.latestPrice,
+                expiryDate: current.expiryDate && expiryDate
+                    ? (new Date(current.expiryDate) <= new Date(expiryDate) ? current.expiryDate : expiryDate)
+                    : (current.expiryDate || expiryDate),
+            });
+        }
+
         setMedicines(
             items
-                .map((item) => mapApiDrugToMedicine(item))
+                .map((item) => {
+                    const mapped = mapApiDrugToMedicine(item);
+                    if (!mapped) {
+                        return null;
+                    }
+
+                    const inventory = inventoryByDrug.get(mapped.id);
+                    if (!inventory) {
+                        return mapped;
+                    }
+
+                    const stock = inventory.stock;
+                    const minStock = inventory.minStock;
+                    const stockLevel = stock <= 0
+                        ? "OUT"
+                        : minStock > 0 && stock <= minStock
+                            ? "LOW"
+                            : minStock > 0 && stock >= minStock * 3
+                                ? "HIGH"
+                                : "NORMAL";
+
+                    return {
+                        ...mapped,
+                        stock,
+                        price: inventory.latestPrice || mapped.price,
+                        expiryDate: inventory.expiryDate || mapped.expiryDate,
+                        stockLevel,
+                        status: stock <= 0 ? MEDICINE_STATUS.OUT_OF_STOCK : mapped.status,
+                    };
+                })
                 .filter((item): item is Medicine => item !== null)
         );
     };

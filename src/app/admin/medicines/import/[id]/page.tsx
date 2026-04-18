@@ -1,23 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { inventoryService } from "@/services/inventoryService";
 
+type StockInStatus = "DRAFT" | "CONFIRMED" | "RECEIVED" | "CANCELLED";
+
 interface ImportDetail {
     id: string;
     code: string;
-    status: "pending" | "completed" | "cancelled";
+    status: StockInStatus;
     createdAt: string;
     createdBy: string;
     supplier: string;
     warehouseName: string;
     note: string;
     totalItems: number;
-    totalValue: number;
-    approvedBy: string;
-    approvedAt: string;
+    totalAmount: number;
+    receivedBy: string;
+    receivedAt: string;
     cancelReason: string;
 }
 
@@ -29,14 +31,27 @@ interface ImportItem {
     unitPrice: number;
     lotNumber: string;
     expiryDate: string;
-    note: string;
 }
 
+const formatDate = (value: unknown): string => {
+    const raw = String(value ?? "");
+    return raw.includes("T") ? raw.split("T")[0] : raw;
+};
 
-const STATUS_MAP = {
-    pending: { label: "Chờ duyệt", bg: "bg-yellow-100 dark:bg-yellow-900/30", text: "text-yellow-700 dark:text-yellow-400", icon: "pending" },
-    completed: { label: "Đã nhập", bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-400", icon: "check_circle" },
-    cancelled: { label: "Đã hủy", bg: "bg-red-100 dark:bg-red-900/30", text: "text-red-700 dark:text-red-400", icon: "cancel" },
+const normalizeStatus = (value: unknown): StockInStatus => {
+    const status = String(value ?? "").trim().toUpperCase();
+
+    if (status === "CONFIRMED" || status === "RECEIVED" || status === "CANCELLED") {
+        return status;
+    }
+    return "DRAFT";
+};
+
+const STATUS_MAP: Record<StockInStatus, { label: string; bg: string; text: string; icon: string }> = {
+    DRAFT: { label: "Ban nhap", bg: "bg-yellow-100 dark:bg-yellow-900/30", text: "text-yellow-700 dark:text-yellow-400", icon: "pending" },
+    CONFIRMED: { label: "Da xac nhan", bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-700 dark:text-blue-400", icon: "task_alt" },
+    RECEIVED: { label: "Da nhap", bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-400", icon: "check_circle" },
+    CANCELLED: { label: "Da huy", bg: "bg-red-100 dark:bg-red-900/30", text: "text-red-700 dark:text-red-400", icon: "cancel" },
 };
 
 export default function StockInDetailPage() {
@@ -47,57 +62,63 @@ export default function StockInDetailPage() {
     const [detail, setDetail] = useState<ImportDetail | null>(null);
     const [items, setItems] = useState<ImportItem[]>([]);
     const [loading, setLoading] = useState(true);
-    const [actionLoading, setActionLoading] = useState("");
+    const [actionLoading, setActionLoading] = useState<"" | "confirm" | "receive" | "cancel">("");
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
 
     useEffect(() => {
         setLoading(true);
-        Promise.all([
-            inventoryService.getStockInDetail(orderId).catch(() => null),
-            inventoryService.getStockInItems(orderId).catch(() => null),
-        ]).then(([detailRes, itemsRes]) => {
-            if (detailRes) {
+        inventoryService.getStockInDetail(orderId)
+            .then((response: any) => {
+                const order = response?.order;
+                const details = Array.isArray(response?.details) ? response.details : [];
+
+                if (!order) {
+                    setDetail(null);
+                    setItems([]);
+                    return;
+                }
+
                 setDetail({
-                    id: detailRes.id ?? orderId,
-                    code: detailRes.code ?? detailRes.order_code ?? `NK-${orderId}`,
-                    status: (detailRes.status?.toLowerCase() === "completed" || detailRes.status?.toLowerCase() === "received") ? "completed" : detailRes.status?.toLowerCase() === "cancelled" ? "cancelled" : "pending",
-                    createdAt: detailRes.created_at ?? detailRes.createdAt ?? "",
-                    createdBy: detailRes.created_by_name ?? detailRes.createdBy ?? "",
-                    supplier: detailRes.supplier?.name ?? detailRes.supplierName ?? "",
-                    warehouseName: detailRes.warehouse?.name ?? detailRes.warehouseName ?? "",
-                    note: detailRes.note ?? "",
-                    totalItems: detailRes.total_items ?? detailRes.totalItems ?? 0,
-                    totalValue: detailRes.total_value ?? detailRes.totalValue ?? 0,
-                    approvedBy: detailRes.approved_by_name ?? detailRes.approvedBy ?? "",
-                    approvedAt: detailRes.approved_at ?? detailRes.approvedAt ?? "",
-                    cancelReason: detailRes.cancel_reason ?? detailRes.cancelReason ?? "",
+                    id: order.stock_in_order_id ?? order.id ?? orderId,
+                    code: order.order_code ?? order.code ?? `NK-${orderId}`,
+                    status: normalizeStatus(order.status),
+                    createdAt: formatDate(order.created_at ?? order.createdAt),
+                    createdBy: order.created_by_name ?? order.createdBy ?? "-",
+                    supplier: order.supplier_name ?? order.supplier?.name ?? "-",
+                    warehouseName: order.warehouse_name ?? order.warehouse?.name ?? "-",
+                    note: order.notes ?? order.note ?? "",
+                    totalItems: Number(response?.total_items ?? details.length),
+                    totalAmount: Number(order.total_amount ?? 0),
+                    receivedBy: order.received_by_name ?? "-",
+                    receivedAt: formatDate(order.received_at),
+                    cancelReason: order.cancelled_reason ?? order.cancelReason ?? "",
                 });
-            } else {
-                setDetail(null);
-            }
-            if (Array.isArray(itemsRes) && itemsRes.length > 0) {
-                setItems(itemsRes.map((x: Record<string, unknown>, i: number) => ({
-                    id: (x.id as string) ?? String(i + 1),
-                    drugName: (x.drug_name as string) ?? (x.drugName as string) ?? (x as Record<string, unknown> & { drug?: { name?: string } }).drug?.name ?? "",
-                    quantity: (x.quantity as number) ?? 0,
-                    unit: (x.unit as string) ?? "Viên",
-                    unitPrice: (x.unit_price as number) ?? (x.unitPrice as number) ?? 0,
-                    lotNumber: (x.lot_number as string) ?? (x.lotNumber as string) ?? "",
-                    expiryDate: ((x.expiry_date as string) ?? (x.expiryDate as string) ?? "").split("T")[0],
-                    note: (x.note as string) ?? "",
+
+                setItems(details.map((item: any, index: number) => ({
+                    id: item.stock_in_detail_id ?? item.id ?? String(index + 1),
+                    drugName: item.brand_name ?? item.drug_name ?? item.drugName ?? "-",
+                    quantity: Number(item.quantity ?? 0),
+                    unit: item.dispensing_unit ?? item.unit ?? "Don vi",
+                    unitPrice: Number(item.unit_cost ?? item.unit_price ?? 0),
+                    lotNumber: item.batch_number ?? item.lot_number ?? "",
+                    expiryDate: formatDate(item.expiry_date ?? item.expiryDate),
                 })));
-            }
-        }).finally(() => setLoading(false));
+            })
+            .catch(() => {
+                setDetail(null);
+                setItems([]);
+            })
+            .finally(() => setLoading(false));
     }, [orderId]);
 
     const handleConfirm = async () => {
         setActionLoading("confirm");
         try {
             await inventoryService.confirmStockIn(orderId);
-            setDetail(prev => prev ? { ...prev, status: "completed", approvedAt: new Date().toISOString() } : prev);
+            setDetail((current) => current ? { ...current, status: "CONFIRMED" } : current);
         } catch {
-            alert("Duyệt phiếu thất bại. Vui lòng thử lại.");
+            alert("Khong the xac nhan phieu nhap. Vui long thu lai.");
         } finally {
             setActionLoading("");
         }
@@ -107,23 +128,25 @@ export default function StockInDetailPage() {
         setActionLoading("receive");
         try {
             await inventoryService.receiveStockIn(orderId);
-            setDetail(prev => prev ? { ...prev, status: "completed" } : prev);
+            setDetail((current) => current ? { ...current, status: "RECEIVED", receivedAt: formatDate(new Date().toISOString()) } : current);
         } catch {
-            alert("Nhận hàng thất bại. Vui lòng thử lại.");
+            alert("Khong the nhan hang. Vui long thu lai.");
         } finally {
             setActionLoading("");
         }
     };
 
     const handleCancel = async () => {
-        if (!cancelReason.trim()) return;
+        if (!cancelReason.trim()) {
+            return;
+        }
+
         setActionLoading("cancel");
         try {
             await inventoryService.cancelStockIn(orderId, cancelReason);
-            setDetail(prev => prev ? { ...prev, status: "cancelled", cancelReason } : prev);
+            setDetail((current) => current ? { ...current, status: "CANCELLED", cancelReason } : current);
         } catch {
-            alert("Đã hủy phiếu nhập.");
-            setDetail(prev => prev ? { ...prev, status: "cancelled", cancelReason } : prev);
+            alert("Khong the huy phieu nhap. Vui long thu lai.");
         } finally {
             setActionLoading("");
             setShowCancelModal(false);
@@ -134,7 +157,7 @@ export default function StockInDetailPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-4 border-[#3C81C6] border-t-transparent rounded-full animate-spin" />
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#3C81C6] border-t-transparent" />
             </div>
         );
     }
@@ -142,194 +165,221 @@ export default function StockInDetailPage() {
     if (!detail) {
         return (
             <div className="flex flex-col items-center justify-center py-20">
-                <span className="material-symbols-outlined text-5xl text-gray-300 mb-4">inbox</span>
-                <p className="text-lg text-gray-500 mb-4">Không tìm thấy phiếu nhập</p>
-                <button onClick={() => router.back()} className="px-5 py-2.5 bg-[#3C81C6] text-white rounded-xl text-sm font-bold hover:bg-[#2a6da8] transition-colors">Quay lại</button>
+                <span className="material-symbols-outlined mb-4 text-5xl text-gray-300">inbox</span>
+                <p className="mb-4 text-lg text-gray-500">Khong tim thay phieu nhap</p>
+                <button onClick={() => router.back()} className="rounded-xl bg-[#3C81C6] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#2a6da8]">
+                    Quay lai
+                </button>
             </div>
         );
     }
 
     const status = STATUS_MAP[detail.status];
-    const totalValue = items.reduce((sum, it) => sum + it.quantity * it.unitPrice, 0);
+    const totalValue = detail.totalAmount > 0
+        ? detail.totalAmount
+        : items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
 
     return (
         <div className="space-y-6">
-            {/* Breadcrumb */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-[#687582]">
-                    <Link href="/admin/medicines" className="hover:text-[#3C81C6] transition-colors">Danh mục thuốc</Link>
+                    <Link href="/admin/medicines" className="transition-colors hover:text-[#3C81C6]">Danh muc thuoc</Link>
                     <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                    <Link href="/admin/medicines/import" className="hover:text-[#3C81C6] transition-colors">Nhập kho</Link>
+                    <Link href="/admin/medicines/import" className="transition-colors hover:text-[#3C81C6]">Nhap kho</Link>
                     <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                    <span className="text-[#121417] dark:text-white font-medium">{detail.code}</span>
+                    <span className="font-medium text-[#121417] dark:text-white">{detail.code}</span>
                 </div>
-                <button onClick={() => router.back()} className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1e242b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">arrow_back</span> Quay lại
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-[#1e242b] dark:hover:bg-gray-800"
+                >
+                    <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Quay lai
                 </button>
             </div>
 
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
                 <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-2xl font-black tracking-tight text-[#121417] dark:text-white">Phiếu nhập {detail.code}</h1>
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${status.bg} ${status.text}`}>
+                    <div className="mb-2 flex items-center gap-3">
+                        <h1 className="text-2xl font-black tracking-tight text-[#121417] dark:text-white">Phieu nhap {detail.code}</h1>
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${status.bg} ${status.text}`}>
                             <span className="material-symbols-outlined text-[14px]">{status.icon}</span>
                             {status.label}
                         </span>
                     </div>
-                    <p className="text-sm text-[#687582] dark:text-gray-400">Tạo lúc {detail.createdAt} bởi {detail.createdBy}</p>
+                    <p className="text-sm text-[#687582] dark:text-gray-400">Tao luc {detail.createdAt || "-"} boi {detail.createdBy}</p>
                 </div>
-                {detail.status === "pending" && (
+
+                {(detail.status === "DRAFT" || detail.status === "CONFIRMED") && (
                     <div className="flex items-center gap-2">
-                        <button onClick={handleConfirm} disabled={!!actionLoading}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold transition-colors disabled:opacity-50">
-                            {actionLoading === "confirm" ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <span className="material-symbols-outlined text-[18px]">check_circle</span>}
-                            Duyệt phiếu
-                        </button>
-                        <button onClick={handleReceive} disabled={!!actionLoading}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-colors disabled:opacity-50">
-                            {actionLoading === "receive" ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <span className="material-symbols-outlined text-[18px]">inventory</span>}
-                            Nhận hàng
-                        </button>
-                        <button onClick={() => setShowCancelModal(true)} disabled={!!actionLoading}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors disabled:opacity-50">
+                        {detail.status === "DRAFT" && (
+                            <button
+                                onClick={handleConfirm}
+                                disabled={!!actionLoading}
+                                className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
+                            >
+                                {actionLoading === "confirm" ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <span className="material-symbols-outlined text-[18px]">check_circle</span>}
+                                Xac nhan
+                            </button>
+                        )}
+                        {detail.status === "CONFIRMED" && (
+                            <button
+                                onClick={handleReceive}
+                                disabled={!!actionLoading}
+                                className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                {actionLoading === "receive" ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <span className="material-symbols-outlined text-[18px]">inventory</span>}
+                                Nhan hang
+                            </button>
+                        )}
+                        <button
+                            onClick={() => setShowCancelModal(true)}
+                            disabled={!!actionLoading}
+                            className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                        >
                             <span className="material-symbols-outlined text-[18px]">cancel</span>
-                            Hủy phiếu
+                            Huy phieu
                         </button>
                     </div>
                 )}
             </div>
 
-            {/* Info cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e]">
-                    <p className="text-xs text-[#687582] dark:text-gray-400 font-medium uppercase tracking-wider mb-1">Nhà cung cấp</p>
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <div className="rounded-xl border border-[#dde0e4] bg-white p-4 dark:border-[#2d353e] dark:bg-[#1e242b]">
+                    <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[#687582] dark:text-gray-400">Nha cung cap</p>
                     <p className="text-sm font-bold text-[#121417] dark:text-white">{detail.supplier}</p>
                 </div>
-                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e]">
-                    <p className="text-xs text-[#687582] dark:text-gray-400 font-medium uppercase tracking-wider mb-1">Kho nhận</p>
+                <div className="rounded-xl border border-[#dde0e4] bg-white p-4 dark:border-[#2d353e] dark:bg-[#1e242b]">
+                    <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[#687582] dark:text-gray-400">Kho nhan</p>
                     <p className="text-sm font-bold text-[#121417] dark:text-white">{detail.warehouseName}</p>
                 </div>
-                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e]">
-                    <p className="text-xs text-[#687582] dark:text-gray-400 font-medium uppercase tracking-wider mb-1">Số loại thuốc</p>
-                    <p className="text-sm font-bold text-[#121417] dark:text-white">{items.length} loại</p>
+                <div className="rounded-xl border border-[#dde0e4] bg-white p-4 dark:border-[#2d353e] dark:bg-[#1e242b]">
+                    <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[#687582] dark:text-gray-400">So dong thuoc</p>
+                    <p className="text-sm font-bold text-[#121417] dark:text-white">{detail.totalItems}</p>
                 </div>
-                <div className="bg-white dark:bg-[#1e242b] p-4 rounded-xl border border-[#dde0e4] dark:border-[#2d353e]">
-                    <p className="text-xs text-[#687582] dark:text-gray-400 font-medium uppercase tracking-wider mb-1">Tổng giá trị</p>
-                    <p className="text-sm font-bold text-[#3C81C6]">{totalValue.toLocaleString("vi-VN")}₫</p>
+                <div className="rounded-xl border border-[#dde0e4] bg-white p-4 dark:border-[#2d353e] dark:bg-[#1e242b]">
+                    <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[#687582] dark:text-gray-400">Tong gia tri</p>
+                    <p className="text-sm font-bold text-[#3C81C6]">{totalValue.toLocaleString("vi-VN")}d</p>
                 </div>
             </div>
 
-            {/* Note */}
             {detail.note && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="material-symbols-outlined text-blue-600 text-[18px]">info</span>
-                        <p className="text-sm font-bold text-blue-700 dark:text-blue-400">Ghi chú</p>
+                <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+                    <div className="mb-1 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[18px] text-blue-600">info</span>
+                        <p className="text-sm font-bold text-blue-700 dark:text-blue-400">Ghi chu</p>
                     </div>
                     <p className="text-sm text-blue-600 dark:text-blue-300">{detail.note}</p>
                 </div>
             )}
 
-            {/* Cancel reason */}
-            {detail.status === "cancelled" && detail.cancelReason && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="material-symbols-outlined text-red-600 text-[18px]">error</span>
-                        <p className="text-sm font-bold text-red-700 dark:text-red-400">Lý do hủy</p>
+            {detail.status === "CANCELLED" && detail.cancelReason && (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                    <div className="mb-1 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[18px] text-red-600">error</span>
+                        <p className="text-sm font-bold text-red-700 dark:text-red-400">Ly do huy</p>
                     </div>
                     <p className="text-sm text-red-600 dark:text-red-300">{detail.cancelReason}</p>
                 </div>
             )}
 
-            {/* Items table */}
-            <div className="bg-white dark:bg-[#1e242b] border border-[#dde0e4] dark:border-[#2d353e] rounded-xl shadow-sm">
-                <div className="p-4 border-b border-[#dde0e4] dark:border-[#2d353e]">
-                    <h2 className="text-lg font-bold text-[#121417] dark:text-white flex items-center gap-2">
+            <div className="rounded-xl border border-[#dde0e4] bg-white shadow-sm dark:border-[#2d353e] dark:bg-[#1e242b]">
+                <div className="border-b border-[#dde0e4] p-4 dark:border-[#2d353e]">
+                    <h2 className="flex items-center gap-2 text-lg font-bold text-[#121417] dark:text-white">
                         <span className="material-symbols-outlined text-[#3C81C6]">medication</span>
-                        Danh sách thuốc nhập ({items.length})
+                        Danh sach thuoc nhap ({items.length})
                     </h2>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50 dark:bg-gray-800/50 border-b border-[#dde0e4] dark:border-[#2d353e]">
+                        <thead className="border-b border-[#dde0e4] bg-gray-50/50 dark:border-[#2d353e] dark:bg-gray-800/50">
                             <tr>
-                                <th className="py-3 px-5 text-xs font-semibold text-[#687582] uppercase">#</th>
-                                <th className="py-3 px-5 text-xs font-semibold text-[#687582] uppercase">Tên thuốc</th>
-                                <th className="py-3 px-5 text-xs font-semibold text-[#687582] uppercase text-right">Số lượng</th>
-                                <th className="py-3 px-5 text-xs font-semibold text-[#687582] uppercase">Đơn vị</th>
-                                <th className="py-3 px-5 text-xs font-semibold text-[#687582] uppercase text-right">Đơn giá</th>
-                                <th className="py-3 px-5 text-xs font-semibold text-[#687582] uppercase text-right">Thành tiền</th>
-                                <th className="py-3 px-5 text-xs font-semibold text-[#687582] uppercase">Số lô</th>
-                                <th className="py-3 px-5 text-xs font-semibold text-[#687582] uppercase">HSD</th>
+                                <th className="px-5 py-3 text-xs font-semibold uppercase text-[#687582]">#</th>
+                                <th className="px-5 py-3 text-xs font-semibold uppercase text-[#687582]">Ten thuoc</th>
+                                <th className="px-5 py-3 text-right text-xs font-semibold uppercase text-[#687582]">So luong</th>
+                                <th className="px-5 py-3 text-xs font-semibold uppercase text-[#687582]">Don vi</th>
+                                <th className="px-5 py-3 text-right text-xs font-semibold uppercase text-[#687582]">Don gia</th>
+                                <th className="px-5 py-3 text-right text-xs font-semibold uppercase text-[#687582]">Thanh tien</th>
+                                <th className="px-5 py-3 text-xs font-semibold uppercase text-[#687582]">So lo</th>
+                                <th className="px-5 py-3 text-xs font-semibold uppercase text-[#687582]">HSD</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#dde0e4] dark:divide-[#2d353e]">
-                            {items.map((item, idx) => (
-                                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                    <td className="py-3 px-5 text-sm text-[#687582]">{idx + 1}</td>
-                                    <td className="py-3 px-5 text-sm font-medium text-[#121417] dark:text-white">{item.drugName}</td>
-                                    <td className="py-3 px-5 text-sm font-bold text-[#121417] dark:text-white text-right">{item.quantity.toLocaleString("vi-VN")}</td>
-                                    <td className="py-3 px-5 text-sm text-[#687582]">{item.unit}</td>
-                                    <td className="py-3 px-5 text-sm text-[#121417] dark:text-white text-right">{item.unitPrice.toLocaleString("vi-VN")}₫</td>
-                                    <td className="py-3 px-5 text-sm font-bold text-[#3C81C6] text-right">{(item.quantity * item.unitPrice).toLocaleString("vi-VN")}₫</td>
-                                    <td className="py-3 px-5 text-sm text-[#687582]">{item.lotNumber || "—"}</td>
-                                    <td className="py-3 px-5 text-sm text-[#687582]">{item.expiryDate || "—"}</td>
+                            {items.length === 0 ? (
+                                <tr>
+                                    <td colSpan={8} className="py-10 text-center text-[#687582] dark:text-gray-400">
+                                        Chua co dong thuoc nao trong phieu
+                                    </td>
+                                </tr>
+                            ) : items.map((item, index) => (
+                                <tr key={item.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                    <td className="px-5 py-3 text-sm text-[#687582]">{index + 1}</td>
+                                    <td className="px-5 py-3 text-sm font-medium text-[#121417] dark:text-white">{item.drugName}</td>
+                                    <td className="px-5 py-3 text-right text-sm font-bold text-[#121417] dark:text-white">{item.quantity.toLocaleString("vi-VN")}</td>
+                                    <td className="px-5 py-3 text-sm text-[#687582]">{item.unit}</td>
+                                    <td className="px-5 py-3 text-right text-sm text-[#121417] dark:text-white">{item.unitPrice.toLocaleString("vi-VN")}d</td>
+                                    <td className="px-5 py-3 text-right text-sm font-bold text-[#3C81C6]">{(item.quantity * item.unitPrice).toLocaleString("vi-VN")}d</td>
+                                    <td className="px-5 py-3 text-sm text-[#687582]">{item.lotNumber || "-"}</td>
+                                    <td className="px-5 py-3 text-sm text-[#687582]">{item.expiryDate || "-"}</td>
                                 </tr>
                             ))}
                         </tbody>
-                        <tfoot className="bg-gray-50 dark:bg-gray-800/50 border-t-2 border-[#dde0e4] dark:border-[#2d353e]">
-                            <tr>
-                                <td colSpan={5} className="py-3 px-5 text-sm font-bold text-[#121417] dark:text-white text-right">Tổng cộng</td>
-                                <td className="py-3 px-5 text-base font-black text-[#3C81C6] text-right">{totalValue.toLocaleString("vi-VN")}₫</td>
-                                <td colSpan={2} />
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>
 
-            {/* Approval info */}
-            {detail.status === "completed" && detail.approvedBy && (
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
+            {detail.status === "RECEIVED" && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
                     <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-emerald-600 text-[18px]">verified</span>
+                        <span className="material-symbols-outlined text-[18px] text-emerald-600">verified</span>
                         <p className="text-sm text-emerald-700 dark:text-emerald-400">
-                            <span className="font-bold">Đã duyệt bởi</span> {detail.approvedBy}
-                            {detail.approvedAt && <span className="ml-2 text-emerald-600 dark:text-emerald-500">lúc {detail.approvedAt.split("T")[0]}</span>}
+                            <span className="font-bold">Da nhap kho</span>
+                            {detail.receivedBy !== "-" ? ` boi ${detail.receivedBy}` : ""}
+                            {detail.receivedAt ? ` luc ${detail.receivedAt}` : ""}
                         </p>
                     </div>
                 </div>
             )}
 
-            {/* Cancel Modal */}
             {showCancelModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowCancelModal(false)}>
-                    <div className="bg-white dark:bg-[#1e242b] rounded-2xl p-6 w-full max-w-md shadow-2xl" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#1e242b]" onClick={(event) => event.stopPropagation()}>
+                        <div className="mb-4 flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
                                 <span className="material-symbols-outlined text-red-600">warning</span>
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-[#121417] dark:text-white">Hủy phiếu nhập</h3>
-                                <p className="text-sm text-[#687582]">Hành động này không thể hoàn tác</p>
+                                <h3 className="text-lg font-bold text-[#121417] dark:text-white">Huy phieu nhap</h3>
+                                <p className="text-sm text-[#687582]">Hanh dong nay khong the hoan tac</p>
                             </div>
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-[#121417] dark:text-gray-300 mb-1.5">Lý do hủy *</label>
-                            <textarea value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} rows={3} placeholder="Nhập lý do hủy phiếu nhập..."
-                                className="w-full py-2.5 px-4 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:text-white placeholder:text-gray-400 resize-none" />
+                            <label className="mb-1.5 block text-sm font-medium text-[#121417] dark:text-gray-300">Ly do huy *</label>
+                            <textarea
+                                value={cancelReason}
+                                onChange={(event) => setCancelReason(event.target.value)}
+                                rows={3}
+                                placeholder="Nhap ly do huy phieu nhap..."
+                                className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                            />
                         </div>
                         <div className="flex items-center justify-end gap-3">
-                            <button onClick={() => { setShowCancelModal(false); setCancelReason(""); }}
-                                className="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-[#687582] rounded-xl text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                Đóng
+                            <button
+                                onClick={() => {
+                                    setShowCancelModal(false);
+                                    setCancelReason("");
+                                }}
+                                className="rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-[#687582] transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+                            >
+                                Dong
                             </button>
-                            <button onClick={handleCancel} disabled={!cancelReason.trim() || !!actionLoading}
-                                className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors disabled:opacity-50 flex items-center gap-2">
-                                {actionLoading === "cancel" ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <span className="material-symbols-outlined text-[18px]">delete</span>}
-                                Xác nhận hủy
+                            <button
+                                onClick={handleCancel}
+                                disabled={!cancelReason.trim() || !!actionLoading}
+                                className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                            >
+                                {actionLoading === "cancel" ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <span className="material-symbols-outlined text-[18px]">delete</span>}
+                                Xac nhan huy
                             </button>
                         </div>
                     </div>

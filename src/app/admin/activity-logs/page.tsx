@@ -1,23 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { UI_TEXT } from "@/constants/ui-text";
-import { auditService } from "@/services/auditService";
-
-interface ActivityLog {
-    id: string;
-    userId: string;
-    userName: string;
-    userAvatar?: string;
-    userRole: string;
-    action: string;
-    target?: string;
-    ipAddress: string;
-    userAgent: string;
-    status: "SUCCESS" | "FAILED" | "WARNING";
-    timestamp: string;
-}
-
+import { auditService, AuditLog } from "@/services/auditService";
+import { useToast } from "@/contexts/ToastContext";
 
 const STATUS_STYLES = {
     SUCCESS: { label: "Thành công", bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-400", icon: "check_circle" },
@@ -26,17 +12,40 @@ const STATUS_STYLES = {
 };
 
 export default function ActivityLogsPage() {
-    const [logs, setLogs] = useState<ActivityLog[]>([]);
+    const toast = useToast();
+    const [logs, setLogs] = useState<AuditLog[]>([]);
+    const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState<string>("all");
+    const [actionFilter, setActionFilter] = useState<string>("all");
     const [dateFrom, setDateFrom] = useState("");
     const [dateTo, setDateTo] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
+
+    const fetchLogs = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params: any = { page, limit: 20 };
+            if (actionFilter !== "all") params.action_type = actionFilter;
+            if (dateFrom) params.start_date = dateFrom;
+            if (dateTo) params.end_date = dateTo;
+
+            const res = await auditService.getLogs(params);
+            setLogs(res.data);
+            setTotal(res.pagination.total);
+            setTotalPages(res.pagination.totalPages);
+        } catch (err: any) {
+            toast.error(err.message || "Không thể tải nhật ký hoạt động");
+        } finally {
+            setLoading(false);
+        }
+    }, [page, actionFilter, dateFrom, dateTo]);
 
     useEffect(() => {
-        auditService.getLogs({ limit: 100 })
-            .then((res: any) => { const items = res?.data?.items ?? res?.items ?? res?.data?.data ?? res?.data ?? res ?? []; if (Array.isArray(items) && items.length > 0) setLogs(items); })
-            .catch(() => { /* API không khả dụng, hiển thị trống */ });
-    }, []);
+        fetchLogs();
+    }, [fetchLogs]);
 
     const filteredLogs = useMemo(() => {
         return logs.filter((log) => {
@@ -44,6 +53,7 @@ export default function ActivityLogsPage() {
                 searchQuery === "" ||
                 log.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 log.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                log.userEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 (log.target && log.target.toLowerCase().includes(searchQuery.toLowerCase()));
             const matchesStatus = statusFilter === "all" || log.status === statusFilter;
             return matchesSearch && matchesStatus;
@@ -51,30 +61,39 @@ export default function ActivityLogsPage() {
     }, [logs, searchQuery, statusFilter]);
 
     const stats = {
-        total: logs.length,
+        total: total,
         success: logs.filter((l) => l.status === "SUCCESS").length,
         failed: logs.filter((l) => l.status === "FAILED").length,
         warning: logs.filter((l) => l.status === "WARNING").length,
     };
 
-    const handleExport = () => {
-        const headers = ["Thời gian", "Người dùng", "Vai trò", "Hành động", "Đối tượng", "IP", "Trạng thái"];
-        const rows = filteredLogs.map((l) => [
-            l.timestamp,
-            l.userName,
-            l.userRole,
-            l.action,
-            l.target || "-",
-            l.ipAddress,
-            l.status,
-        ]);
-        const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `activity_logs_${new Date().toISOString().split("T")[0]}.csv`;
-        link.click();
+    const handleExport = async () => {
+        try {
+            const params: any = {};
+            if (actionFilter !== "all") params.action_type = actionFilter;
+            if (dateFrom) params.start_date = dateFrom;
+            if (dateTo) params.end_date = dateTo;
+
+            const blob = await auditService.exportExcel(params);
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `AuditLogs_Export_${new Date().toISOString().split("T")[0]}.xlsx`;
+            link.click();
+            URL.revokeObjectURL(url);
+            toast.success("Đã xuất nhật ký thành công!");
+        } catch (err: any) {
+            toast.error(err.message || "Có lỗi khi xuất nhật ký");
+        }
+    };
+
+    const handleClearFilters = () => {
+        setSearchQuery("");
+        setStatusFilter("all");
+        setActionFilter("all");
+        setDateFrom("");
+        setDateTo("");
+        setPage(1);
     };
 
     return (
@@ -168,28 +187,34 @@ export default function ActivityLogsPage() {
                             <option value="WARNING">Cảnh báo</option>
                             <option value="FAILED">Thất bại</option>
                         </select>
+                        <select
+                            value={actionFilter}
+                            onChange={(e) => { setActionFilter(e.target.value); setPage(1); }}
+                            className="py-2.5 pl-3 pr-10 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 text-[#687582] dark:text-gray-400 cursor-pointer"
+                        >
+                            <option value="all">Tất cả hành động</option>
+                            <option value="CREATE">Tạo mới</option>
+                            <option value="UPDATE">Cập nhật</option>
+                            <option value="DELETE">Xóa</option>
+                            <option value="LOGIN">Đăng nhập</option>
+                        </select>
                         <input
                             type="date"
                             value={dateFrom}
-                            onChange={(e) => setDateFrom(e.target.value)}
+                            onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
                             className="py-2.5 px-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none dark:text-white"
                             placeholder="Từ ngày"
                         />
                         <input
                             type="date"
                             value={dateTo}
-                            onChange={(e) => setDateTo(e.target.value)}
+                            onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
                             className="py-2.5 px-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none dark:text-white"
                             placeholder="Đến ngày"
                         />
                     </div>
                     <button
-                        onClick={() => {
-                            setSearchQuery("");
-                            setStatusFilter("all");
-                            setDateFrom("");
-                            setDateTo("");
-                        }}
+                        onClick={handleClearFilters}
                         className="p-2.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-[#687582] transition-colors"
                         title="Xóa bộ lọc"
                     >
@@ -211,7 +236,14 @@ export default function ActivityLogsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#dde0e4] dark:divide-[#2d353e]">
-                            {filteredLogs.length === 0 ? (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={6} className="py-12 text-center text-[#687582] dark:text-gray-400">
+                                        <span className="material-symbols-outlined text-4xl mb-2 block animate-spin">progress_activity</span>
+                                        Đang tải dữ liệu...
+                                    </td>
+                                </tr>
+                            ) : filteredLogs.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="py-12 text-center text-[#687582] dark:text-gray-400">
                                         <span className="material-symbols-outlined text-4xl mb-2 block">search_off</span>
@@ -226,7 +258,7 @@ export default function ActivityLogsPage() {
                                     return (
                                         <tr key={log.id} className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                             <td className="py-4 px-6 text-sm text-[#687582] dark:text-gray-400">
-                                                {new Date(log.timestamp).toLocaleString("vi-VN")}
+                                                {log.timestamp ? new Date(log.timestamp).toLocaleString("vi-VN") : "-"}
                                             </td>
                                             <td className="py-4 px-6">
                                                 <div className="flex items-center gap-2">
@@ -234,14 +266,14 @@ export default function ActivityLogsPage() {
                                                         <span className="material-symbols-outlined text-[16px]">person</span>
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-medium text-[#121417] dark:text-white">{log.userName}</p>
-                                                        <p className="text-xs text-[#687582] dark:text-gray-400">{log.userRole}</p>
+                                                        <p className="text-sm font-medium text-[#121417] dark:text-white">{log.userName || log.userEmail}</p>
+                                                        <p className="text-xs text-[#687582] dark:text-gray-400">{log.userEmail}</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6 text-sm text-[#121417] dark:text-gray-200">{log.action}</td>
                                             <td className="py-4 px-6 text-sm text-[#687582] dark:text-gray-400">{log.target || "-"}</td>
-                                            <td className="py-4 px-6 text-sm font-mono text-[#687582] dark:text-gray-400">{log.ipAddress}</td>
+                                            <td className="py-4 px-6 text-sm font-mono text-[#687582] dark:text-gray-400">{log.ipAddress || "-"}</td>
                                             <td className="py-4 px-6">
                                                 <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${statusInfo.bg} ${statusInfo.text}`}>
                                                     <span className="material-symbols-outlined text-[14px]">{statusInfo.icon}</span>
@@ -255,6 +287,31 @@ export default function ActivityLogsPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="p-4 border-t border-[#dde0e4] dark:border-[#2d353e] flex items-center justify-between">
+                        <p className="text-sm text-[#687582] dark:text-gray-400">
+                            Trang {page} / {totalPages} — Tổng {total} bản ghi
+                        </p>
+                        <div className="flex gap-2">
+                            <button
+                                disabled={page <= 1}
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                className="px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-[#687582] dark:text-gray-400"
+                            >
+                                Trước
+                            </button>
+                            <button
+                                disabled={page >= totalPages}
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                className="px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-[#687582] dark:text-gray-400"
+                            >
+                                Sau
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </>
     );

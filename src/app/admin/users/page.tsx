@@ -12,6 +12,16 @@ import * as userService from "@/services/userService";
 import type { User } from "@/types";
 import { validateFile } from "@/utils/fileValidation";
 
+/** Format ISO date to readable string */
+function formatDate(iso: unknown): string {
+    if (!iso || typeof iso !== 'string') return "—";
+    try {
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return String(iso);
+        return d.toLocaleDateString("vi-VN", { year: "numeric", month: "2-digit", day: "2-digit" });
+    } catch { return String(iso); }
+}
+
 type SortField = "fullName" | "role" | "createdAt" | "lastAccess" | "status";
 type SortOrder = "asc" | "desc";
 
@@ -474,10 +484,10 @@ export default function UsersPage() {
                                                 </span>
                                             </td>
                                             <td className="py-4 px-6">
-                                                <p className="text-sm text-[#121417] dark:text-gray-200">{user.createdAt}</p>
+                                                <p className="text-sm text-[#121417] dark:text-gray-200">{formatDate(user.createdAt)}</p>
                                             </td>
                                             <td className="py-4 px-6">
-                                                <p className="text-sm text-[#121417] dark:text-gray-200">{user.lastAccess}</p>
+                                                <p className="text-sm text-[#121417] dark:text-gray-200">{user.lastAccess ? formatDate(user.lastAccess) : "—"}</p>
                                             </td>
                                             <td className="py-4 px-6">
                                                 <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusStyle(user.status)}`}>

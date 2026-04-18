@@ -85,10 +85,11 @@ export const resolveStableMedicineId = (raw: unknown): string | null => {
     const row = asObject(raw);
     const value =
         row.id ??
-        row.drugId ??
-        row.drug_id ??
+        row.drugs_id ??
         row.pharmacyInventoryId ??
         row.pharmacy_inventory_id ??
+        row.drugId ??
+        row.drug_id ??
         row.code ??
         row.drugCode ??
         row.drug_code;
@@ -104,21 +105,25 @@ export const mapApiDrugToMedicine = (raw: unknown): Medicine | null => {
         return null;
     }
 
-    const stock = readNumber(row.quantity ?? row.stock);
-    const minStock = readNumber(row.minQuantity ?? row.minStock);
+    const stock = readNumber(row.quantity ?? row.stock ?? row.stock_quantity);
+    const minStock = readNumber(row.minQuantity ?? row.minStock ?? row.low_stock_threshold);
+    const isActive = row.is_active;
 
     return {
         id,
-        code: readString(row.code ?? row.drugCode, id),
-        name: readString(row.name, 'Unknown medicine'),
-        activeIngredient: readString(row.activeIngredient ?? row.active_ingredient ?? row.genericName),
-        unit: readString(row.unit, 'unit'),
+        code: readString(row.code ?? row.drugCode ?? row.drug_code, id),
+        name: readString(row.name ?? row.brand_name, 'Unknown medicine'),
+        activeIngredient: readString(row.activeIngredient ?? row.active_ingredient ?? row.genericName ?? row.active_ingredients),
+        unit: readString(row.unit ?? row.dispensing_unit, 'unit'),
         unitDetail: readString(row.unitDetail),
-        price: readNumber(row.price),
+        price: readNumber(row.price ?? row.unit_price),
         stock,
         stockLevel: normalizeStockLevel(stock, minStock, row.stockLevel),
-        category: readString(row.category, 'Uncategorized'),
-        status: normalizeMedicineStatus(row.status, stock),
+        category: readString(row.category ?? row.category_name ?? row.category_id, 'Uncategorized'),
+        status: normalizeMedicineStatus(
+            row.status ?? (typeof isActive === 'boolean' ? (isActive ? 'ACTIVE' : 'SUSPENDED') : undefined),
+            stock
+        ),
         expiryDate: readString(row.expiryDate ?? row.expiry_date),
         createdAt: readString(row.createdAt ?? row.created_at, ''),
         updatedAt: readString(row.updatedAt ?? row.updated_at, ''),
@@ -132,19 +137,19 @@ export const mapApiInventoryToStockItem = (raw: unknown): AdminStockItem | null 
         return null;
     }
 
-    const currentStock = readNumber(row.quantity ?? row.currentStock ?? row.stock);
-    const minStock = readNumber(row.minQuantity ?? row.minStock ?? row.reorderPoint);
+    const currentStock = readNumber(row.quantity ?? row.currentStock ?? row.stock ?? row.stock_quantity);
+    const minStock = readNumber(row.minQuantity ?? row.minStock ?? row.reorderPoint ?? row.low_stock_threshold);
     const maxStock = readNumber(row.maxQuantity ?? row.maxStock, minStock > 0 ? minStock * 5 : Math.max(currentStock, 1));
 
     return {
         id,
         code: readString(row.drugCode ?? row.drug_code ?? row.code, id),
-        name: readString(row.drugName ?? row.name, 'Unknown medicine'),
-        unit: readString(row.unit, 'unit'),
+        name: readString(row.drugName ?? row.name ?? row.brand_name, 'Unknown medicine'),
+        unit: readString(row.unit ?? row.dispensing_unit, 'unit'),
         currentStock,
         minStock,
         maxStock,
-        batchNumber: readString(row.batchNumber ?? row.lotNumber ?? row.lot_number),
+        batchNumber: readString(row.batchNumber ?? row.lotNumber ?? row.lot_number ?? row.batch_number),
         expiryDate: readString(row.expiryDate ?? row.nearestExpiry ?? row.expiry_date),
         stockLevel: normalizeStockLevel(currentStock, minStock, row.stockLevel),
     };

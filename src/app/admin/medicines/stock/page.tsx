@@ -17,11 +17,14 @@ export default function MedicineStockPage() {
     useEffect(() => {
         inventoryService.getList({ limit: 500 })
             .then((res) => {
-                const items: unknown[] = Array.isArray((res as { data?: unknown[] })?.data)
-                    ? ((res as { data?: unknown[] }).data ?? [])
-                    : Array.isArray(res)
-                        ? res
-                        : [];
+                const payload = (res as { data?: { data?: unknown[] } | unknown[] })?.data;
+                const items: unknown[] = Array.isArray((payload as { data?: unknown[] })?.data)
+                    ? ((payload as { data?: unknown[] }).data ?? [])
+                    : Array.isArray(payload)
+                        ? payload
+                        : Array.isArray(res)
+                            ? res
+                            : [];
 
                 setStock(
                     items

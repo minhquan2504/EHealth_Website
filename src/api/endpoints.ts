@@ -2091,3 +2091,13 @@ export const STOCK_OUT_MANAGEMENT_ENDPOINTS = {
     CANCEL: (orderId: string) => `/api/stock-out/${orderId}/cancel`,                // PATCH
     DETAIL: (orderId: string) => `/api/stock-out/${orderId}`,                       // GET
 };
+
+// ============================================
+// 1.8 Audit Log Endpoints
+// Swagger: /api/system/audit-logs/*
+// ============================================
+export const AUDIT_ENDPOINTS = {
+    LIST: '/api/system/audit-logs',
+    DETAIL: (id: string) => `/api/system/audit-logs/${id}`,
+    EXPORT_EXCEL: '/api/system/audit-logs/export-excel',
+};

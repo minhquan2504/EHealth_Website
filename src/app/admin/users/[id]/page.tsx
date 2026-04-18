@@ -7,6 +7,17 @@ import { ROLE_LABELS, ROLE_COLORS, type Role } from "@/constants/roles";
 import { USER_STATUS } from "@/constants/status";
 import type { User } from "@/types";
 
+/** Format ISO date to readable string */
+function formatDate(iso: string): string {
+    if (!iso) return "—";
+    try {
+        return new Date(iso).toLocaleDateString("vi-VN", {
+            year: "numeric", month: "2-digit", day: "2-digit",
+            hour: "2-digit", minute: "2-digit",
+        });
+    } catch { return iso; }
+}
+
 const TABS = [
     { key: "overview", label: "Tổng quan", icon: "person" },
     { key: "professional", label: "Chuyên môn", icon: "workspace_premium" },
@@ -21,19 +32,45 @@ export default function UserDetailPage() {
     const userId = params.id as string;
 
     const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
 
     useEffect(() => {
         let cancelled = false;
+        setLoading(true);
         import("@/services/userService").then(({ getUserById }) => {
             getUserById(userId).then((res: any) => {
                 if (cancelled) return;
-                const data = res?.data?.data ?? res?.data ?? res;
-                setUser(data || null);
+                const raw = res?.data?.data ?? res?.data ?? res;
+                if (raw) {
+                    setUser({
+                        ...raw,
+                        id: String(raw.users_id ?? raw.id ?? userId),
+                        fullName: raw.profile?.full_name ?? raw.full_name ?? raw.fullName ?? raw.email ?? "",
+                        email: raw.email ?? "",
+                        phone: raw.phone ?? raw.phone_number ?? "",
+                        role: Array.isArray(raw.roles) && raw.roles.length > 0 ? raw.roles[0].toLowerCase() : (raw.role ?? "staff"),
+                        status: raw.status ?? "ACTIVE",
+                        avatar: raw.profile?.avatar_url ?? raw.avatar ?? "",
+                        createdAt: formatDate(raw.created_at ?? raw.createdAt ?? ""),
+                        lastAccess: formatDate(raw.last_login ?? raw.lastAccess ?? ""),
+                    } as User);
+                } else {
+                    setUser(null);
+                }
             }).catch(() => { if (!cancelled) setUser(null); });
-        });
+        }).finally(() => { if (!cancelled) setLoading(false); });
         return () => { cancelled = true; };
     }, [userId]);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20">
+                <div className="w-10 h-10 border-4 border-[#3C81C6]/20 border-t-[#3C81C6] rounded-full animate-spin mb-4" />
+                <p className="text-sm text-[#687582]">Đang tải...</p>
+            </div>
+        );
+    }
 
     if (!user) {
         return (
@@ -173,7 +210,7 @@ function OverviewTab({ user, roleColor, isActive }: { user: User; roleColor: { b
                     Thông tin tài khoản
                 </h2>
                 <div className="space-y-4">
-                    <InfoRow label="Mã nhân viên" value={`NV${user.id.padStart(5, "0")}`} icon="fingerprint" />
+                    <InfoRow label="Mã nhân viên" value={`NV${String(user.id ?? "").padStart(5, "0")}`} icon="fingerprint" />
                     <InfoRow label="Ngày tạo tài khoản" value={user.createdAt} icon="event" />
                     <InfoRow label="Truy cập cuối" value={user.lastAccess || "—"} icon="schedule" />
                     <InfoRow label="Trạng thái" value={isActive ? "Đang hoạt động" : "Đã khóa"} icon="toggle_on" />
