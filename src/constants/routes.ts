@@ -38,6 +38,11 @@ export const ROUTES = {
     SHIFTS: "/admin/shifts",
     STAFF_SCHEDULE: "/admin/staff-schedule",
     DOCTOR_LOAD: "/admin/doctor-load",
+    LEAVES: "/admin/leaves",
+    SHIFT_SWAPS: "/admin/shift-swaps",
+    // Cấu hình vận hành
+    SLOTS_CONFIG: "/admin/slots/config",
+    OPERATING_HOURS: "/admin/operating-hours",
     // Kho thuốc
     MEDICINES: "/admin/medicines",
     MEDICINES_IMPORT: "/admin/medicines/import",
@@ -208,6 +213,17 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
       { key: "staff-schedule", href: ROUTES.ADMIN.STAFF_SCHEDULE, label: "Lịch phân ca" },
       { key: "schedules", href: ROUTES.ADMIN.SCHEDULES, label: "Lịch trực" },
       { key: "doctor-load", href: ROUTES.ADMIN.DOCTOR_LOAD, label: "Cân bằng tải bác sĩ" },
+      { key: "leaves", href: ROUTES.ADMIN.LEAVES, label: "Nghỉ phép" },
+      { key: "shift-swaps", href: ROUTES.ADMIN.SHIFT_SWAPS, label: "Đổi ca" },
+    ],
+  },
+  {
+    key: "ops-config",
+    icon: "tune",
+    label: "Cấu hình vận hành",
+    children: [
+      { key: "slots-config", href: ROUTES.ADMIN.SLOTS_CONFIG, label: "Khung giờ khám" },
+      { key: "operating-hours", href: ROUTES.ADMIN.OPERATING_HOURS, label: "Giờ hoạt động" },
     ],
   },
   {
