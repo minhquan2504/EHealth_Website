@@ -24,6 +24,10 @@ export const ROUTES = {
     USERS: "/admin/users",
     USERS_ROLES: "/admin/users/roles",
     DOCTORS: "/admin/doctors",
+    PERMISSIONS: "/admin/permissions",
+    MASTER_DATA: "/admin/master-data",
+    NOTIF_ROLE_CONFIGS: "/admin/notifications/role-configs",
+    NOTIF_BROADCAST: "/admin/notifications/broadcast",
     // Quản lý cơ sở y tế
     DEPARTMENTS: "/admin/departments",
     HOSPITALS: "/admin/hospitals",
@@ -211,7 +215,18 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
     children: [
       { key: "users-list", href: ROUTES.ADMIN.USERS, label: "Danh sách nhân sự" },
       { key: "doctors-list", href: ROUTES.ADMIN.DOCTORS, label: "Danh sách Bác sĩ" },
-      { key: "users-roles", href: ROUTES.ADMIN.USERS_ROLES, label: "Phân quyền & Vai trò" },
+      { key: "users-roles", href: ROUTES.ADMIN.USERS_ROLES, label: "Vai trò" },
+      { key: "permissions", href: ROUTES.ADMIN.PERMISSIONS, label: "Permissions/Menus" },
+    ],
+  },
+  {
+    key: "system-data",
+    icon: "database",
+    label: "Dữ liệu hệ thống",
+    children: [
+      { key: "master-data", href: ROUTES.ADMIN.MASTER_DATA, label: "Master Data" },
+      { key: "notif-role-configs", href: ROUTES.ADMIN.NOTIF_ROLE_CONFIGS, label: "Cấu hình thông báo" },
+      { key: "notif-broadcast", href: ROUTES.ADMIN.NOTIF_BROADCAST, label: "Gửi broadcast" },
     ],
   },
   {
