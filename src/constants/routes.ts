@@ -42,7 +42,15 @@ export const ROUTES = {
     SHIFT_SWAPS: "/admin/shift-swaps",
     // Cấu hình vận hành
     SLOTS_CONFIG: "/admin/slots/config",
+    SLOTS_LOCKED: "/admin/slots/locked",
+    SHIFT_SERVICES: "/admin/shifts/services",
+    SERVICE_DURATIONS: "/admin/facilities/service-durations",
+    BOOKING_CONFIGS: "/admin/branches/booking-configs",
     OPERATING_HOURS: "/admin/operating-hours",
+    FACILITY_STATUS: "/admin/facility-status",
+    // Điều phối
+    APPOINTMENT_CHANGES: "/admin/appointment-changes",
+    DOCTOR_AVAILABILITY: "/admin/doctor-availability",
     // Kho thuốc
     MEDICINES: "/admin/medicines",
     MEDICINES_IMPORT: "/admin/medicines/import",
@@ -212,7 +220,6 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
       { key: "shifts", href: ROUTES.ADMIN.SHIFTS, label: "Ca làm việc" },
       { key: "staff-schedule", href: ROUTES.ADMIN.STAFF_SCHEDULE, label: "Lịch phân ca" },
       { key: "schedules", href: ROUTES.ADMIN.SCHEDULES, label: "Lịch trực" },
-      { key: "doctor-load", href: ROUTES.ADMIN.DOCTOR_LOAD, label: "Cân bằng tải bác sĩ" },
       { key: "leaves", href: ROUTES.ADMIN.LEAVES, label: "Nghỉ phép" },
       { key: "shift-swaps", href: ROUTES.ADMIN.SHIFT_SWAPS, label: "Đổi ca" },
     ],
@@ -223,7 +230,22 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
     label: "Cấu hình vận hành",
     children: [
       { key: "slots-config", href: ROUTES.ADMIN.SLOTS_CONFIG, label: "Khung giờ khám" },
+      { key: "slots-locked", href: ROUTES.ADMIN.SLOTS_LOCKED, label: "Slot bị khoá" },
+      { key: "shift-services", href: ROUTES.ADMIN.SHIFT_SERVICES, label: "Gán dịch vụ vào ca" },
+      { key: "service-durations", href: ROUTES.ADMIN.SERVICE_DURATIONS, label: "Thời lượng dịch vụ" },
+      { key: "booking-configs", href: ROUTES.ADMIN.BOOKING_CONFIGS, label: "Cấu hình booking" },
       { key: "operating-hours", href: ROUTES.ADMIN.OPERATING_HOURS, label: "Giờ hoạt động" },
+      { key: "facility-status", href: ROUTES.ADMIN.FACILITY_STATUS, label: "Trạng thái cơ sở" },
+    ],
+  },
+  {
+    key: "coordination",
+    icon: "hub",
+    label: "Điều phối",
+    children: [
+      { key: "doctor-load", href: ROUTES.ADMIN.DOCTOR_LOAD, label: "Cân bằng tải bác sĩ" },
+      { key: "doctor-availability", href: ROUTES.ADMIN.DOCTOR_AVAILABILITY, label: "Độ rảnh bác sĩ" },
+      { key: "appointment-changes", href: ROUTES.ADMIN.APPOINTMENT_CHANGES, label: "Thay đổi lịch hẹn" },
     ],
   },
   {
