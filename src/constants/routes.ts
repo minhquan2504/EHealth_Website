@@ -38,6 +38,7 @@ export const ROUTES = {
     CLINIC_ROOMS: "/admin/clinic-rooms",
     EQUIPMENT: "/admin/equipment",
     BEDS: "/admin/beds",
+    SPECIALTIES: "/admin/specialties",
     // Vận hành nhân sự
     SHIFTS: "/admin/shifts",
     STAFF_SCHEDULE: "/admin/staff-schedule",
@@ -236,7 +237,8 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
     children: [
       { key: "hospitals", href: ROUTES.ADMIN.HOSPITALS, label: "Cơ sở / Bệnh viện" },
       { key: "branches", href: ROUTES.ADMIN.BRANCHES, label: "Chi nhánh" },
-      { key: "departments", href: ROUTES.ADMIN.DEPARTMENTS, label: "Khoa / Chuyên khoa" },
+      { key: "departments", href: ROUTES.ADMIN.DEPARTMENTS, label: "Khoa / Phòng ban" },
+      { key: "specialties", href: ROUTES.ADMIN.SPECIALTIES, label: "Chuyên khoa" },
       { key: "services", href: ROUTES.ADMIN.SERVICES, label: "Dịch vụ y tế" },
       { key: "clinic-rooms", href: ROUTES.ADMIN.CLINIC_ROOMS, label: "Phòng khám" },
       { key: "equipment", href: ROUTES.ADMIN.EQUIPMENT, label: "Thiết bị" },
