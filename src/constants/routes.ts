@@ -71,7 +71,9 @@ export const ROUTES = {
     MEDICINES_STOCK: "/admin/medicines/stock",
     SUPPLIERS: "/admin/suppliers",
     WAREHOUSES: "/admin/warehouses",
+    PHARMACY_CATEGORIES: "/admin/pharmacy/categories",
     // Tài chính
+    BILLING_INVOICES: "/admin/billing-invoices",
     PRICING_POLICIES: "/admin/pricing-policies",
     E_INVOICES: "/admin/e-invoices",
     PROMOTIONS: "/admin/promotions",
@@ -307,6 +309,7 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
       { key: "medicines-stock", href: ROUTES.ADMIN.MEDICINES_STOCK, label: "Tồn kho" },
       { key: "warehouses", href: ROUTES.ADMIN.WAREHOUSES, label: "Quản lý kho" },
       { key: "suppliers", href: ROUTES.ADMIN.SUPPLIERS, label: "Nhà cung cấp" },
+      { key: "pharmacy-categories", href: ROUTES.ADMIN.PHARMACY_CATEGORIES, label: "Nhóm thuốc" },
     ],
   },
   {
@@ -314,6 +317,7 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
     icon: "payments",
     label: "Tài chính",
     children: [
+      { key: "billing-invoices", href: ROUTES.ADMIN.BILLING_INVOICES, label: "Hoá đơn" },
       { key: "pricing-policies", href: ROUTES.ADMIN.PRICING_POLICIES, label: "Chính sách giá" },
       { key: "promotions", href: ROUTES.ADMIN.PROMOTIONS, label: "Khuyến mãi" },
       { key: "e-invoices", href: ROUTES.ADMIN.E_INVOICES, label: "Hoá đơn điện tử" },
