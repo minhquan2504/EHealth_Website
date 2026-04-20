@@ -1,9 +1,23 @@
 # Plan fix BE để FE đạt 100% coverage spec
 
 **Gửi:** BE team (E-Health_server + EHealth-Api)
-**Ngày:** 2026-04-20
-**Trạng thái FE:** ~92% coverage 86 MH theo spec, pushed commits `6deb404` trên `pth/main`
+**Ngày:** 2026-04-20 (update lần 2)
+**Trạng thái FE:** ~92% coverage, pushed `9089602` trên `pth/main`
 **Mục tiêu:** Đưa toàn bộ page admin hoạt động 100% với dữ liệu thực
+
+## ✅ BE đã fix (commits `c047a0d` + `3c244c9` trên EHealth-Api main)
+
+- `/api/facility-status/today` → **OK** (page `/admin/facility-status` hoạt động, hiện dữ liệu thực)
+- `/api/appointment-changes/stats` → **OK** (page `/admin/appointment-changes` hoạt động)
+- `/api/treatment-plans/*` routes → **đã register** (401 thay vì 404 — BE đã add route, chưa test auth)
+- `/api/billing/refunds/requests` → **đã register** (401 thay vì 500)
+- `/api/teleconsultation/prescriptions` → **đã register** (401 thay vì 500)
+- `/api/notifications/role-configs` → **đã register** (401 thay vì 500)
+- `/api/patient/profiles` → **đã register** (401 thay vì 500)
+
+## ⏳ Còn lại cần fix
+
+- `/api/locked-slots/locked` — **vẫn 400** khi gọi không có param. Cần check params yêu cầu hoặc relax validation.
 
 ---
 
