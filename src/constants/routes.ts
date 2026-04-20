@@ -56,6 +56,15 @@ export const ROUTES = {
     MEDICINES_IMPORT: "/admin/medicines/import",
     MEDICINES_EXPORT: "/admin/medicines/export",
     MEDICINES_STOCK: "/admin/medicines/stock",
+    SUPPLIERS: "/admin/suppliers",
+    WAREHOUSES: "/admin/warehouses",
+    // Tài chính
+    PRICING_POLICIES: "/admin/pricing-policies",
+    E_INVOICES: "/admin/e-invoices",
+    PROMOTIONS: "/admin/promotions",
+    RECONCILIATION: "/admin/reconciliation",
+    REFUNDS: "/admin/refunds",
+    PAYMENT_GATEWAY: "/admin/payment-gateway",
     // Thống kê & Khác
     STATISTICS: "/admin/statistics",
     STATISTICS_REVENUE: "/admin/statistics/revenue",
@@ -251,12 +260,27 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
   {
     key: "medicines",
     icon: "medication",
-    label: "Kho thuốc",
+    label: "Dược & Kho",
     children: [
       { key: "medicines-list", href: ROUTES.ADMIN.MEDICINES, label: "Danh mục thuốc" },
       { key: "medicines-import", href: ROUTES.ADMIN.MEDICINES_IMPORT, label: "Nhập kho" },
       { key: "medicines-export", href: ROUTES.ADMIN.MEDICINES_EXPORT, label: "Xuất kho" },
       { key: "medicines-stock", href: ROUTES.ADMIN.MEDICINES_STOCK, label: "Tồn kho" },
+      { key: "warehouses", href: ROUTES.ADMIN.WAREHOUSES, label: "Quản lý kho" },
+      { key: "suppliers", href: ROUTES.ADMIN.SUPPLIERS, label: "Nhà cung cấp" },
+    ],
+  },
+  {
+    key: "finance",
+    icon: "payments",
+    label: "Tài chính",
+    children: [
+      { key: "pricing-policies", href: ROUTES.ADMIN.PRICING_POLICIES, label: "Chính sách giá" },
+      { key: "promotions", href: ROUTES.ADMIN.PROMOTIONS, label: "Khuyến mãi" },
+      { key: "e-invoices", href: ROUTES.ADMIN.E_INVOICES, label: "Hoá đơn điện tử" },
+      { key: "payment-gateway", href: ROUTES.ADMIN.PAYMENT_GATEWAY, label: "Cổng thanh toán" },
+      { key: "reconciliation", href: ROUTES.ADMIN.RECONCILIATION, label: "Đối soát" },
+      { key: "refunds", href: ROUTES.ADMIN.REFUNDS, label: "Hoàn tiền" },
     ],
   },
   {
