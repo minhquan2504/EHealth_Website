@@ -41,7 +41,16 @@ export default function StaffSchedulePage() {
             }
             if (sh.status === "fulfilled") {
                 const data: any = sh.value;
-                setShifts(Array.isArray(data?.data) ? data.data : []);
+                const raw: any[] = Array.isArray(data?.data) ? data.data : [];
+                setShifts(raw.map((s) => ({
+                    id: String(s.id ?? s.shifts_id ?? s.shift_id ?? s.code ?? ""),
+                    name: s.name ?? "",
+                    startTime: (s.startTime ?? s.start_time ?? "").slice(0, 5),
+                    endTime: (s.endTime ?? s.end_time ?? "").slice(0, 5),
+                    type: (s.type ?? s.code ?? "MORNING") as WorkShift["type"],
+                    description: s.description ?? "",
+                    isActive: typeof s.isActive === "boolean" ? s.isActive : String(s.status ?? "").toUpperCase() !== "INACTIVE",
+                })));
             }
         } catch {
             setError("Không tải được lịch làm việc.");

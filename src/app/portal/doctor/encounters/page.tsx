@@ -28,16 +28,16 @@ interface EncounterRow {
 function mapEncounter(e: any): EncounterRow {
     const rawStatus = String(e.status ?? e.encounter_status ?? "OPEN").toUpperCase();
     return {
-        id: String(e.id ?? e.encounter_id ?? e.encounterId ?? ""),
-        code: e.code ?? e.encounter_code ?? e.encounterCode ?? "",
+        id: String(e.id ?? e.encounters_id ?? e.encounter_id ?? e.encounterId ?? ""),
+        code: e.code ?? e.encounter_code ?? e.encounterCode ?? e.encounters_id ?? "",
         patientId: String(e.patientId ?? e.patient_id ?? e.patient?.id ?? ""),
         patientName: e.patientName ?? e.patient_name ?? e.patient?.fullName ?? e.patient?.full_name ?? "Bệnh nhân",
         doctorName: e.doctorName ?? e.doctor_name ?? e.doctor?.fullName ?? e.doctor?.full_name ?? "",
-        departmentName: e.departmentName ?? e.department_name ?? e.department?.name ?? e.specialty ?? "",
+        departmentName: e.departmentName ?? e.department_name ?? e.department?.name ?? e.specialty_name ?? e.specialty ?? "",
         type: e.type ?? e.encounter_type ?? "FIRST_VISIT",
         status: rawStatus,
-        startedAt: e.startedAt ?? e.started_at ?? e.visitDate ?? e.visit_date ?? e.createdAt ?? e.created_at ?? "",
-        diagnosis: e.diagnosis ?? e.chiefComplaint ?? e.chief_complaint ?? e.reason ?? "",
+        startedAt: e.startedAt ?? e.started_at ?? e.start_time ?? e.visitDate ?? e.visit_date ?? e.createdAt ?? e.created_at ?? "",
+        diagnosis: e.diagnosis ?? e.conclusion ?? e.chiefComplaint ?? e.chief_complaint ?? e.reason ?? "",
         icdCode: e.icdCode ?? e.icd_code ?? "",
         appointmentId: String(e.appointmentId ?? e.appointment_id ?? ""),
         roomName: e.roomName ?? e.room_name ?? e.room?.name ?? "",

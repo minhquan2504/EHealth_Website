@@ -32,6 +32,21 @@ interface FormState {
 
 const EMPTY_FORM: FormState = { name: "", startTime: "07:00", endTime: "11:00", type: "MORNING", description: "", isActive: true };
 
+function mapShift(s: any): WorkShift {
+    const status = String(s.status ?? "").toUpperCase();
+    return {
+        id: String(s.id ?? s.shifts_id ?? s.shift_id ?? s.code ?? ""),
+        name: s.name ?? "",
+        startTime: (s.startTime ?? s.start_time ?? "").slice(0, 5),
+        endTime: (s.endTime ?? s.end_time ?? "").slice(0, 5),
+        type: (s.type ?? s.code ?? "MORNING") as WorkShift["type"],
+        description: s.description ?? "",
+        isActive: typeof s.isActive === "boolean" ? s.isActive : status !== "INACTIVE" && status !== "DISABLED",
+        createdAt: s.createdAt ?? s.created_at ?? "",
+        updatedAt: s.updatedAt ?? s.updated_at ?? "",
+    };
+}
+
 export default function ShiftsAdminPage() {
     const toast = useToast();
     const [shifts, setShifts] = useState<WorkShift[]>([]);
@@ -48,7 +63,8 @@ export default function ShiftsAdminPage() {
         setError(null);
         try {
             const res = await workShiftService.getList();
-            setShifts(Array.isArray(res?.data) ? res.data : []);
+            const raw: any[] = Array.isArray(res?.data) ? res.data : [];
+            setShifts(raw.map(mapShift));
         } catch {
             setError("Không tải được danh sách ca làm việc.");
             setShifts([]);

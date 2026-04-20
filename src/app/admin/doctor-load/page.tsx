@@ -18,23 +18,40 @@ interface DoctorLoadRow {
 }
 
 function mapRow(r: any, i: number): DoctorLoadRow {
-    const capacity = numOr(r.capacity ?? r.maxAppointments ?? r.max_appointments, 0);
-    const booked = numOr(r.booked ?? r.totalAppointments ?? r.total_appointments, 0);
-    const loadPercent = numOr(r.loadPercent ?? r.load_percent ?? (capacity > 0 ? Math.round((booked / capacity) * 100) : 0), 0);
+    const capacity = numOr(r.capacity ?? r.total_slots ?? r.totalSlots ?? r.maxAppointments ?? r.max_appointments, 0);
+    const booked = numOr(r.booked ?? r.booked_count ?? r.bookedCount ?? r.totalAppointments ?? r.total_appointments, 0);
+    const loadPercent = numOr(
+        r.loadPercent ?? r.load_percent ?? r.load_percentage ?? r.loadPercentage,
+        capacity > 0 ? Math.round((booked / capacity) * 100) : 0
+    );
     return {
         doctorId: String(r.doctorId ?? r.doctor_id ?? r.id ?? `d-${i}`),
         doctorName: r.doctorName ?? r.doctor_name ?? r.fullName ?? r.full_name ?? "Bác sĩ",
-        department: r.department ?? r.departmentName ?? r.department_name ?? r.specialty ?? "",
+        department: r.department ?? r.departmentName ?? r.department_name ?? r.specialty_name ?? r.specialty ?? "",
         capacity,
         booked,
-        completed: numOr(r.completed ?? r.completedAppointments, 0),
-        pending: numOr(r.pending ?? r.pendingAppointments, 0),
+        completed: numOr(r.completed ?? r.completed_count ?? r.completedAppointments, 0),
+        pending: numOr(r.pending ?? r.pending_count ?? r.pendingAppointments, 0),
         loadPercent,
         avgPerHour: numOr(r.avgPerHour ?? r.avg_per_hour, 0),
     };
 }
 
 function numOr(v: any, d: number): number { const n = Number(v); return Number.isFinite(n) ? n : d; }
+
+function aggregateByDoctor(rows: DoctorLoadRow[]): DoctorLoadRow[] {
+    const map = new Map<string, DoctorLoadRow>();
+    for (const r of rows) {
+        const cur = map.get(r.doctorId);
+        if (!cur) { map.set(r.doctorId, { ...r }); continue; }
+        cur.capacity += r.capacity;
+        cur.booked += r.booked;
+        cur.completed += r.completed;
+        cur.pending += r.pending;
+        cur.loadPercent = cur.capacity > 0 ? Math.round((cur.booked / cur.capacity) * 100) : 0;
+    }
+    return Array.from(map.values());
+}
 
 const LOAD_COLOR = (pct: number) => {
     if (pct >= 90) return { bg: "from-red-500 to-rose-600", bar: "bg-red-500", label: "Quá tải" };
@@ -61,8 +78,9 @@ export default function DoctorLoadDashboardPage() {
                 axiosClient.get(APPOINTMENT_COORDINATION_ENDPOINTS.BALANCE_OVERVIEW, { params: { date } }).then((r) => r.data?.data ?? r.data),
             ]);
             if (loadRes.status === "fulfilled") {
-                const arr: any[] = Array.isArray(loadRes.value) ? loadRes.value : (loadRes.value?.items ?? loadRes.value?.doctors ?? []);
-                setRows(arr.map(mapRow));
+                const v: any = loadRes.value;
+                const arr: any[] = Array.isArray(v) ? v : (v?.data ?? v?.items ?? v?.doctors ?? []);
+                setRows(aggregateByDoctor(arr.map(mapRow)));
             } else {
                 setRows([]);
             }
