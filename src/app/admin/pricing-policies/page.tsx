@@ -179,8 +179,8 @@ export default function PricingPoliciesPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filtered.map((p) => (
-                                            <tr key={p.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
+                                        {filtered.map((p, idx) => (
+                                            <tr key={p.id || `${p.facilityServiceId}-${idx}`} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
                                                 <td className="px-4 py-3 font-medium text-[#121417] dark:text-white">{p.serviceName}</td>
                                                 <td className="px-4 py-3 text-right font-mono font-semibold text-[#121417] dark:text-white">{formatVND(p.basePrice)}</td>
                                                 <td className="px-4 py-3 text-xs text-[#687582] dark:text-gray-400">{formatDate(p.effectiveFrom)} → {formatDate(p.effectiveTo)}</td>

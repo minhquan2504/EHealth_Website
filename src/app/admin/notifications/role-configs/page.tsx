@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import axiosClient from "@/api/axiosClient";
 import { NOTIFICATION_ENDPOINTS, ROLE_ENDPOINTS } from "@/api/endpoints";
 import { unwrapList } from "@/api/response";
@@ -126,43 +126,43 @@ export default function NotificationRoleConfigsPage() {
                             <thead className="bg-[#f8f9fa] dark:bg-[#13191f] border-b border-[#dde0e4] dark:border-[#2d353e]">
                                 <tr>
                                     <th className="text-left px-3 py-2 font-semibold text-[#687582] sticky left-0 bg-[#f8f9fa] dark:bg-[#13191f] min-w-[180px]">Loại thông báo</th>
-                                    {roles.map((r) => (
-                                        <th key={r.id} colSpan={4} className="text-center px-2 py-1 font-semibold text-xs text-[#687582] border-l border-[#dde0e4] dark:border-[#2d353e]">{r.name}</th>
+                                    {roles.map((r, idx) => (
+                                        <th key={r.id || `role-h-${idx}`} colSpan={4} className="text-center px-2 py-1 font-semibold text-xs text-[#687582] border-l border-[#dde0e4] dark:border-[#2d353e]">{r.name}</th>
                                     ))}
                                 </tr>
                                 <tr className="border-t border-[#dde0e4] dark:border-[#2d353e]">
                                     <th className="sticky left-0 bg-[#f8f9fa] dark:bg-[#13191f]"></th>
-                                    {roles.map((r) => (
-                                        <>
-                                            <th key={`${r.id}-e`} className="px-1 py-1 text-[10px] font-semibold text-[#687582] border-l border-[#dde0e4] dark:border-[#2d353e]" title="Email">✉</th>
-                                            <th key={`${r.id}-s`} className="px-1 py-1 text-[10px] font-semibold text-[#687582]" title="SMS">SMS</th>
-                                            <th key={`${r.id}-p`} className="px-1 py-1 text-[10px] font-semibold text-[#687582]" title="Push">🔔</th>
-                                            <th key={`${r.id}-i`} className="px-1 py-1 text-[10px] font-semibold text-[#687582]" title="Inbox">📥</th>
-                                        </>
+                                    {roles.map((r, idx) => (
+                                        <Fragment key={r.id || `role-sub-${idx}`}>
+                                            <th className="px-1 py-1 text-[10px] font-semibold text-[#687582] border-l border-[#dde0e4] dark:border-[#2d353e]" title="Email">✉</th>
+                                            <th className="px-1 py-1 text-[10px] font-semibold text-[#687582]" title="SMS">SMS</th>
+                                            <th className="px-1 py-1 text-[10px] font-semibold text-[#687582]" title="Push">🔔</th>
+                                            <th className="px-1 py-1 text-[10px] font-semibold text-[#687582]" title="Inbox">📥</th>
+                                        </Fragment>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {categories.map((c) => (
-                                    <tr key={c.id} className="border-b border-gray-50 dark:border-gray-800">
+                                {categories.map((c, cIdx) => (
+                                    <tr key={c.id || `cat-${cIdx}`} className="border-b border-gray-50 dark:border-gray-800">
                                         <td className="px-3 py-2 font-medium text-[#121417] dark:text-white text-xs sticky left-0 bg-white dark:bg-[#1e242b]">{c.name}</td>
-                                        {roles.map((r) => {
+                                        {roles.map((r, rIdx) => {
                                             const cfg = getConfig(r.id, c.id);
                                             return (
-                                                <>
-                                                    <td key={`${r.id}-${c.id}-e`} className="px-1 py-1 text-center border-l border-[#dde0e4] dark:border-[#2d353e]">
+                                                <Fragment key={`${r.id || rIdx}-${c.id || cIdx}`}>
+                                                    <td className="px-1 py-1 text-center border-l border-[#dde0e4] dark:border-[#2d353e]">
                                                         <input type="checkbox" checked={cfg.email} onChange={() => toggle(r.id, c.id, "email")} className="w-3 h-3" />
                                                     </td>
-                                                    <td key={`${r.id}-${c.id}-s`} className="px-1 py-1 text-center">
+                                                    <td className="px-1 py-1 text-center">
                                                         <input type="checkbox" checked={cfg.sms} onChange={() => toggle(r.id, c.id, "sms")} className="w-3 h-3" />
                                                     </td>
-                                                    <td key={`${r.id}-${c.id}-p`} className="px-1 py-1 text-center">
+                                                    <td className="px-1 py-1 text-center">
                                                         <input type="checkbox" checked={cfg.push} onChange={() => toggle(r.id, c.id, "push")} className="w-3 h-3" />
                                                     </td>
-                                                    <td key={`${r.id}-${c.id}-i`} className="px-1 py-1 text-center">
+                                                    <td className="px-1 py-1 text-center">
                                                         <input type="checkbox" checked={cfg.inbox} onChange={() => toggle(r.id, c.id, "inbox")} className="w-3 h-3" />
                                                     </td>
-                                                </>
+                                                </Fragment>
                                             );
                                         })}
                                     </tr>

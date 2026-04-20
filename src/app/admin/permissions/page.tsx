@@ -138,8 +138,8 @@ function PermissionsTab() {
                             </div>
                             <table className="w-full text-sm">
                                 <tbody>
-                                    {list.map((p) => (
-                                        <tr key={p.id} className="border-b border-gray-50 dark:border-gray-800">
+                                    {list.map((p, idx) => (
+                                        <tr key={p.id || `perm-${mod}-${idx}`} className="border-b border-gray-50 dark:border-gray-800">
                                             <td className="px-4 py-2 font-mono text-xs text-[#3C81C6] w-64">{p.code}</td>
                                             <td className="px-4 py-2 text-[#121417] dark:text-white">{p.name}</td>
                                             <td className="px-4 py-2 text-xs text-[#687582] dark:text-gray-400">{p.description || "—"}</td>
@@ -217,8 +217,8 @@ function MenusTab() {
                             </tr>
                         </thead>
                         <tbody>
-                            {items.map((m) => (
-                                <tr key={m.id} className="border-b border-gray-50 dark:border-gray-800">
+                            {items.map((m, idx) => (
+                                <tr key={m.id || `menu-${idx}`} className="border-b border-gray-50 dark:border-gray-800">
                                     <td className="px-4 py-3">{m.icon && <span className="material-symbols-outlined text-[#3C81C6]" style={{ fontSize: "20px" }}>{m.icon}</span>}</td>
                                     <td className="px-4 py-3 font-medium text-[#121417] dark:text-white">{m.label}</td>
                                     <td className="px-4 py-3 font-mono text-xs text-[#687582]">{m.code}</td>
@@ -293,8 +293,8 @@ function ApiPermTab() {
                 <div className="bg-white dark:bg-[#1e242b] rounded-2xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm overflow-hidden">
                     <table className="w-full text-sm">
                         <tbody>
-                            {items.map((a) => (
-                                <tr key={a.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
+                            {items.map((a, idx) => (
+                                <tr key={a.id || `api-${idx}`} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
                                     <td className="px-4 py-2 w-24">
                                         <div className={`inline-flex text-[10px] font-bold px-2 py-1 rounded-md ${METHOD_COLORS[a.method] ?? "bg-gray-100 text-gray-700"}`}>{a.method}</div>
                                     </td>

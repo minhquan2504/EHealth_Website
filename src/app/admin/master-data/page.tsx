@@ -136,8 +136,8 @@ export default function MasterDataPage() {
                         <div className="p-4 text-xs text-[#687582] italic">Chưa có danh mục.</div>
                     ) : (
                         <div className="max-h-[600px] overflow-y-auto">
-                            {categories.map((c) => (
-                                <div key={c.id}
+                            {categories.map((c, idx) => (
+                                <div key={c.id || c.code || `cat-${idx}`}
                                     onClick={() => setSelectedCat(c.code)}
                                     className={`flex items-center justify-between gap-2 px-4 py-2.5 cursor-pointer border-b border-gray-50 dark:border-gray-800 ${selectedCat === c.code ? "bg-[#3C81C6]/10 border-l-4 border-l-[#3C81C6]" : "hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]"}`}>
                                     <div className="min-w-0 flex-1">
@@ -177,8 +177,8 @@ export default function MasterDataPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredItems.map((it) => (
-                                        <tr key={it.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
+                                    {filteredItems.map((it, idx) => (
+                                        <tr key={it.id || `item-${idx}`} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
                                             <td className="px-4 py-2.5 font-mono text-xs text-[#3C81C6]">{it.code}</td>
                                             <td className="px-4 py-2.5 text-[#121417] dark:text-white">{it.label}</td>
                                             <td className="px-4 py-2.5 text-right font-mono text-xs">{it.order ?? 0}</td>

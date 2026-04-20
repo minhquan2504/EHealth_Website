@@ -48,22 +48,30 @@ export default function RoleDetailPage() {
     const [loading, setLoading] = useState(true);
     const [tab, setTab] = useState<TabKey>("permissions");
 
-    const loadRole = useCallback(async () => {
-        try {
-            const res = await axiosClient.get(ROLE_ENDPOINTS.DETAIL(roleId));
-            const r = res.data?.data ?? res.data ?? {};
-            setRole({
-                id: String(r.role_id ?? r.roles_id ?? r.id ?? roleId),
-                name: r.name ?? r.role_name ?? "—",
-                code: r.code ?? "",
-                description: r.description ?? "",
-            });
-        } catch {
-            toast.error("Không tải được thông tin vai trò.");
-        } finally { setLoading(false); }
-    }, [roleId, toast]);
-
-    useEffect(() => { if (roleId) loadRole(); }, [roleId, loadRole]);
+    useEffect(() => {
+        if (!roleId) return;
+        let mounted = true;
+        (async () => {
+            try {
+                const res = await axiosClient.get(ROLE_ENDPOINTS.DETAIL(roleId));
+                const r = res.data?.data ?? res.data ?? {};
+                if (mounted) {
+                    setRole({
+                        id: String(r.role_id ?? r.roles_id ?? r.id ?? roleId),
+                        name: r.name ?? r.role_name ?? "—",
+                        code: r.code ?? "",
+                        description: r.description ?? "",
+                    });
+                }
+            } catch {
+                if (mounted) toast.error("Không tải được thông tin vai trò.");
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        })();
+        return () => { mounted = false; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [roleId]);
 
     return (
         <div className="p-6 space-y-6">

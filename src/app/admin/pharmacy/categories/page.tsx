@@ -149,8 +149,8 @@ export default function PharmacyCategoriesPage() {
                 <EmptyState icon="category" title={items.length === 0 ? "Chưa có nhóm thuốc" : "Không khớp tìm kiếm"} description={items.length === 0 ? "Thêm nhóm thuốc đầu tiên." : ""} />
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filtered.map((c) => (
-                        <div key={c.id} className="bg-white dark:bg-[#1e242b] rounded-2xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm overflow-hidden">
+                    {filtered.map((c, idx) => (
+                        <div key={c.id || c.code || `cat-${idx}`} className="bg-white dark:bg-[#1e242b] rounded-2xl border border-[#dde0e4] dark:border-[#2d353e] shadow-sm overflow-hidden">
                             <div className={`h-1.5 bg-gradient-to-r ${c.isActive ? "from-[#3C81C6] to-[#1d4ed8]" : "from-gray-300 to-gray-400"}`} />
                             <div className="p-4">
                                 <div className="flex items-start justify-between gap-2 mb-2">

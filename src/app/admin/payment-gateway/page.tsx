@@ -185,8 +185,8 @@ function OnlineTab() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {orders.map((o) => (
-                                    <tr key={o.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
+                                {orders.map((o, idx) => (
+                                    <tr key={o.id || `online-${idx}`} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
                                         <td className="px-4 py-3 font-mono text-xs text-[#3C81C6]">{o.orderCode}</td>
                                         <td className="px-4 py-3 font-mono text-xs text-[#687582]">{o.invoiceCode || "—"}</td>
                                         <td className="px-4 py-3 text-right font-mono font-semibold text-[#121417] dark:text-white">{formatVND(o.amount)}</td>
@@ -336,8 +336,8 @@ function CashierTab() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {profiles.map((p) => (
-                                    <tr key={p.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
+                                {profiles.map((p, idx) => (
+                                    <tr key={p.id || `profile-${idx}`} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
                                         <td className="px-4 py-3 font-medium text-[#121417] dark:text-white">{p.userName}</td>
                                         <td className="px-4 py-3 text-xs text-[#687582]">{p.facilityName || "—"}</td>
                                         <td className="px-4 py-3 text-right font-mono font-semibold text-[#121417] dark:text-white">{formatVND(p.dailyLimit)}</td>

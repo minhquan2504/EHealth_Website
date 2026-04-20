@@ -176,10 +176,10 @@ export default function BillingInvoicesPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filtered.map((i) => {
+                                {filtered.map((i, idx) => {
                                     const meta = STATUS_META[i.status];
                                     return (
-                                        <tr key={i.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
+                                        <tr key={i.id || `inv-${idx}`} className="border-b border-gray-50 dark:border-gray-800 hover:bg-[#f8f9fa] dark:hover:bg-[#13191f]">
                                             <td className="px-4 py-3 font-mono text-xs text-[#3C81C6]">{i.code}</td>
                                             <td className="px-4 py-3 text-[#121417] dark:text-white">{i.patientName}</td>
                                             <td className="px-4 py-3 font-mono text-xs text-[#687582]">{i.encounterCode || "—"}</td>
