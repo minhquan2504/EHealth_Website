@@ -51,6 +51,14 @@ export const ROUTES = {
     // Điều phối
     APPOINTMENT_CHANGES: "/admin/appointment-changes",
     DOCTOR_AVAILABILITY: "/admin/doctor-availability",
+    // Telemedicine (admin-facing)
+    TELE_TYPES: "/admin/teleconsultation/types",
+    TELE_BOOKINGS: "/admin/teleconsultation/bookings",
+    TELE_ROOMS: "/admin/teleconsultation/rooms",
+    TELE_RESULTS: "/admin/teleconsultation/results",
+    TELE_PRESCRIPTIONS: "/admin/teleconsultation/prescriptions",
+    TELE_FOLLOWUPS: "/admin/teleconsultation/follow-ups",
+    TELE_QUALITY: "/admin/teleconsultation/quality",
     // Kho thuốc
     MEDICINES: "/admin/medicines",
     MEDICINES_IMPORT: "/admin/medicines/import",
@@ -255,6 +263,20 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
       { key: "doctor-load", href: ROUTES.ADMIN.DOCTOR_LOAD, label: "Cân bằng tải bác sĩ" },
       { key: "doctor-availability", href: ROUTES.ADMIN.DOCTOR_AVAILABILITY, label: "Độ rảnh bác sĩ" },
       { key: "appointment-changes", href: ROUTES.ADMIN.APPOINTMENT_CHANGES, label: "Thay đổi lịch hẹn" },
+    ],
+  },
+  {
+    key: "telemedicine",
+    icon: "videocam",
+    label: "Khám từ xa",
+    children: [
+      { key: "tele-types", href: ROUTES.ADMIN.TELE_TYPES, label: "Loại & cấu hình" },
+      { key: "tele-bookings", href: ROUTES.ADMIN.TELE_BOOKINGS, label: "Booking" },
+      { key: "tele-rooms", href: ROUTES.ADMIN.TELE_ROOMS, label: "Room đang hoạt động" },
+      { key: "tele-results", href: ROUTES.ADMIN.TELE_RESULTS, label: "Kết quả khám" },
+      { key: "tele-prescriptions", href: ROUTES.ADMIN.TELE_PRESCRIPTIONS, label: "Đơn thuốc online" },
+      { key: "tele-followups", href: ROUTES.ADMIN.TELE_FOLLOWUPS, label: "Follow-up" },
+      { key: "tele-quality", href: ROUTES.ADMIN.TELE_QUALITY, label: "Chất lượng" },
     ],
   },
   {
