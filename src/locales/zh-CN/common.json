@@ -177,6 +177,8 @@
             "collapseSidebar": "收起侧边栏",
             "doctor": {
                 "dashboard": "首页",
+                "tasks": "今日任务",
+                "alerts": "警报",
                 "appointments": "预约",
                 "queue": "队列",
                 "examination": "诊疗",

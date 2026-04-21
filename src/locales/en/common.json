@@ -177,6 +177,8 @@
             "collapseSidebar": "Collapse sidebar",
             "doctor": {
                 "dashboard": "Home",
+                "tasks": "Today tasks",
+                "alerts": "Alerts",
                 "appointments": "Appointments",
                 "queue": "Queue",
                 "examination": "Examination",

@@ -177,6 +177,8 @@
             "collapseSidebar": "Thu nhỏ sidebar",
             "doctor": {
                 "dashboard": "Trang chủ",
+                "tasks": "Việc cần làm",
+                "alerts": "Cảnh báo",
                 "appointments": "Lịch hẹn",
                 "queue": "Hàng đợi",
                 "examination": "Khám bệnh",

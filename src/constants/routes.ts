@@ -91,6 +91,8 @@ export const ROUTES = {
   PORTAL: {
     DOCTOR: {
       DASHBOARD: "/portal/doctor",
+      TASKS: "/portal/doctor/tasks",
+      ALERTS: "/portal/doctor/alerts",
       APPOINTMENTS: "/portal/doctor/appointments",
       QUEUE: "/portal/doctor/queue",
       EXAMINATION: "/portal/doctor/examination",
@@ -144,6 +146,18 @@ export const DOCTOR_MENU_ITEMS = [
     href: ROUTES.PORTAL.DOCTOR.DASHBOARD,
     icon: "home",
     label: "Trang chủ",
+  },
+  {
+    key: "tasks",
+    href: ROUTES.PORTAL.DOCTOR.TASKS,
+    icon: "checklist",
+    label: "Việc cần làm",
+  },
+  {
+    key: "alerts",
+    href: ROUTES.PORTAL.DOCTOR.ALERTS,
+    icon: "notifications_active",
+    label: "Cảnh báo",
   },
   {
     key: "appointments",
