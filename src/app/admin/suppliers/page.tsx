@@ -7,6 +7,7 @@ import { SUPPLIER_ENDPOINTS } from "@/api/endpoints";
 import { unwrapList } from "@/api/response";
 import { useToast } from "@/contexts/ToastContext";
 import { PageHeader, FilterBar, EmptyState, StatCard } from "@/components/shared/layout";
+import { translateError } from "@/utils/translateError";
 
 interface Supplier {
     id: string;
@@ -54,6 +55,7 @@ export default function SuppliersPage() {
     const toast = useToast();
     const t = useTranslations("pages.suppliers");
     const tc = useTranslations("common");
+    const tErr = useTranslations("errors");
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -130,7 +132,7 @@ export default function SuppliersPage() {
             setShowModal(false);
             await load();
         } catch (err: any) {
-            toast.error(err?.response?.data?.message ?? "Không lưu được.");
+            toast.error(translateError(err, tErr));
         } finally {
             setSaving(false);
         }
@@ -142,8 +144,8 @@ export default function SuppliersPage() {
             await axiosClient.delete(SUPPLIER_ENDPOINTS.DETAIL(s.id));
             toast.success("Đã xoá.");
             await load();
-        } catch {
-            toast.error("Không xoá được.");
+        } catch (err: any) {
+            toast.error(translateError(err, tErr));
         }
     };
 

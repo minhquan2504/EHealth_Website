@@ -236,5 +236,99 @@
             "title": "批量操作与二维码签到",
             "subtitle": "批量预约确认、短信/邮件提醒、快速二维码签到"
         }
+    },
+    "auth": {
+        "login": {
+            "title": "登录",
+            "subtitle": "欢迎回到 EHealth 系统",
+            "redirecting": "正在跳转...",
+            "platformTagline": "数字医疗平台",
+            "heroLine1": "智能",
+            "heroLine2": "数字医疗",
+            "heroLine3": "平台",
+            "heroDescription": "全面的医疗管理系统,集成 AI 辅助诊断、预约管理、电子处方和患者健康监测。",
+            "feature": {
+                "ai": "AI 助手",
+                "aiDesc": "智能诊断",
+                "appointment": "预约",
+                "appointmentDesc": "在线预约",
+                "prescription": "处方",
+                "prescriptionDesc": "电子处方",
+                "monitoring": "监测",
+                "monitoringDesc": "在线健康追踪"
+            },
+            "statPatients": "患者",
+            "statDoctors": "医生",
+            "statSpecialties": "专科",
+            "emailLabel": "邮箱地址",
+            "passwordLabel": "密码",
+            "rememberMe": "记住登录",
+            "forgotPassword": "忘记密码?",
+            "loggingIn": "登录中...",
+            "submit": "登录",
+            "noAccount": "还没有账号?",
+            "registerNow": "立即注册",
+            "copyright": "© 2025 EHealth. 数字医疗系统 — PTH Group",
+            "errorDefault": "登录失败。请检查您的凭据。"
+        },
+        "register": {
+            "title": "注册账号",
+            "subtitle": "创建新账号以使用 EHealth 系统",
+            "fullNameLabel": "姓名",
+            "emailLabel": "邮箱地址",
+            "phoneLabel": "电话号码",
+            "passwordLabel": "密码",
+            "confirmPasswordLabel": "确认密码",
+            "submit": "注册",
+            "registering": "注册中...",
+            "hasAccount": "已有账号?",
+            "loginLink": "登录"
+        },
+        "forgotPassword": {
+            "title": "忘记密码",
+            "subtitle": "输入邮箱以接收密码恢复说明",
+            "emailLabel": "邮箱地址",
+            "submit": "发送请求",
+            "sending": "发送中...",
+            "backToLogin": "返回登录"
+        },
+        "otp": {
+            "title": "OTP 验证",
+            "subtitle": "输入发送到邮箱的 OTP 验证码",
+            "codeLabel": "验证码",
+            "submit": "验证",
+            "verifying": "验证中...",
+            "resend": "重新发送",
+            "resendIn": "{seconds} 秒后重新发送"
+        },
+        "verifyEmail": {
+            "title": "邮箱验证",
+            "subtitle": "请检查邮箱以验证账号",
+            "verifying": "正在验证邮箱...",
+            "success": "验证成功!",
+            "goToLogin": "前往登录"
+        }
+    },
+    "public": {
+        "landing": {
+            "title": "EHealth — 数字医疗平台",
+            "subtitle": "智能医疗,连接医生与患者"
+        },
+        "specialties": {
+            "title": "专科",
+            "subtitle": "医学专科目录"
+        },
+        "booking": {
+            "title": "预约挂号",
+            "subtitle": "在线预约合适的医生"
+        },
+        "doctors": {
+            "title": "查找医生",
+            "subtitle": "按专科和机构查看医生目录"
+        },
+        "doctorDetail": {
+            "title": "医生资料",
+            "subtitle": "专业资料和工作时间"
+        }
     }
 }

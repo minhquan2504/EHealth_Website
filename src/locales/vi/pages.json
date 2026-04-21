@@ -236,5 +236,99 @@
             "title": "Thao tác hàng loạt & QR check-in",
             "subtitle": "Xác nhận lịch hàng loạt, gửi nhắc SMS/email, QR check-in nhanh"
         }
+    },
+    "auth": {
+        "login": {
+            "title": "Đăng nhập",
+            "subtitle": "Chào mừng bạn trở lại hệ thống EHealth",
+            "redirecting": "Đang chuyển hướng...",
+            "platformTagline": "Nền tảng Y tế Số",
+            "heroLine1": "Nền tảng",
+            "heroLine2": "Y tế Số",
+            "heroLine3": "Thông minh",
+            "heroDescription": "Hệ thống quản lý y tế toàn diện, tích hợp AI hỗ trợ chẩn đoán, quản lý lịch hẹn, kê đơn thuốc và theo dõi sức khỏe bệnh nhân.",
+            "feature": {
+                "ai": "AI Hỗ trợ",
+                "aiDesc": "Chẩn đoán thông minh",
+                "appointment": "Lịch hẹn",
+                "appointmentDesc": "Đặt lịch trực tuyến",
+                "prescription": "Kê đơn",
+                "prescriptionDesc": "Thuốc điện tử",
+                "monitoring": "Theo dõi",
+                "monitoringDesc": "Sức khỏe trực tuyến"
+            },
+            "statPatients": "Bệnh nhân",
+            "statDoctors": "Bác sĩ",
+            "statSpecialties": "Chuyên khoa",
+            "emailLabel": "Địa chỉ email",
+            "passwordLabel": "Mật khẩu",
+            "rememberMe": "Ghi nhớ đăng nhập",
+            "forgotPassword": "Quên mật khẩu?",
+            "loggingIn": "Đang đăng nhập...",
+            "submit": "Đăng nhập",
+            "noAccount": "Chưa có tài khoản?",
+            "registerNow": "Đăng ký ngay",
+            "copyright": "© 2025 EHealth. Hệ thống Y tế Số — PTH Group",
+            "errorDefault": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
+        },
+        "register": {
+            "title": "Đăng ký tài khoản",
+            "subtitle": "Tạo tài khoản mới để sử dụng hệ thống EHealth",
+            "fullNameLabel": "Họ và tên",
+            "emailLabel": "Địa chỉ email",
+            "phoneLabel": "Số điện thoại",
+            "passwordLabel": "Mật khẩu",
+            "confirmPasswordLabel": "Xác nhận mật khẩu",
+            "submit": "Đăng ký",
+            "registering": "Đang đăng ký...",
+            "hasAccount": "Đã có tài khoản?",
+            "loginLink": "Đăng nhập"
+        },
+        "forgotPassword": {
+            "title": "Quên mật khẩu",
+            "subtitle": "Nhập email để nhận hướng dẫn khôi phục mật khẩu",
+            "emailLabel": "Địa chỉ email",
+            "submit": "Gửi yêu cầu",
+            "sending": "Đang gửi...",
+            "backToLogin": "Quay lại đăng nhập"
+        },
+        "otp": {
+            "title": "Xác thực OTP",
+            "subtitle": "Nhập mã OTP đã gửi đến email của bạn",
+            "codeLabel": "Mã xác thực",
+            "submit": "Xác thực",
+            "verifying": "Đang xác thực...",
+            "resend": "Gửi lại mã",
+            "resendIn": "Gửi lại sau {seconds}s"
+        },
+        "verifyEmail": {
+            "title": "Xác thực email",
+            "subtitle": "Vui lòng kiểm tra email để xác thực tài khoản",
+            "verifying": "Đang xác thực email...",
+            "success": "Xác thực thành công!",
+            "goToLogin": "Đi đến đăng nhập"
+        }
+    },
+    "public": {
+        "landing": {
+            "title": "EHealth — Nền tảng Y tế Số",
+            "subtitle": "Chăm sóc sức khỏe thông minh, kết nối bác sĩ và bệnh nhân"
+        },
+        "specialties": {
+            "title": "Chuyên khoa",
+            "subtitle": "Danh mục các chuyên khoa y tế"
+        },
+        "booking": {
+            "title": "Đặt lịch khám",
+            "subtitle": "Đặt lịch khám trực tuyến với bác sĩ phù hợp"
+        },
+        "doctors": {
+            "title": "Tìm bác sĩ",
+            "subtitle": "Danh bạ bác sĩ theo chuyên khoa và cơ sở"
+        },
+        "doctorDetail": {
+            "title": "Thông tin bác sĩ",
+            "subtitle": "Hồ sơ chuyên môn và lịch làm việc"
+        }
     }
 }

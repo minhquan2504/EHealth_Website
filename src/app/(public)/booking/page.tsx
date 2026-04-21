@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { PatientNavbar } from "@/components/patient/PatientNavbar";
@@ -48,6 +49,7 @@ const emptyForm: PatientForm = {
 };
 
 function BookingPageInner() {
+    const t = useTranslations("pages.public.booking");
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, isAuthenticated } = useAuth();
@@ -716,8 +718,8 @@ function BookingPageInner() {
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Đặt lịch khám</h1>
-                    <p className="text-gray-500 text-sm">Hoàn thành các bước bên dưới để đặt lịch khám bệnh</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{t("title")}</h1>
+                    <p className="text-gray-500 text-sm">{t("subtitle")}</p>
                 </div>
 
                 {/* Steps */}

@@ -236,5 +236,99 @@
             "title": "Batch Operations & QR Check-in",
             "subtitle": "Batch appointment confirmations, SMS/email reminders, quick QR check-in"
         }
+    },
+    "auth": {
+        "login": {
+            "title": "Sign in",
+            "subtitle": "Welcome back to the EHealth system",
+            "redirecting": "Redirecting...",
+            "platformTagline": "Digital Health Platform",
+            "heroLine1": "Smart",
+            "heroLine2": "Digital Health",
+            "heroLine3": "Platform",
+            "heroDescription": "Comprehensive healthcare management with AI-assisted diagnosis, appointment scheduling, e-prescriptions and patient monitoring.",
+            "feature": {
+                "ai": "AI Assistant",
+                "aiDesc": "Smart diagnosis",
+                "appointment": "Appointments",
+                "appointmentDesc": "Online booking",
+                "prescription": "Prescriptions",
+                "prescriptionDesc": "Electronic Rx",
+                "monitoring": "Monitoring",
+                "monitoringDesc": "Online health tracking"
+            },
+            "statPatients": "Patients",
+            "statDoctors": "Doctors",
+            "statSpecialties": "Specialties",
+            "emailLabel": "Email address",
+            "passwordLabel": "Password",
+            "rememberMe": "Remember me",
+            "forgotPassword": "Forgot password?",
+            "loggingIn": "Signing in...",
+            "submit": "Sign in",
+            "noAccount": "No account yet?",
+            "registerNow": "Register now",
+            "copyright": "© 2025 EHealth. Digital Health System — PTH Group",
+            "errorDefault": "Sign in failed. Please check your credentials."
+        },
+        "register": {
+            "title": "Create account",
+            "subtitle": "Create a new account to use the EHealth system",
+            "fullNameLabel": "Full name",
+            "emailLabel": "Email address",
+            "phoneLabel": "Phone number",
+            "passwordLabel": "Password",
+            "confirmPasswordLabel": "Confirm password",
+            "submit": "Register",
+            "registering": "Registering...",
+            "hasAccount": "Already have an account?",
+            "loginLink": "Sign in"
+        },
+        "forgotPassword": {
+            "title": "Forgot password",
+            "subtitle": "Enter your email to receive password recovery instructions",
+            "emailLabel": "Email address",
+            "submit": "Send request",
+            "sending": "Sending...",
+            "backToLogin": "Back to sign in"
+        },
+        "otp": {
+            "title": "OTP verification",
+            "subtitle": "Enter the OTP code sent to your email",
+            "codeLabel": "Verification code",
+            "submit": "Verify",
+            "verifying": "Verifying...",
+            "resend": "Resend code",
+            "resendIn": "Resend in {seconds}s"
+        },
+        "verifyEmail": {
+            "title": "Verify email",
+            "subtitle": "Please check your email to verify the account",
+            "verifying": "Verifying email...",
+            "success": "Verification successful!",
+            "goToLogin": "Go to sign in"
+        }
+    },
+    "public": {
+        "landing": {
+            "title": "EHealth — Digital Health Platform",
+            "subtitle": "Smart healthcare connecting doctors and patients"
+        },
+        "specialties": {
+            "title": "Specialties",
+            "subtitle": "Catalog of medical specialties"
+        },
+        "booking": {
+            "title": "Book appointment",
+            "subtitle": "Book an online appointment with the right doctor"
+        },
+        "doctors": {
+            "title": "Find doctors",
+            "subtitle": "Doctor directory by specialty and facility"
+        },
+        "doctorDetail": {
+            "title": "Doctor profile",
+            "subtitle": "Professional profile and work schedule"
+        }
     }
 }
