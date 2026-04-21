@@ -166,6 +166,54 @@
             "notifBroadcast": "Broadcast",
             "statisticsOverview": "Overview",
             "statisticsRevenue": "Revenue Report"
+        },
+        "portal": {
+            "doctorTagline": "Doctor Portal",
+            "pharmacistTagline": "Pharmacist",
+            "staffTagline": "Receptionist",
+            "patientTagline": "Patient",
+            "quickBook": "Quick booking",
+            "expandSidebar": "Expand sidebar",
+            "collapseSidebar": "Collapse sidebar",
+            "doctor": {
+                "dashboard": "Home",
+                "appointments": "Appointments",
+                "queue": "Queue",
+                "examination": "Examination",
+                "medicalRecords": "Medical records",
+                "prescriptions": "Prescriptions",
+                "aiAssistant": "AI Assistant",
+                "telemedicine": "Telemedicine",
+                "settings": "Settings"
+            },
+            "pharmacist": {
+                "dashboard": "Home",
+                "prescriptions": "Prescriptions",
+                "dispensing": "Dispensing",
+                "inventory": "Inventory",
+                "settings": "Settings"
+            },
+            "staff": {
+                "dashboard": "Home",
+                "reception": "Reception",
+                "appointments": "Appointments",
+                "queue": "Queue",
+                "patients": "Patients",
+                "billing": "Billing",
+                "settings": "Settings"
+            },
+            "patient": {
+                "dashboard": "Home",
+                "appointments": "My appointments",
+                "patientProfiles": "Patient profiles",
+                "medicalRecords": "Results",
+                "healthRecords": "Health records",
+                "medicationReminders": "Reminders",
+                "billing": "Billing",
+                "telemedicine": "Telemedicine",
+                "aiConsult": "AI Consult",
+                "profile": "Account"
+            }
         }
     },
     "language": {

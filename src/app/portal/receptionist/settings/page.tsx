@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import axiosClient from "@/api/axiosClient";
 import { PROFILE_ENDPOINTS } from "@/api/endpoints";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function ReceptionistSettings() {
+    const t = useTranslations("pages.portal.staff.settings");
     const { user: authUser, updateUser } = useAuth();
     const [profile, setProfile] = useState({
         name: authUser?.fullName || "", email: authUser?.email || "", phone: authUser?.phone || "", role: "Lễ tân"
@@ -56,8 +58,8 @@ export default function ReceptionistSettings() {
     return (
         <div className="p-6 md:p-8"><div className="max-w-3xl mx-auto space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-[#121417] dark:text-white">Cài đặt</h1>
-                <p className="text-sm text-[#687582] mt-1">Quản lý thông tin cá nhân và tùy chỉnh</p>
+                <h1 className="text-2xl font-bold text-[#121417] dark:text-white">{t("title")}</h1>
+                <p className="text-sm text-[#687582] mt-1">{t("subtitle")}</p>
             </div>
 
             {/* Profile */}

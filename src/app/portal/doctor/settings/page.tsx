@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { UI_TEXT } from "@/constants/ui-text";
 import axiosClient from "@/api/axiosClient";
 import { PROFILE_ENDPOINTS } from "@/api/endpoints";
@@ -11,6 +12,7 @@ import { AISettingsTab } from "@/components/portal/ai";
 type SettingsTab = "profile" | "password" | "notifications" | "working_hours" | "appearance" | "ai_preferences";
 
 export default function SettingsPage() {
+    const t = useTranslations("pages.portal.doctor.settings");
     const { user, updateUser } = useAuth();
     const toast = useToast();
     const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
@@ -102,10 +104,10 @@ export default function SettingsPage() {
                 {/* Page Header */}
                 <div>
                     <h2 className="text-2xl font-bold text-[#121417] dark:text-white">
-                        {UI_TEXT.DOCTOR.SETTINGS.TITLE}
+                        {t("title")}
                     </h2>
                     <p className="text-sm text-[#687582] dark:text-gray-400">
-                        {UI_TEXT.DOCTOR.SETTINGS.SUBTITLE}
+                        {t("subtitle")}
                     </p>
                 </div>
 

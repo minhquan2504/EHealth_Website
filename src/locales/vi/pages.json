@@ -330,5 +330,223 @@
             "title": "Thông tin bác sĩ",
             "subtitle": "Hồ sơ chuyên môn và lịch làm việc"
         }
+    },
+    "portal": {
+        "doctor": {
+            "dashboard": {
+                "title": "Tổng quan",
+                "subtitle": "Xin chào, đây là báo cáo hoạt động của bạn hôm nay."
+            },
+            "appointments": {
+                "title": "Quản lý Lịch hẹn",
+                "subtitle": "Xem và quản lý lịch hẹn khám bệnh."
+            },
+            "appointmentsNew": {
+                "title": "Đặt lịch mới",
+                "subtitle": "Tạo lịch hẹn khám mới cho bệnh nhân."
+            },
+            "manageSlots": {
+                "title": "Quản lý khung giờ trống",
+                "subtitle": "Cấu hình slot khám trống cho lịch hẹn."
+            },
+            "queue": {
+                "title": "Hàng đợi thăm khám",
+                "subtitle": "Quản lý hàng đợi bệnh nhân chờ khám."
+            },
+            "examination": {
+                "title": "Khám bệnh",
+                "subtitle": "Thực hiện khám và ghi nhận thông tin bệnh nhân."
+            },
+            "medicalRecords": {
+                "title": "Hồ sơ bệnh án",
+                "subtitle": "Quản lý và xem hồ sơ bệnh án của các bệnh nhân."
+            },
+            "ehr": {
+                "title": "Hồ sơ sức khỏe điện tử (EHR)",
+                "subtitle": "Xem toàn bộ dữ liệu sức khỏe của bệnh nhân."
+            },
+            "encounters": {
+                "title": "Lượt khám",
+                "subtitle": "Lịch sử lượt khám của bệnh nhân."
+            },
+            "diagnosis": {
+                "title": "Chẩn đoán",
+                "subtitle": "Nhập chẩn đoán và kết luận khám."
+            },
+            "clinicalExam": {
+                "title": "Khám lâm sàng",
+                "subtitle": "Ghi nhận triệu chứng lâm sàng và sinh hiệu."
+            },
+            "prescriptions": {
+                "title": "Danh sách đơn thuốc",
+                "subtitle": "Quản lý và theo dõi lịch sử kê đơn."
+            },
+            "prescriptionsNew": {
+                "title": "Tạo đơn thuốc mới",
+                "subtitle": "Kê đơn thuốc cho bệnh nhân."
+            },
+            "aiAssistant": {
+                "title": "Trợ lý AI",
+                "subtitle": "AI hỗ trợ chẩn đoán và kê đơn."
+            },
+            "telemedicine": {
+                "title": "Khám từ xa",
+                "subtitle": "Tư vấn và khám bệnh online."
+            },
+            "settings": {
+                "title": "Cài đặt",
+                "subtitle": "Quản lý thông tin cá nhân và cài đặt hệ thống."
+            }
+        },
+        "pharmacist": {
+            "dashboard": {
+                "title": "Tổng quan dược sĩ",
+                "subtitle": "Thống kê cấp phát thuốc và tồn kho hôm nay."
+            },
+            "prescriptions": {
+                "title": "Đơn thuốc chờ cấp phát",
+                "subtitle": "Danh sách đơn thuốc từ bác sĩ."
+            },
+            "dispensing": {
+                "title": "Cấp phát thuốc",
+                "subtitle": "Xuất thuốc cho bệnh nhân theo đơn."
+            },
+            "inventory": {
+                "title": "Kho thuốc",
+                "subtitle": "Quản lý tồn kho thuốc và vật tư."
+            },
+            "inventoryImport": {
+                "title": "Nhập kho",
+                "subtitle": "Tiếp nhận thuốc từ nhà cung cấp."
+            },
+            "stockOut": {
+                "title": "Xuất kho",
+                "subtitle": "Phiếu xuất kho thuốc."
+            },
+            "settings": {
+                "title": "Cài đặt",
+                "subtitle": "Quản lý thông tin cá nhân."
+            }
+        },
+        "staff": {
+            "dashboard": {
+                "title": "Tổng quan lễ tân",
+                "subtitle": "Hoạt động tiếp nhận và đặt lịch hôm nay."
+            },
+            "reception": {
+                "title": "Tiếp nhận bệnh nhân",
+                "subtitle": "Đăng ký và tiếp nhận bệnh nhân đến khám."
+            },
+            "appointments": {
+                "title": "Quản lý lịch hẹn",
+                "subtitle": "Lịch hẹn khám bệnh của cơ sở."
+            },
+            "appointmentsNew": {
+                "title": "Đặt lịch hẹn mới",
+                "subtitle": "Tạo lịch hẹn cho bệnh nhân."
+            },
+            "queue": {
+                "title": "Hàng đợi",
+                "subtitle": "Quản lý hàng đợi bệnh nhân."
+            },
+            "queueBatch": {
+                "title": "Thao tác hàng loạt & QR check-in",
+                "subtitle": "Xác nhận lịch hàng loạt, gửi nhắc SMS/email, QR check-in nhanh."
+            },
+            "patients": {
+                "title": "Bệnh nhân",
+                "subtitle": "Danh sách bệnh nhân đã đăng ký."
+            },
+            "patientsNew": {
+                "title": "Thêm bệnh nhân mới",
+                "subtitle": "Đăng ký hồ sơ bệnh nhân mới."
+            },
+            "patientDetail": {
+                "title": "Chi tiết bệnh nhân",
+                "subtitle": "Thông tin chi tiết và lịch sử khám."
+            },
+            "billing": {
+                "title": "Thanh toán",
+                "subtitle": "Quản lý hóa đơn và thu viện phí."
+            },
+            "billingNew": {
+                "title": "Tạo hóa đơn mới",
+                "subtitle": "Lập hóa đơn cho bệnh nhân."
+            },
+            "settings": {
+                "title": "Cài đặt",
+                "subtitle": "Quản lý thông tin cá nhân."
+            }
+        },
+        "cashier": {
+            "offline": {
+                "title": "POS thu ngân offline",
+                "subtitle": "Thanh toán tiền mặt tại quầy."
+            }
+        },
+        "patient": {
+            "dashboard": {
+                "title": "Trang chủ bệnh nhân",
+                "subtitle": "Tổng quan sức khỏe và lịch hẹn của bạn."
+            },
+            "appointments": {
+                "title": "Lịch hẹn của tôi",
+                "subtitle": "Danh sách lịch hẹn khám đã đặt."
+            },
+            "appointmentDetail": {
+                "title": "Chi tiết lịch hẹn",
+                "subtitle": "Thông tin chi tiết về lịch hẹn khám."
+            },
+            "patientProfiles": {
+                "title": "Hồ sơ bệnh nhân",
+                "subtitle": "Quản lý hồ sơ bệnh nhân (bản thân + người thân)."
+            },
+            "patientProfileDetail": {
+                "title": "Chi tiết hồ sơ bệnh nhân",
+                "subtitle": "Thông tin đầy đủ của hồ sơ."
+            },
+            "medicalRecords": {
+                "title": "Kết quả khám",
+                "subtitle": "Xem lịch sử khám và kết quả chẩn đoán."
+            },
+            "medicalRecordDetail": {
+                "title": "Chi tiết kết quả khám",
+                "subtitle": "Thông tin đầy đủ của lượt khám."
+            },
+            "healthRecords": {
+                "title": "Hồ sơ sức khỏe",
+                "subtitle": "Theo dõi chỉ số sức khỏe cá nhân."
+            },
+            "medicationReminders": {
+                "title": "Nhắc thuốc",
+                "subtitle": "Lịch uống thuốc và nhắc nhở hàng ngày."
+            },
+            "billing": {
+                "title": "Thanh toán",
+                "subtitle": "Hóa đơn viện phí và lịch sử thanh toán."
+            },
+            "telemedicine": {
+                "title": "Khám từ xa",
+                "subtitle": "Đặt lịch và tham gia phiên tư vấn online."
+            },
+            "telemedicineRoom": {
+                "title": "Phòng tư vấn online",
+                "subtitle": "Phiên khám trực tuyến với bác sĩ."
+            },
+            "aiConsult": {
+                "title": "AI tư vấn sức khỏe",
+                "subtitle": "Tư vấn ban đầu với trợ lý AI."
+            },
+            "profile": {
+                "title": "Tài khoản của tôi",
+                "subtitle": "Thông tin cá nhân và bảo mật."
+            }
+        },
+        "notifications": {
+            "inbox": {
+                "title": "Hộp thư thông báo",
+                "subtitle": "Thông báo từ bệnh viện và hệ thống."
+            }
+        }
     }
 }

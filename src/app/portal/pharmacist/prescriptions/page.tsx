@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { prescriptionService } from "@/services/prescriptionService";
 import { usePageAIContext } from "@/hooks/usePageAIContext";
 
@@ -22,6 +23,7 @@ const COLUMNS: { key: RxStatus; label: string; icon: string; color: string; bgCo
 const INTERACTION_WARNINGS: Record<string, { drugs: string[]; warning: string; severity: "high" | "medium" }> = {};
 
 export default function PharmacistPrescriptions() {
+    const t = useTranslations("pages.portal.pharmacist.prescriptions");
     usePageAIContext({ pageKey: 'prescriptions' });
     const [rxs, setRxs] = useState<RxItem[]>([]);
 
@@ -79,8 +81,8 @@ export default function PharmacistPrescriptions() {
         <div className="p-6 md:p-8"><div className="max-w-full mx-auto space-y-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#121417] dark:text-white">Quản lý Đơn thuốc</h1>
-                    <p className="text-sm text-[#687582] mt-1">Tiếp nhận, kiểm tra và cấp phát đơn thuốc từ bác sĩ</p>
+                    <h1 className="text-2xl font-bold text-[#121417] dark:text-white">{t("title")}</h1>
+                    <p className="text-sm text-[#687582] mt-1">{t("subtitle")}</p>
                 </div>
                 <div className="relative w-full md:w-72">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#687582]" style={{ fontSize: "20px" }}>search</span>

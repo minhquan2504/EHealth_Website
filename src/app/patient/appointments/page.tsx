@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { AppointmentStatusBadge } from "@/components/patient/AppointmentStatusBadge";
 import { AppointmentRescheduleModal } from "@/components/patient/AppointmentRescheduleModal";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,6 +37,7 @@ export default function AppointmentsPage() {
     usePageAIContext({ pageKey: "appointments" });
     const { user } = useAuth();
     const { showToast } = useToast();
+    const tp = useTranslations("pages.portal.patient.appointments");
 
     const [activeTab, setActiveTab] = useState("upcoming");
     const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -148,8 +150,8 @@ export default function AppointmentsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#121417]">Lịch hẹn của tôi</h1>
-                    <p className="mt-0.5 text-sm text-[#687582]">Quản lý tất cả lịch hẹn khám bệnh</p>
+                    <h1 className="text-2xl font-bold text-[#121417]">{tp("title")}</h1>
+                    <p className="mt-0.5 text-sm text-[#687582]">{tp("subtitle")}</p>
                 </div>
                 <Link
                     href="/booking"

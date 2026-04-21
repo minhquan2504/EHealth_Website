@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { emrService } from "@/services/emrService";
 import { encounterService } from "@/services/encounterService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,6 +17,7 @@ const typeConfig: Record<string, { icon: string; color: string; label: string }>
 };
 
 export default function MedicalRecordsPage() {
+    const t = useTranslations("pages.portal.doctor.medicalRecords");
     const router = useRouter();
     const { user } = useAuth();
     const [filterType, setFilterType] = useState("all");
@@ -80,8 +82,8 @@ export default function MedicalRecordsPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#121417] dark:text-white">Hồ sơ sức khỏe điện tử (EHR)</h1>
-                    <p className="text-sm text-[#687582] mt-1">Lộ trình sức khỏe — Nguyễn Văn An (BN001)</p>
+                    <h1 className="text-2xl font-bold text-[#121417] dark:text-white">{t("title")}</h1>
+                    <p className="text-sm text-[#687582] mt-1">{t("subtitle")}</p>
                 </div>
             </div>
 

@@ -166,6 +166,54 @@
             "notifBroadcast": "Gửi broadcast",
             "statisticsOverview": "Tổng quan",
             "statisticsRevenue": "Báo cáo doanh thu"
+        },
+        "portal": {
+            "doctorTagline": "Cổng thông tin Bác sĩ",
+            "pharmacistTagline": "Dược sĩ",
+            "staffTagline": "Lễ tân",
+            "patientTagline": "Bệnh nhân",
+            "quickBook": "Đặt lịch khám nhanh",
+            "expandSidebar": "Mở rộng sidebar",
+            "collapseSidebar": "Thu nhỏ sidebar",
+            "doctor": {
+                "dashboard": "Trang chủ",
+                "appointments": "Lịch hẹn",
+                "queue": "Hàng đợi",
+                "examination": "Khám bệnh",
+                "medicalRecords": "Hồ sơ bệnh án",
+                "prescriptions": "Kê đơn",
+                "aiAssistant": "Trợ lý AI",
+                "telemedicine": "Khám từ xa",
+                "settings": "Cài đặt"
+            },
+            "pharmacist": {
+                "dashboard": "Trang chủ",
+                "prescriptions": "Đơn thuốc",
+                "dispensing": "Cấp phát",
+                "inventory": "Kho thuốc",
+                "settings": "Cài đặt"
+            },
+            "staff": {
+                "dashboard": "Trang chủ",
+                "reception": "Tiếp nhận BN",
+                "appointments": "Lịch hẹn",
+                "queue": "Hàng đợi",
+                "patients": "Bệnh nhân",
+                "billing": "Thanh toán",
+                "settings": "Cài đặt"
+            },
+            "patient": {
+                "dashboard": "Trang chủ",
+                "appointments": "Lịch hẹn của tôi",
+                "patientProfiles": "Hồ sơ bệnh nhân",
+                "medicalRecords": "Kết quả khám",
+                "healthRecords": "Hồ sơ sức khỏe",
+                "medicationReminders": "Nhắc thuốc",
+                "billing": "Thanh toán",
+                "telemedicine": "Khám từ xa",
+                "aiConsult": "AI tư vấn",
+                "profile": "Tài khoản"
+            }
         }
     },
     "language": {

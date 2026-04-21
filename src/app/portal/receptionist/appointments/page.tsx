@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { getAppointments, confirmAppointment, cancelAppointment } from "@/services/appointmentService";
 import { appointmentStatusService } from "@/services/appointmentStatusService";
 import { usePageAIContext } from "@/hooks/usePageAIContext";
@@ -21,6 +22,7 @@ type AptItem = {
 };
 
 export default function ReceptionistAppointments() {
+    const t = useTranslations("pages.portal.staff.appointments");
     usePageAIContext({ pageKey: 'appointments' });
     const router = useRouter();
     const [appointments, setAppointments] = useState<AptItem[]>([]);
@@ -127,8 +129,8 @@ export default function ReceptionistAppointments() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#121417] dark:text-white">Quản lý Lịch hẹn</h1>
-                        <p className="text-sm text-[#687582] mt-1">Xem và quản lý lịch hẹn khám bệnh của bệnh nhân</p>
+                        <h1 className="text-2xl font-bold text-[#121417] dark:text-white">{t("title")}</h1>
+                        <p className="text-sm text-[#687582] mt-1">{t("subtitle")}</p>
                     </div>
                     <button
                         onClick={() => router.push('/portal/receptionist/appointments/new')}

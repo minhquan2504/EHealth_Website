@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { billingService } from "@/services/billingService";
 import { unwrapList } from "@/api/response";
 import { usePageAIContext } from "@/hooks/usePageAIContext";
@@ -29,6 +30,7 @@ type Invoice = { id: string; invoiceNumber: string; patient: string; patientName
 const fmt = (n: number) => (n || 0).toLocaleString("vi-VN") + "đ";
 
 export default function BillingPage() {
+    const t = useTranslations("pages.portal.staff.billing");
     usePageAIContext({ pageKey: 'billing' });
     const router = useRouter();
 
@@ -145,8 +147,8 @@ export default function BillingPage() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#121417] dark:text-white">Thanh toán & Hóa đơn</h1>
-                        <p className="text-sm text-[#687582] mt-1">Quản lý thanh toán viện phí và bảo hiểm</p>
+                        <h1 className="text-2xl font-bold text-[#121417] dark:text-white">{t("title")}</h1>
+                        <p className="text-sm text-[#687582] mt-1">{t("subtitle")}</p>
                     </div>
                     <div className="flex gap-2">
                         <button

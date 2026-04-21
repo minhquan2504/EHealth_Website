@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { getAppointments } from "@/services/appointmentService";
 import { appointmentStatusService } from "@/services/appointmentStatusService";
 import { QueueCard, type QueueStatus, type QueuePriority } from "@/components/shared/cards";
@@ -16,6 +17,7 @@ const STATUS_CFG: Record<string, { label: string; cls: string; icon: string }> =
 };
 
 export default function ReceptionistQueue() {
+    const t = useTranslations("pages.portal.staff.queue");
     const [queue, setQueue] = useState<any[]>([]);
     const [search, setSearch] = useState("");
     const [viewMode, setViewMode] = useState<"table" | "card">("card");
@@ -116,8 +118,8 @@ export default function ReceptionistQueue() {
         <div className="p-6 md:p-8"><div className="max-w-7xl mx-auto space-y-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#121417] dark:text-white">Quản lý Hàng đợi</h1>
-                    <p className="text-sm text-[#687582] mt-1">Theo dõi và điều phối bệnh nhân chờ khám</p>
+                    <h1 className="text-2xl font-bold text-[#121417] dark:text-white">{t("title")}</h1>
+                    <p className="text-sm text-[#687582] mt-1">{t("subtitle")}</p>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
                     <button onClick={() => setAutoRefresh(!autoRefresh)}

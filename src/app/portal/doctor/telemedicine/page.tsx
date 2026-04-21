@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { telemedicineService, TelemedicineSession, DoctorStats, ConsultationResult, Prescription, FollowUp } from "@/services/telemedicineService";
 import { extractErrorMessage } from "@/api/response";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,6 +17,7 @@ const STATUS_MAP: Record<string, { label: string; style: string }> = {
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 export default function TelemedicinePage() {
+    const t = useTranslations("pages.portal.doctor.telemedicine");
     usePageAIContext({ pageKey: "telemedicine" });
     const { user } = useAuth();
 
@@ -513,8 +515,8 @@ export default function TelemedicinePage() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#121417] dark:text-white">Khám từ xa</h1>
-                        <p className="text-sm text-[#687582] mt-1">Quản lý lịch khám trực tuyến và phòng khám ảo</p>
+                        <h1 className="text-2xl font-bold text-[#121417] dark:text-white">{t("title")}</h1>
+                        <p className="text-sm text-[#687582] mt-1">{t("subtitle")}</p>
                     </div>
                     <button className="flex items-center gap-2 px-4 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-medium transition-colors">
                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>video_call</span>Tạo phiên khám mới

@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { UI_TEXT } from "@/constants/ui-text";
 import { ROUTES } from "@/constants/routes";
 import { getAppointments } from "@/services/appointmentService";
@@ -21,6 +22,7 @@ type QueueItem = {
 const DEFAULT_QUEUE_STATS = { waiting: 0, examining: 0, completed: 0, cancelled: 0, total: 0, remaining: 0, avgWaitTime: 0 };
 
 export default function QueuePage() {
+    const t = useTranslations("pages.portal.doctor.queue");
     const router = useRouter();
     const { user } = useAuth();
     const [searchQuery, setSearchQuery] = useState("");
@@ -221,10 +223,10 @@ export default function QueuePage() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
                         <h2 className="text-2xl font-bold text-[#121417] dark:text-white">
-                            {UI_TEXT.DOCTOR.QUEUE.TITLE}
+                            {t("title")}
                         </h2>
                         <p className="text-sm text-[#687582] dark:text-gray-400">
-                            {UI_TEXT.DOCTOR.QUEUE.SUBTITLE}
+                            {t("subtitle")}
                         </p>
                     </div>
                 </div>

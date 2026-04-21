@@ -166,6 +166,54 @@
             "notifBroadcast": "广播",
             "statisticsOverview": "概览",
             "statisticsRevenue": "收入报表"
+        },
+        "portal": {
+            "doctorTagline": "医生门户",
+            "pharmacistTagline": "药剂师",
+            "staffTagline": "前台",
+            "patientTagline": "患者",
+            "quickBook": "快速预约",
+            "expandSidebar": "展开侧边栏",
+            "collapseSidebar": "收起侧边栏",
+            "doctor": {
+                "dashboard": "首页",
+                "appointments": "预约",
+                "queue": "队列",
+                "examination": "诊疗",
+                "medicalRecords": "病历",
+                "prescriptions": "处方",
+                "aiAssistant": "AI 助手",
+                "telemedicine": "远程医疗",
+                "settings": "设置"
+            },
+            "pharmacist": {
+                "dashboard": "首页",
+                "prescriptions": "处方",
+                "dispensing": "发药",
+                "inventory": "库存",
+                "settings": "设置"
+            },
+            "staff": {
+                "dashboard": "首页",
+                "reception": "接诊",
+                "appointments": "预约",
+                "queue": "队列",
+                "patients": "患者",
+                "billing": "结算",
+                "settings": "设置"
+            },
+            "patient": {
+                "dashboard": "首页",
+                "appointments": "我的预约",
+                "patientProfiles": "患者档案",
+                "medicalRecords": "就诊结果",
+                "healthRecords": "健康档案",
+                "medicationReminders": "用药提醒",
+                "billing": "结算",
+                "telemedicine": "远程医疗",
+                "aiConsult": "AI 咨询",
+                "profile": "账号"
+            }
         }
     },
     "language": {

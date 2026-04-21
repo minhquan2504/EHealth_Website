@@ -330,5 +330,223 @@
             "title": "医生资料",
             "subtitle": "专业资料和工作时间"
         }
+    },
+    "portal": {
+        "doctor": {
+            "dashboard": {
+                "title": "概览",
+                "subtitle": "您好,这是您今天的活动报告。"
+            },
+            "appointments": {
+                "title": "预约管理",
+                "subtitle": "查看和管理就诊预约。"
+            },
+            "appointmentsNew": {
+                "title": "新建预约",
+                "subtitle": "为患者创建新的就诊预约。"
+            },
+            "manageSlots": {
+                "title": "管理空闲时段",
+                "subtitle": "为预约配置可用时段。"
+            },
+            "queue": {
+                "title": "就诊队列",
+                "subtitle": "管理等待就诊的患者队列。"
+            },
+            "examination": {
+                "title": "诊疗",
+                "subtitle": "对患者进行检查并记录信息。"
+            },
+            "medicalRecords": {
+                "title": "病历管理",
+                "subtitle": "查看和管理患者病历。"
+            },
+            "ehr": {
+                "title": "电子健康档案(EHR)",
+                "subtitle": "查看患者的完整健康数据。"
+            },
+            "encounters": {
+                "title": "就诊记录",
+                "subtitle": "患者就诊历史。"
+            },
+            "diagnosis": {
+                "title": "诊断",
+                "subtitle": "录入诊断和检查结论。"
+            },
+            "clinicalExam": {
+                "title": "临床检查",
+                "subtitle": "记录临床症状和生命体征。"
+            },
+            "prescriptions": {
+                "title": "处方列表",
+                "subtitle": "管理并跟踪开方历史。"
+            },
+            "prescriptionsNew": {
+                "title": "新建处方",
+                "subtitle": "为患者开具处方。"
+            },
+            "aiAssistant": {
+                "title": "AI 助手",
+                "subtitle": "AI 辅助诊断和开方。"
+            },
+            "telemedicine": {
+                "title": "远程医疗",
+                "subtitle": "在线问诊与远程诊疗。"
+            },
+            "settings": {
+                "title": "设置",
+                "subtitle": "管理个人信息和系统设置。"
+            }
+        },
+        "pharmacist": {
+            "dashboard": {
+                "title": "药剂师概览",
+                "subtitle": "今日发药和库存统计。"
+            },
+            "prescriptions": {
+                "title": "待配处方",
+                "subtitle": "来自医生的待配处方。"
+            },
+            "dispensing": {
+                "title": "发药",
+                "subtitle": "按处方为患者发药。"
+            },
+            "inventory": {
+                "title": "药品库存",
+                "subtitle": "管理药品和耗材库存。"
+            },
+            "inventoryImport": {
+                "title": "入库",
+                "subtitle": "接收供应商的药品。"
+            },
+            "stockOut": {
+                "title": "出库",
+                "subtitle": "药品出库单。"
+            },
+            "settings": {
+                "title": "设置",
+                "subtitle": "管理个人信息。"
+            }
+        },
+        "staff": {
+            "dashboard": {
+                "title": "前台概览",
+                "subtitle": "今日接诊和预约活动。"
+            },
+            "reception": {
+                "title": "患者接诊",
+                "subtitle": "登记和接待到院患者。"
+            },
+            "appointments": {
+                "title": "预约管理",
+                "subtitle": "机构的就诊预约。"
+            },
+            "appointmentsNew": {
+                "title": "新建预约",
+                "subtitle": "为患者创建预约。"
+            },
+            "queue": {
+                "title": "就诊队列",
+                "subtitle": "管理患者等待队列。"
+            },
+            "queueBatch": {
+                "title": "批量操作和二维码签到",
+                "subtitle": "批量确认预约、发送短信/邮件提醒、快速二维码签到。"
+            },
+            "patients": {
+                "title": "患者",
+                "subtitle": "已登记的患者列表。"
+            },
+            "patientsNew": {
+                "title": "新增患者",
+                "subtitle": "登记新的患者档案。"
+            },
+            "patientDetail": {
+                "title": "患者详情",
+                "subtitle": "患者详细信息和就诊历史。"
+            },
+            "billing": {
+                "title": "结算",
+                "subtitle": "管理发票和收取医疗费用。"
+            },
+            "billingNew": {
+                "title": "新建发票",
+                "subtitle": "为患者开具新发票。"
+            },
+            "settings": {
+                "title": "设置",
+                "subtitle": "管理个人信息。"
+            }
+        },
+        "cashier": {
+            "offline": {
+                "title": "线下收银台 POS",
+                "subtitle": "柜台现金支付。"
+            }
+        },
+        "patient": {
+            "dashboard": {
+                "title": "患者首页",
+                "subtitle": "您的健康概览和预约信息。"
+            },
+            "appointments": {
+                "title": "我的预约",
+                "subtitle": "已预约的就诊列表。"
+            },
+            "appointmentDetail": {
+                "title": "预约详情",
+                "subtitle": "预约的详细信息。"
+            },
+            "patientProfiles": {
+                "title": "患者档案",
+                "subtitle": "管理患者档案(本人及家属)。"
+            },
+            "patientProfileDetail": {
+                "title": "档案详情",
+                "subtitle": "档案的完整信息。"
+            },
+            "medicalRecords": {
+                "title": "就诊结果",
+                "subtitle": "查看就诊历史和诊断结果。"
+            },
+            "medicalRecordDetail": {
+                "title": "就诊详情",
+                "subtitle": "本次就诊的完整信息。"
+            },
+            "healthRecords": {
+                "title": "健康档案",
+                "subtitle": "追踪个人健康指标。"
+            },
+            "medicationReminders": {
+                "title": "用药提醒",
+                "subtitle": "每日用药计划和提醒。"
+            },
+            "billing": {
+                "title": "结算",
+                "subtitle": "医院发票和付款历史。"
+            },
+            "telemedicine": {
+                "title": "远程医疗",
+                "subtitle": "预约并参加在线问诊。"
+            },
+            "telemedicineRoom": {
+                "title": "在线问诊室",
+                "subtitle": "与医生进行远程就诊。"
+            },
+            "aiConsult": {
+                "title": "AI 健康咨询",
+                "subtitle": "与 AI 助手进行初步咨询。"
+            },
+            "profile": {
+                "title": "我的账号",
+                "subtitle": "个人信息与安全。"
+            }
+        },
+        "notifications": {
+            "inbox": {
+                "title": "消息中心",
+                "subtitle": "来自医院和系统的通知。"
+            }
+        }
     }
 }
