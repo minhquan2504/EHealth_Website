@@ -31,22 +31,101 @@
     "hospitals": {
         "title": "机构 / 医院",
         "subtitle": "管理系统中的医疗机构",
-        "addButton": "添加机构"
+        "addButton": "添加机构",
+        "stats": {
+            "total": "机构总数",
+            "doctors": "医生总数",
+            "active": "启用中"
+        },
+        "filter": {
+            "searchPlaceholder": "搜索机构..."
+        },
+        "statusLabel": {
+            "active": "启用",
+            "inactive": "停用"
+        },
+        "units": {
+            "doctors": "医生",
+            "departments": "专科"
+        }
     },
     "branches": {
         "title": "分支机构",
         "subtitle": "管理医疗机构的分支",
-        "addButton": "添加分支"
+        "addButton": "添加分支",
+        "stats": {
+            "total": "分支总数",
+            "active": "启用中",
+            "inactive": "已暂停",
+            "facilities": "医疗机构"
+        },
+        "filter": {
+            "searchPlaceholder": "按编号、名称、地址、电话搜索..."
+        },
+        "statusLabel": {
+            "active": "启用",
+            "inactive": "已暂停"
+        }
     },
     "departments": {
         "title": "科室",
         "subtitle": "管理医院内的科室",
-        "addButton": "添加科室"
+        "addButton": "添加科室",
+        "stats": {
+            "total": "科室总数",
+            "active": "启用科室",
+            "totalDoctors": "医生总数",
+            "totalPatients": "患者总数"
+        },
+        "filter": {
+            "searchPlaceholder": "按名称、科室编号搜索..."
+        },
+        "statusLabel": {
+            "active": "启用",
+            "inactive": "停用",
+            "maintenance": "维护中"
+        }
     },
     "specialties": {
         "title": "专科",
         "subtitle": "医学专科目录",
-        "addButton": "添加专科"
+        "addButton": "添加专科",
+        "stats": {
+            "total": "专科总数",
+            "active": "启用中",
+            "doctors": "医生总数",
+            "services": "服务总数"
+        },
+        "filter": {
+            "searchPlaceholder": "按编号或名称搜索..."
+        },
+        "statusLabel": {
+            "active": "启用",
+            "inactive": "停用"
+        },
+        "units": {
+            "doctors": "医生",
+            "services": "服务"
+        },
+        "empty": {
+            "none": "暂无专科",
+            "noneDesc": "添加第一个专科。",
+            "noMatch": "无匹配搜索结果",
+            "noMatchDesc": "请尝试更换关键词。"
+        },
+        "modal": {
+            "titleCreate": "添加专科",
+            "titleEdit": "编辑专科",
+            "code": "编号",
+            "icon": "图标",
+            "name": "名称",
+            "description": "描述",
+            "iconPreview": "图标预览:"
+        },
+        "toast": {
+            "requiredCodeName": "请输入专科编号和名称。",
+            "loadError": "无法加载专科数据。"
+        }
     },
     "services": {
         "title": "医疗服务",
@@ -67,7 +146,22 @@
     "beds": {
         "title": "病床",
         "subtitle": "按房间和使用状态管理病床资源",
-        "addButton": "添加病床"
+        "addButton": "添加病床",
+        "stats": {
+            "total": "病床总数",
+            "available": "可用",
+            "occupied": "使用中",
+            "maintenance": "维护中"
+        },
+        "filter": {
+            "searchPlaceholder": "按编号、名称、房间、患者搜索..."
+        },
+        "statusLabel": {
+            "available": "可用",
+            "occupied": "使用中",
+            "maintenance": "维护中",
+            "reserved": "已预留"
+        }
     },
     "shifts": {
         "title": "班次",
@@ -132,12 +226,106 @@
     "suppliers": {
         "title": "供应商",
         "subtitle": "管理药品和医疗用品供应商",
-        "addButton": "添加供应商"
+        "addButton": "添加供应商",
+        "stats": {
+            "total": "供应商总数",
+            "active": "合作中",
+            "inactive": "已停用",
+            "withContact": "有联系方式"
+        },
+        "filter": {
+            "searchPlaceholder": "按编号、名称、税号、电话搜索...",
+            "active": "合作中",
+            "inactive": "已停用"
+        },
+        "table": {
+            "codeName": "编号 / 名称",
+            "taxCode": "税号",
+            "contact": "联系方式",
+            "address": "地址"
+        },
+        "statusLabel": {
+            "active": "合作中",
+            "inactive": "已停用"
+        },
+        "empty": {
+            "none": "暂无供应商",
+            "noneDesc": "添加第一个供应商以开始入库。",
+            "noMatch": "未匹配筛选条件",
+            "noMatchDesc": "请尝试更换关键词。"
+        },
+        "modal": {
+            "titleCreate": "添加供应商",
+            "titleEdit": "编辑供应商",
+            "code": "供应商编号",
+            "codePlaceholder": "如:NCC001",
+            "taxCode": "税号",
+            "name": "供应商名称",
+            "contactPerson": "联系人",
+            "phone": "电话",
+            "email": "邮箱",
+            "address": "地址",
+            "note": "备注"
+        },
+        "toast": {
+            "requiredCodeName": "请输入供应商编号和名称。",
+            "loadError": "无法加载供应商列表。"
+        }
     },
     "warehouses": {
         "title": "仓库管理",
         "subtitle": "物资、药品和设备仓库",
-        "addButton": "添加仓库"
+        "addButton": "添加仓库",
+        "stats": {
+            "total": "仓库总数",
+            "active": "使用中",
+            "pharmacy": "药品仓",
+            "equipment": "设备仓"
+        },
+        "filter": {
+            "searchPlaceholder": "按编号、名称、管理员搜索...",
+            "typeLabel": "仓库类型",
+            "allTypes": "全部类型"
+        },
+        "type": {
+            "main": "主仓库",
+            "pharmacy": "药品仓",
+            "equipment": "设备仓",
+            "consumable": "耗材仓",
+            "other": "其他"
+        },
+        "statusLabel": {
+            "active": "使用中",
+            "inactive": "已停用"
+        },
+        "empty": {
+            "none": "暂无仓库",
+            "noneDesc": "添加第一个仓库。",
+            "noMatch": "没有匹配的仓库",
+            "noMatchDesc": "请尝试更改筛选条件。"
+        },
+        "modal": {
+            "titleCreate": "添加仓库",
+            "titleEdit": "编辑仓库",
+            "code": "仓库编号",
+            "type": "仓库类型",
+            "name": "仓库名称",
+            "manager": "仓库管理员",
+            "phone": "电话",
+            "address": "地址",
+            "note": "备注"
+        },
+        "actions": {
+            "activate": "启用",
+            "deactivate": "停用"
+        },
+        "toast": {
+            "requiredCodeName": "请输入仓库编号和名称。",
+            "loadError": "无法加载仓库列表。",
+            "activated": "已启用。",
+            "deactivated": "已停用。",
+            "toggleFailed": "无法更改状态。"
+        }
     },
     "pharmacyCategories": {
         "title": "药品分类",

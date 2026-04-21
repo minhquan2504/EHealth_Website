@@ -221,14 +221,14 @@ export default function BranchesAdminPage() {
             />
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard label="Tổng chi nhánh" value={stats.total} icon="apartment" color="blue" loading={loading} />
-                <StatCard label={tc("status.active")} value={stats.active} icon="check_circle" color="emerald" loading={loading} />
-                <StatCard label="Tạm dừng" value={stats.inactive} icon="pause_circle" color="amber" loading={loading} />
-                <StatCard label="Cơ sở y tế" value={stats.facilities} icon="domain" color="violet" loading={loading} />
+                <StatCard label={t("stats.total")} value={stats.total} icon="apartment" color="blue" loading={loading} />
+                <StatCard label={t("stats.active")} value={stats.active} icon="check_circle" color="emerald" loading={loading} />
+                <StatCard label={t("stats.inactive")} value={stats.inactive} icon="pause_circle" color="amber" loading={loading} />
+                <StatCard label={t("stats.facilities")} value={stats.facilities} icon="domain" color="violet" loading={loading} />
             </div>
 
             <FilterBar
-                searchPlaceholder="Tìm theo mã, tên, địa chỉ, SĐT..."
+                searchPlaceholder={t("filter.searchPlaceholder")}
                 searchValue={search}
                 onSearchChange={setSearch}
                 filters={[
@@ -307,7 +307,7 @@ export default function BranchesAdminPage() {
                                                 : "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
                                         }`}
                                     >
-                                        {b.status === "ACTIVE" ? "Hoạt động" : "Tạm dừng"}
+                                        {b.status === "ACTIVE" ? t("statusLabel.active") : t("statusLabel.inactive")}
                                     </span>
                                 </div>
 

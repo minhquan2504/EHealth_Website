@@ -174,11 +174,11 @@ export default function DepartmentsPage() {
     const getStatusStyle = (status: string) => {
         switch (status) {
             case DEPARTMENT_STATUS.ACTIVE:
-                return { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-400", dot: "bg-green-500", label: UI_TEXT.STATUS.ACTIVE };
+                return { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-400", dot: "bg-green-500", label: t("statusLabel.active") };
             case DEPARTMENT_STATUS.INACTIVE:
-                return { bg: "bg-gray-100 dark:bg-gray-700", text: "text-gray-600 dark:text-gray-400", dot: "bg-gray-400", label: UI_TEXT.STATUS.INACTIVE };
+                return { bg: "bg-gray-100 dark:bg-gray-700", text: "text-gray-600 dark:text-gray-400", dot: "bg-gray-400", label: t("statusLabel.inactive") };
             case DEPARTMENT_STATUS.MAINTENANCE:
-                return { bg: "bg-orange-100 dark:bg-orange-900/30", text: "text-orange-700 dark:text-orange-400", dot: "bg-orange-500", label: UI_TEXT.STATUS.MAINTENANCE };
+                return { bg: "bg-orange-100 dark:bg-orange-900/30", text: "text-orange-700 dark:text-orange-400", dot: "bg-orange-500", label: t("statusLabel.maintenance") };
             default:
                 return { bg: "bg-gray-100", text: "text-gray-600", dot: "bg-gray-400", label: status };
         }
@@ -239,7 +239,7 @@ export default function DepartmentsPage() {
                         <span className="material-symbols-outlined">category</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">{UI_TEXT.ADMIN.DEPARTMENTS.TOTAL_DEPARTMENTS}</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.total")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">{dynamicStats.total}</p>
                     </div>
                 </div>
@@ -249,7 +249,7 @@ export default function DepartmentsPage() {
                         <span className="material-symbols-outlined">check_circle</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">{UI_TEXT.ADMIN.DEPARTMENTS.ACTIVE_DEPARTMENTS}</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.active")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">{dynamicStats.active}</p>
                     </div>
                 </div>
@@ -259,7 +259,7 @@ export default function DepartmentsPage() {
                         <span className="material-symbols-outlined">stethoscope</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">{UI_TEXT.ADMIN.DEPARTMENTS.TOTAL_DOCTORS}</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.totalDoctors")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">{dynamicStats.totalDoctors}</p>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ export default function DepartmentsPage() {
                         <span className="material-symbols-outlined">personal_injury</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">{UI_TEXT.ADMIN.DEPARTMENTS.TOTAL_PATIENTS}</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.totalPatients")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">{dynamicStats.totalPatients}</p>
                     </div>
                 </div>
@@ -286,7 +286,7 @@ export default function DepartmentsPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full py-2.5 pl-10 pr-4 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 focus:border-[#3C81C6] transition-all dark:text-white placeholder:text-gray-400"
-                        placeholder={UI_TEXT.ADMIN.DEPARTMENTS.SEARCH_PLACEHOLDER}
+                        placeholder={t("filter.searchPlaceholder")}
                     />
                 </div>
 

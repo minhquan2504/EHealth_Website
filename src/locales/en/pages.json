@@ -31,22 +31,101 @@
     "hospitals": {
         "title": "Facilities / Hospitals",
         "subtitle": "Manage medical facilities in the system",
-        "addButton": "Add facility"
+        "addButton": "Add facility",
+        "stats": {
+            "total": "Total facilities",
+            "doctors": "Total doctors",
+            "active": "Active"
+        },
+        "filter": {
+            "searchPlaceholder": "Search facilities..."
+        },
+        "statusLabel": {
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "units": {
+            "doctors": "doctors",
+            "departments": "departments"
+        }
     },
     "branches": {
         "title": "Branches",
         "subtitle": "Manage branches of medical facilities",
-        "addButton": "Add branch"
+        "addButton": "Add branch",
+        "stats": {
+            "total": "Total branches",
+            "active": "Active",
+            "inactive": "Paused",
+            "facilities": "Facilities"
+        },
+        "filter": {
+            "searchPlaceholder": "Search by code, name, address, phone..."
+        },
+        "statusLabel": {
+            "active": "Active",
+            "inactive": "Paused"
+        }
     },
     "departments": {
         "title": "Departments",
         "subtitle": "Manage departments within the hospital",
-        "addButton": "Add department"
+        "addButton": "Add department",
+        "stats": {
+            "total": "Total departments",
+            "active": "Active departments",
+            "totalDoctors": "Total doctors",
+            "totalPatients": "Total patients"
+        },
+        "filter": {
+            "searchPlaceholder": "Search by name, department code..."
+        },
+        "statusLabel": {
+            "active": "Active",
+            "inactive": "Inactive",
+            "maintenance": "Maintenance"
+        }
     },
     "specialties": {
         "title": "Specialties",
         "subtitle": "Medical specialty catalog",
-        "addButton": "Add specialty"
+        "addButton": "Add specialty",
+        "stats": {
+            "total": "Total specialties",
+            "active": "Active",
+            "doctors": "Total doctors",
+            "services": "Total services"
+        },
+        "filter": {
+            "searchPlaceholder": "Search by code or name..."
+        },
+        "statusLabel": {
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "units": {
+            "doctors": "doctors",
+            "services": "services"
+        },
+        "empty": {
+            "none": "No specialties yet",
+            "noneDesc": "Add the first specialty.",
+            "noMatch": "No search matches",
+            "noMatchDesc": "Try changing the keywords."
+        },
+        "modal": {
+            "titleCreate": "Add specialty",
+            "titleEdit": "Edit specialty",
+            "code": "Code",
+            "icon": "Icon",
+            "name": "Name",
+            "description": "Description",
+            "iconPreview": "Preview icon:"
+        },
+        "toast": {
+            "requiredCodeName": "Please enter the specialty code and name.",
+            "loadError": "Could not load specialties."
+        }
     },
     "services": {
         "title": "Medical Services",
@@ -67,7 +146,22 @@
     "beds": {
         "title": "Hospital Beds",
         "subtitle": "Manage bed resources by room and occupancy status",
-        "addButton": "Add bed"
+        "addButton": "Add bed",
+        "stats": {
+            "total": "Total beds",
+            "available": "Available",
+            "occupied": "Occupied",
+            "maintenance": "Maintenance"
+        },
+        "filter": {
+            "searchPlaceholder": "Search by code, name, room, patient..."
+        },
+        "statusLabel": {
+            "available": "Available",
+            "occupied": "Occupied",
+            "maintenance": "Maintenance",
+            "reserved": "Reserved"
+        }
     },
     "shifts": {
         "title": "Work Shifts",
@@ -132,12 +226,106 @@
     "suppliers": {
         "title": "Suppliers",
         "subtitle": "Manage drug and medical supply suppliers",
-        "addButton": "Add supplier"
+        "addButton": "Add supplier",
+        "stats": {
+            "total": "Total suppliers",
+            "active": "Active",
+            "inactive": "Inactive",
+            "withContact": "With contact info"
+        },
+        "filter": {
+            "searchPlaceholder": "Search by code, name, tax, phone...",
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "table": {
+            "codeName": "Code / Name",
+            "taxCode": "Tax code",
+            "contact": "Contact",
+            "address": "Address"
+        },
+        "statusLabel": {
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "empty": {
+            "none": "No suppliers yet",
+            "noneDesc": "Add the first supplier to start stocking.",
+            "noMatch": "No matches for filters",
+            "noMatchDesc": "Try changing the keywords."
+        },
+        "modal": {
+            "titleCreate": "Add supplier",
+            "titleEdit": "Edit supplier",
+            "code": "Supplier code",
+            "codePlaceholder": "e.g., SUP001",
+            "taxCode": "Tax code",
+            "name": "Supplier name",
+            "contactPerson": "Contact person",
+            "phone": "Phone",
+            "email": "Email",
+            "address": "Address",
+            "note": "Note"
+        },
+        "toast": {
+            "requiredCodeName": "Please enter supplier code and name.",
+            "loadError": "Could not load the supplier list."
+        }
     },
     "warehouses": {
         "title": "Warehouse Management",
         "subtitle": "Supply, drug, and equipment warehouses",
-        "addButton": "Add warehouse"
+        "addButton": "Add warehouse",
+        "stats": {
+            "total": "Total warehouses",
+            "active": "Active",
+            "pharmacy": "Pharmacy",
+            "equipment": "Equipment"
+        },
+        "filter": {
+            "searchPlaceholder": "Search by code, name, manager...",
+            "typeLabel": "Warehouse type",
+            "allTypes": "All types"
+        },
+        "type": {
+            "main": "Main",
+            "pharmacy": "Pharmacy",
+            "equipment": "Equipment",
+            "consumable": "Consumables",
+            "other": "Other"
+        },
+        "statusLabel": {
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "empty": {
+            "none": "No warehouses yet",
+            "noneDesc": "Add the first warehouse.",
+            "noMatch": "No matching warehouses",
+            "noMatchDesc": "Try changing the filters."
+        },
+        "modal": {
+            "titleCreate": "Add warehouse",
+            "titleEdit": "Edit warehouse",
+            "code": "Warehouse code",
+            "type": "Warehouse type",
+            "name": "Warehouse name",
+            "manager": "Warehouse manager",
+            "phone": "Phone",
+            "address": "Address",
+            "note": "Note"
+        },
+        "actions": {
+            "activate": "Activate",
+            "deactivate": "Deactivate"
+        },
+        "toast": {
+            "requiredCodeName": "Please enter the warehouse code and name.",
+            "loadError": "Could not load the warehouse list.",
+            "activated": "Activated.",
+            "deactivated": "Deactivated.",
+            "toggleFailed": "Could not change status."
+        }
     },
     "pharmacyCategories": {
         "title": "Drug Categories",

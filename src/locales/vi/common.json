@@ -220,5 +220,41 @@
         "label": "Ngôn ngữ",
         "switch": "Đổi ngôn ngữ",
         "current": "Ngôn ngữ hiện tại"
+    },
+    "toast": {
+        "saved": "Đã lưu.",
+        "created": "Đã tạo.",
+        "updated": "Đã cập nhật.",
+        "deleted": "Đã xoá.",
+        "saveFailed": "Lưu thất bại.",
+        "deleteFailed": "Xoá thất bại.",
+        "loadFailed": "Không tải được dữ liệu.",
+        "requiredFields": "Vui lòng nhập đầy đủ thông tin bắt buộc.",
+        "operationSuccess": "Thao tác thành công.",
+        "operationFailed": "Thao tác thất bại."
+    },
+    "form": {
+        "required": "*",
+        "optional": "(tuỳ chọn)",
+        "saving": "Đang lưu...",
+        "placeholder": "Nhập nội dung..."
+    },
+    "filter": {
+        "all": "Tất cả",
+        "searchPlaceholder": "Tìm kiếm...",
+        "status": "Trạng thái",
+        "reset": "Đặt lại bộ lọc"
+    },
+    "table": {
+        "actions": "Thao tác",
+        "empty": "Không có dữ liệu",
+        "editTitle": "Sửa",
+        "deleteTitle": "Xoá",
+        "viewTitle": "Xem chi tiết",
+        "loading": "Đang tải..."
+    },
+    "confirm": {
+        "deleteGeneric": "Bạn có chắc chắn muốn xoá?",
+        "deleteNamed": "Xoá \"{name}\"?"
     }
 }

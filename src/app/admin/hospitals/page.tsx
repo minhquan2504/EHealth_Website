@@ -73,7 +73,7 @@ export default function HospitalsPage() {
                         <span className="material-symbols-outlined">domain</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">Tổng cơ sở</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.total")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">{hospitals.length}</p>
                     </div>
                 </div>
@@ -91,7 +91,7 @@ export default function HospitalsPage() {
                         <span className="material-symbols-outlined">stethoscope</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">Tổng bác sĩ</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.doctors")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">{hospitals.reduce((a, h) => a + h.doctorCount, 0)}</p>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ export default function HospitalsPage() {
                         </span>
                         <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full py-2.5 pl-10 pr-4 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3C81C6]/20 transition-all dark:text-white placeholder:text-gray-400"
-                            placeholder="Tìm kiếm cơ sở..." />
+                            placeholder={t("filter.searchPlaceholder")} />
                     </div>
                 </div>
 
@@ -120,7 +120,7 @@ export default function HospitalsPage() {
                                     <p className="text-xs text-[#687582] dark:text-gray-400 mt-0.5">{hospital.code} • {hospital.type}</p>
                                 </div>
                                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${hospital.status === "active" ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}>
-                                    {hospital.status === "active" ? "Hoạt động" : "Tạm ngưng"}
+                                    {hospital.status === "active" ? t("statusLabel.active") : t("statusLabel.inactive")}
                                 </span>
                             </div>
                             <div className="space-y-2 text-sm text-[#687582] dark:text-gray-400">
@@ -135,10 +135,10 @@ export default function HospitalsPage() {
                             </div>
                             <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
                                 <span className="text-xs text-[#687582] dark:text-gray-400">
-                                    <span className="font-bold text-[#121417] dark:text-white">{hospital.doctorCount}</span> bác sĩ
+                                    <span className="font-bold text-[#121417] dark:text-white">{hospital.doctorCount}</span> {t("units.doctors")}
                                 </span>
                                 <span className="text-xs text-[#687582] dark:text-gray-400">
-                                    <span className="font-bold text-[#121417] dark:text-white">{hospital.departmentCount}</span> chuyên khoa
+                                    <span className="font-bold text-[#121417] dark:text-white">{hospital.departmentCount}</span> {t("units.departments")}
                                 </span>
                             </div>
                         </div>

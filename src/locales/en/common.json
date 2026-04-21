@@ -220,5 +220,41 @@
         "label": "Language",
         "switch": "Switch language",
         "current": "Current language"
+    },
+    "toast": {
+        "saved": "Saved.",
+        "created": "Created.",
+        "updated": "Updated.",
+        "deleted": "Deleted.",
+        "saveFailed": "Save failed.",
+        "deleteFailed": "Delete failed.",
+        "loadFailed": "Failed to load data.",
+        "requiredFields": "Please fill in all required fields.",
+        "operationSuccess": "Operation succeeded.",
+        "operationFailed": "Operation failed."
+    },
+    "form": {
+        "required": "*",
+        "optional": "(optional)",
+        "saving": "Saving...",
+        "placeholder": "Enter content..."
+    },
+    "filter": {
+        "all": "All",
+        "searchPlaceholder": "Search...",
+        "status": "Status",
+        "reset": "Reset filters"
+    },
+    "table": {
+        "actions": "Actions",
+        "empty": "No data",
+        "editTitle": "Edit",
+        "deleteTitle": "Delete",
+        "viewTitle": "View details",
+        "loading": "Loading..."
+    },
+    "confirm": {
+        "deleteGeneric": "Are you sure you want to delete?",
+        "deleteNamed": "Delete \"{name}\"?"
     }
 }

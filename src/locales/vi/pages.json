@@ -31,22 +31,101 @@
     "hospitals": {
         "title": "Cơ sở / Bệnh viện",
         "subtitle": "Quản lý thông tin các cơ sở y tế trong hệ thống",
-        "addButton": "Thêm cơ sở"
+        "addButton": "Thêm cơ sở",
+        "stats": {
+            "total": "Tổng cơ sở",
+            "doctors": "Tổng bác sĩ",
+            "active": "Đang hoạt động"
+        },
+        "filter": {
+            "searchPlaceholder": "Tìm kiếm cơ sở..."
+        },
+        "statusLabel": {
+            "active": "Hoạt động",
+            "inactive": "Tạm ngưng"
+        },
+        "units": {
+            "doctors": "bác sĩ",
+            "departments": "chuyên khoa"
+        }
     },
     "branches": {
         "title": "Chi nhánh",
         "subtitle": "Quản lý các chi nhánh của cơ sở y tế",
-        "addButton": "Thêm chi nhánh"
+        "addButton": "Thêm chi nhánh",
+        "stats": {
+            "total": "Tổng chi nhánh",
+            "active": "Đang hoạt động",
+            "inactive": "Tạm dừng",
+            "facilities": "Cơ sở y tế"
+        },
+        "filter": {
+            "searchPlaceholder": "Tìm theo mã, tên, địa chỉ, SĐT..."
+        },
+        "statusLabel": {
+            "active": "Hoạt động",
+            "inactive": "Tạm dừng"
+        }
     },
     "departments": {
         "title": "Khoa / Phòng ban",
         "subtitle": "Quản lý các khoa chức năng trong bệnh viện",
-        "addButton": "Thêm khoa"
+        "addButton": "Thêm khoa",
+        "stats": {
+            "total": "Tổng số khoa",
+            "active": "Khoa hoạt động",
+            "totalDoctors": "Tổng bác sĩ",
+            "totalPatients": "Tổng bệnh nhân"
+        },
+        "filter": {
+            "searchPlaceholder": "Tìm kiếm theo tên, mã khoa..."
+        },
+        "statusLabel": {
+            "active": "Hoạt động",
+            "inactive": "Tạm ngưng",
+            "maintenance": "Bảo trì"
+        }
     },
     "specialties": {
         "title": "Chuyên khoa",
         "subtitle": "Danh mục chuyên khoa y tế",
-        "addButton": "Thêm chuyên khoa"
+        "addButton": "Thêm chuyên khoa",
+        "stats": {
+            "total": "Tổng chuyên khoa",
+            "active": "Đang hoạt động",
+            "doctors": "Tổng bác sĩ",
+            "services": "Tổng dịch vụ"
+        },
+        "filter": {
+            "searchPlaceholder": "Tìm theo mã hoặc tên..."
+        },
+        "statusLabel": {
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "units": {
+            "doctors": "bác sĩ",
+            "services": "dịch vụ"
+        },
+        "empty": {
+            "none": "Chưa có chuyên khoa",
+            "noneDesc": "Thêm chuyên khoa đầu tiên.",
+            "noMatch": "Không khớp tìm kiếm",
+            "noMatchDesc": "Thử đổi từ khoá."
+        },
+        "modal": {
+            "titleCreate": "Thêm chuyên khoa",
+            "titleEdit": "Sửa chuyên khoa",
+            "code": "Mã",
+            "icon": "Icon",
+            "name": "Tên",
+            "description": "Mô tả",
+            "iconPreview": "Preview icon:"
+        },
+        "toast": {
+            "requiredCodeName": "Nhập mã và tên chuyên khoa.",
+            "loadError": "Không tải được chuyên khoa."
+        }
     },
     "services": {
         "title": "Dịch vụ y tế",
@@ -67,7 +146,22 @@
     "beds": {
         "title": "Giường bệnh",
         "subtitle": "Quản lý tài nguyên giường bệnh theo phòng và tình trạng",
-        "addButton": "Tạo giường"
+        "addButton": "Tạo giường",
+        "stats": {
+            "total": "Tổng giường",
+            "available": "Sẵn sàng",
+            "occupied": "Đang dùng",
+            "maintenance": "Bảo trì"
+        },
+        "filter": {
+            "searchPlaceholder": "Tìm theo mã, tên, phòng, bệnh nhân..."
+        },
+        "statusLabel": {
+            "available": "Sẵn sàng",
+            "occupied": "Đang dùng",
+            "maintenance": "Bảo trì",
+            "reserved": "Đã giữ"
+        }
     },
     "shifts": {
         "title": "Ca làm việc",
@@ -132,12 +226,106 @@
     "suppliers": {
         "title": "Nhà cung cấp",
         "subtitle": "Quản lý thông tin các nhà cung cấp thuốc và vật tư y tế",
-        "addButton": "Thêm NCC"
+        "addButton": "Thêm NCC",
+        "stats": {
+            "total": "Tổng NCC",
+            "active": "Đang hợp tác",
+            "inactive": "Ngưng hợp tác",
+            "withContact": "Có thông tin liên hệ"
+        },
+        "filter": {
+            "searchPlaceholder": "Tìm theo mã, tên, MST, SĐT...",
+            "active": "Đang hợp tác",
+            "inactive": "Ngưng"
+        },
+        "table": {
+            "codeName": "Mã / Tên",
+            "taxCode": "MST",
+            "contact": "Liên hệ",
+            "address": "Địa chỉ"
+        },
+        "statusLabel": {
+            "active": "Đang hợp tác",
+            "inactive": "Ngưng"
+        },
+        "empty": {
+            "none": "Chưa có NCC",
+            "noneDesc": "Thêm NCC đầu tiên để bắt đầu nhập kho.",
+            "noMatch": "Không khớp bộ lọc",
+            "noMatchDesc": "Thử đổi từ khoá."
+        },
+        "modal": {
+            "titleCreate": "Thêm nhà cung cấp",
+            "titleEdit": "Sửa nhà cung cấp",
+            "code": "Mã NCC",
+            "codePlaceholder": "VD: NCC001",
+            "taxCode": "Mã số thuế",
+            "name": "Tên NCC",
+            "contactPerson": "Người liên hệ",
+            "phone": "SĐT",
+            "email": "Email",
+            "address": "Địa chỉ",
+            "note": "Ghi chú"
+        },
+        "toast": {
+            "requiredCodeName": "Nhập mã và tên NCC.",
+            "loadError": "Không tải được danh sách nhà cung cấp."
+        }
     },
     "warehouses": {
         "title": "Quản lý kho",
         "subtitle": "Các kho vật tư, dược phẩm và thiết bị y tế trong cơ sở",
-        "addButton": "Thêm kho"
+        "addButton": "Thêm kho",
+        "stats": {
+            "total": "Tổng kho",
+            "active": "Đang hoạt động",
+            "pharmacy": "Kho dược",
+            "equipment": "Kho thiết bị"
+        },
+        "filter": {
+            "searchPlaceholder": "Tìm theo mã, tên, quản lý...",
+            "typeLabel": "Loại kho",
+            "allTypes": "Mọi loại"
+        },
+        "type": {
+            "main": "Kho chính",
+            "pharmacy": "Kho dược",
+            "equipment": "Kho thiết bị",
+            "consumable": "Kho vật tư tiêu hao",
+            "other": "Khác"
+        },
+        "statusLabel": {
+            "active": "Hoạt động",
+            "inactive": "Ngưng"
+        },
+        "empty": {
+            "none": "Chưa có kho",
+            "noneDesc": "Thêm kho đầu tiên.",
+            "noMatch": "Không có kho phù hợp",
+            "noMatchDesc": "Thử đổi bộ lọc."
+        },
+        "modal": {
+            "titleCreate": "Thêm kho",
+            "titleEdit": "Sửa kho",
+            "code": "Mã kho",
+            "type": "Loại kho",
+            "name": "Tên kho",
+            "manager": "Quản lý kho",
+            "phone": "SĐT",
+            "address": "Địa chỉ",
+            "note": "Ghi chú"
+        },
+        "actions": {
+            "activate": "Kích hoạt",
+            "deactivate": "Ngưng"
+        },
+        "toast": {
+            "requiredCodeName": "Nhập mã và tên kho.",
+            "loadError": "Không tải được danh sách kho.",
+            "activated": "Đã kích hoạt.",
+            "deactivated": "Đã vô hiệu hoá.",
+            "toggleFailed": "Không đổi được trạng thái."
+        }
     },
     "pharmacyCategories": {
         "title": "Nhóm thuốc (Categories)",
