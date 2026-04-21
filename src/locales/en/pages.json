@@ -13,13 +13,20 @@
             "total": "Total staff",
             "active": "Active",
             "inactive": "Inactive",
-            "banned": "Banned"
+            "banned": "Banned",
+            "rolesCount": "Role count"
         }
     },
     "doctors": {
         "title": "Doctor List",
         "subtitle": "Manage doctor profiles, licenses and on-call schedules",
-        "addButton": "Add doctor"
+        "addButton": "Add doctor",
+        "stats": {
+            "totalDoctors": "Total doctors",
+            "onDuty": "On duty",
+            "pendingAssignment": "Pending assignment",
+            "avgPerformance": "Avg performance"
+        }
     },
     "hospitals": {
         "title": "Facilities / Hospitals",

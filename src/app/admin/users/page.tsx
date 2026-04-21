@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { UI_TEXT } from "@/constants/ui-text";
 import { ROLES, ROLE_LABELS, ROLE_COLORS, type Role } from "@/constants/roles";
 import { USER_STATUS } from "@/constants/status";
@@ -30,6 +31,8 @@ type SortOrder = "asc" | "desc";
 export default function UsersPage() {
     // State
     const router = useRouter();
+    const t = useTranslations("pages.users");
+    const tc = useTranslations("common");
     const [users, setUsers] = useState<User[]>([]);
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
@@ -248,10 +251,10 @@ export default function UsersPage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black tracking-tight text-[#121417] dark:text-white">
-                        {UI_TEXT.ADMIN.USERS.TITLE}
+                        {t("title")}
                     </h1>
                     <p className="text-[#687582] dark:text-gray-400">
-                        {UI_TEXT.ADMIN.USERS.SUBTITLE}
+                        {t("subtitle")}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -310,7 +313,7 @@ export default function UsersPage() {
                         className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all transform hover:-translate-y-0.5"
                     >
                         <span className="material-symbols-outlined text-[20px]">person_add</span>
-                        {UI_TEXT.ADMIN.USERS.ADD_USER}
+                        {t("addButton")}
                     </button>
                 </div>
             </div>
@@ -322,7 +325,7 @@ export default function UsersPage() {
                         <span className="material-symbols-outlined">group</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">{UI_TEXT.ADMIN.USERS.TOTAL_USERS}</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.total")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">{users.length}</p>
                     </div>
                 </div>
@@ -332,7 +335,7 @@ export default function UsersPage() {
                         <span className="material-symbols-outlined">verified_user</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">{UI_TEXT.ADMIN.USERS.ACTIVE_USERS}</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.active")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">
                             {users.filter((u) => u.status === USER_STATUS.ACTIVE).length}
                         </p>
@@ -344,7 +347,7 @@ export default function UsersPage() {
                         <span className="material-symbols-outlined">manage_accounts</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">{UI_TEXT.ADMIN.USERS.ROLES_COUNT}</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.rolesCount")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">{stats.roles}</p>
                     </div>
                 </div>
@@ -354,7 +357,7 @@ export default function UsersPage() {
                         <span className="material-symbols-outlined">block</span>
                     </div>
                     <div>
-                        <p className="text-sm text-[#687582] dark:text-gray-400">{UI_TEXT.ADMIN.USERS.LOCKED_USERS}</p>
+                        <p className="text-sm text-[#687582] dark:text-gray-400">{t("stats.banned")}</p>
                         <p className="text-xl font-bold text-[#121417] dark:text-white">
                             {users.filter((u) => u.status === USER_STATUS.LOCKED).length}
                         </p>

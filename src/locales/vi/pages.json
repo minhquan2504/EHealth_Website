@@ -13,13 +13,20 @@
             "total": "Tổng nhân sự",
             "active": "Đang hoạt động",
             "inactive": "Ngừng",
-            "banned": "Bị khoá"
+            "banned": "Bị khoá",
+            "rolesCount": "Số vai trò"
         }
     },
     "doctors": {
         "title": "Danh sách bác sĩ",
         "subtitle": "Quản lý thông tin bác sĩ, chứng chỉ và lịch trực",
-        "addButton": "Thêm bác sĩ"
+        "addButton": "Thêm bác sĩ",
+        "stats": {
+            "totalDoctors": "Tổng bác sĩ",
+            "onDuty": "Đang trực",
+            "pendingAssignment": "Chờ phân công",
+            "avgPerformance": "Hiệu suất TB"
+        }
     },
     "hospitals": {
         "title": "Cơ sở / Bệnh viện",

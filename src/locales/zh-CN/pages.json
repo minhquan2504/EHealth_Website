@@ -13,13 +13,20 @@
             "total": "员工总数",
             "active": "活动",
             "inactive": "停用",
-            "banned": "已封禁"
+            "banned": "已封禁",
+            "rolesCount": "角色数量"
         }
     },
     "doctors": {
         "title": "医生列表",
         "subtitle": "管理医生档案、执照和值班表",
-        "addButton": "添加医生"
+        "addButton": "添加医生",
+        "stats": {
+            "totalDoctors": "医生总数",
+            "onDuty": "当班中",
+            "pendingAssignment": "待分配",
+            "avgPerformance": "平均绩效"
+        }
     },
     "hospitals": {
         "title": "机构 / 医院",

@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { UI_TEXT } from "@/constants/ui-text";
 import * as departmentService from "@/services/departmentService";
 import { DEPARTMENT_STATUS } from "@/constants/status";
@@ -14,6 +15,8 @@ type SortField = "name" | "doctorCount" | "patientCount" | "status";
 type SortOrder = "asc" | "desc";
 
 export default function DepartmentsPage() {
+    const t = useTranslations("pages.departments");
+    const tc = useTranslations("common");
     // State
     const [departments, setDepartments] = useState<Department[]>([]);
     const [isDataLoading, setIsDataLoading] = useState(true);
@@ -205,10 +208,10 @@ export default function DepartmentsPage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black tracking-tight text-[#121417] dark:text-white">
-                        {UI_TEXT.ADMIN.DEPARTMENTS.TITLE}
+                        {t("title")}
                     </h1>
                     <p className="text-[#687582] dark:text-gray-400">
-                        {UI_TEXT.ADMIN.DEPARTMENTS.SUBTITLE}
+                        {t("subtitle")}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -224,7 +227,7 @@ export default function DepartmentsPage() {
                         className="flex items-center gap-2 px-5 py-2.5 bg-[#3C81C6] hover:bg-[#2a6da8] text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all transform hover:-translate-y-0.5"
                     >
                         <span className="material-symbols-outlined text-[20px]">add_circle</span>
-                        {UI_TEXT.ADMIN.DEPARTMENTS.ADD_DEPARTMENT}
+                        {t("addButton")}
                     </button>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import axiosClient from "@/api/axiosClient";
 import { SPECIALTY_ENDPOINTS } from "@/api/endpoints";
 import { unwrapList } from "@/api/response";
@@ -48,6 +49,8 @@ function mapSpecialty(r: any): Specialty {
 
 export default function SpecialtiesPage() {
     const toast = useToast();
+    const t = useTranslations("pages.specialties");
+    const tc = useTranslations("common");
     const [items, setItems] = useState<Specialty[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -124,14 +127,14 @@ export default function SpecialtiesPage() {
     return (
         <div className="p-6 space-y-6">
             <PageHeader
-                title="Chuyên khoa"
-                subtitle="Danh mục chuyên khoa y tế (dùng chung cho bác sĩ, dịch vụ, phòng khám)"
+                title={t("title")}
+                subtitle={t("subtitle")}
                 icon="local_hospital"
-                breadcrumbs={[{ label: "Quản trị", href: "/admin" }, { label: "Chuyên khoa" }]}
+                breadcrumbs={[{ label: tc("role.admin"), href: "/admin" }, { label: t("title") }]}
                 actions={
                     <button onClick={openCreate} className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] rounded-xl shadow-sm hover:shadow-md inline-flex items-center gap-1">
                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>add</span>
-                        Thêm chuyên khoa
+                        {t("addButton")}
                     </button>
                 }
             />

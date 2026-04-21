@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import axiosClient from "@/api/axiosClient";
 import { WAREHOUSE_ENDPOINTS } from "@/api/endpoints";
 import { unwrapList } from "@/api/response";
@@ -58,6 +59,8 @@ function mapWarehouse(r: any): Warehouse {
 
 export default function WarehousesPage() {
     const toast = useToast();
+    const t = useTranslations("pages.warehouses");
+    const tc = useTranslations("common");
     const [items, setItems] = useState<Warehouse[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -163,14 +166,14 @@ export default function WarehousesPage() {
     return (
         <div className="p-6 space-y-6">
             <PageHeader
-                title="Quản lý kho"
-                subtitle="Các kho vật tư, dược phẩm và thiết bị y tế trong cơ sở"
+                title={t("title")}
+                subtitle={t("subtitle")}
                 icon="warehouse"
-                breadcrumbs={[{ label: "Quản trị", href: "/admin" }, { label: "Kho" }]}
+                breadcrumbs={[{ label: tc("role.admin"), href: "/admin" }, { label: t("title") }]}
                 actions={
                     <button onClick={openCreate} className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] rounded-xl shadow-sm hover:shadow-md inline-flex items-center gap-1">
                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>add</span>
-                        Thêm kho
+                        {t("addButton")}
                     </button>
                 }
             />
