@@ -27,6 +27,7 @@ export default getRequestConfig(async () => {
     const locale = resolveLocale();
     const messages = {
         common: (await import(`../locales/${locale}/common.json`)).default,
+        pages: (await import(`../locales/${locale}/pages.json`)).default,
     };
     return {
         locale,

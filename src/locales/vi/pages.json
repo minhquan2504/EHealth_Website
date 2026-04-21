@@ -1,0 +1,233 @@
+{
+    "dashboard": {
+        "title": "Trang chủ",
+        "welcome": "Chào mừng trở lại",
+        "overview": "Tổng quan",
+        "todayReport": "Báo cáo hôm nay"
+    },
+    "users": {
+        "title": "Quản lý nhân sự",
+        "subtitle": "Danh sách tài khoản người dùng trong hệ thống",
+        "addButton": "Thêm nhân sự",
+        "stats": {
+            "total": "Tổng nhân sự",
+            "active": "Đang hoạt động",
+            "inactive": "Ngừng",
+            "banned": "Bị khoá"
+        }
+    },
+    "doctors": {
+        "title": "Danh sách bác sĩ",
+        "subtitle": "Quản lý thông tin bác sĩ, chứng chỉ và lịch trực",
+        "addButton": "Thêm bác sĩ"
+    },
+    "hospitals": {
+        "title": "Cơ sở / Bệnh viện",
+        "subtitle": "Quản lý thông tin các cơ sở y tế trong hệ thống",
+        "addButton": "Thêm cơ sở"
+    },
+    "branches": {
+        "title": "Chi nhánh",
+        "subtitle": "Quản lý các chi nhánh của cơ sở y tế",
+        "addButton": "Thêm chi nhánh"
+    },
+    "departments": {
+        "title": "Khoa / Phòng ban",
+        "subtitle": "Quản lý các khoa chức năng trong bệnh viện",
+        "addButton": "Thêm khoa"
+    },
+    "specialties": {
+        "title": "Chuyên khoa",
+        "subtitle": "Danh mục chuyên khoa y tế",
+        "addButton": "Thêm chuyên khoa"
+    },
+    "services": {
+        "title": "Dịch vụ y tế",
+        "subtitle": "Quản lý dịch vụ khám chữa bệnh",
+        "tabMaster": "Dịch vụ gốc",
+        "tabFacility": "Dịch vụ theo cơ sở"
+    },
+    "clinicRooms": {
+        "title": "Phòng khám",
+        "subtitle": "Quản lý phòng khám và gán dịch vụ",
+        "addButton": "Thêm phòng"
+    },
+    "equipment": {
+        "title": "Thiết bị y tế",
+        "subtitle": "Quản lý thiết bị và lịch bảo trì",
+        "addButton": "Thêm thiết bị"
+    },
+    "beds": {
+        "title": "Giường bệnh",
+        "subtitle": "Quản lý tài nguyên giường bệnh theo phòng và tình trạng",
+        "addButton": "Tạo giường"
+    },
+    "shifts": {
+        "title": "Ca làm việc",
+        "subtitle": "Quản lý ca sáng/chiều/tối của nhân sự"
+    },
+    "staffSchedule": {
+        "title": "Lịch phân ca",
+        "subtitle": "Sắp xếp lịch làm việc cho nhân sự"
+    },
+    "schedules": {
+        "title": "Lịch trực",
+        "subtitle": "Lịch trực của bác sĩ theo ngày"
+    },
+    "leaves": {
+        "title": "Nghỉ phép nhân sự",
+        "subtitle": "Duyệt/từ chối đơn nghỉ phép của bác sĩ, y tá và nhân viên y tế"
+    },
+    "shiftSwaps": {
+        "title": "Đổi ca",
+        "subtitle": "Duyệt yêu cầu đổi ca giữa các nhân sự y tế"
+    },
+    "slotsConfig": {
+        "title": "Cấu hình khung giờ khám",
+        "subtitle": "Tạo & quản lý slot khám theo bác sĩ, ngày và thời lượng"
+    },
+    "slotsLocked": {
+        "title": "Slot bị khoá",
+        "subtitle": "Khoá tạm slot khám khi bác sĩ bận, phòng bảo trì hoặc ngưng nhận lịch"
+    },
+    "shiftServices": {
+        "title": "Gán dịch vụ vào ca làm việc",
+        "subtitle": "Cấu hình dịch vụ nào được phục vụ trong ca nào của cơ sở"
+    },
+    "serviceDurations": {
+        "title": "Thời lượng dịch vụ theo cơ sở",
+        "subtitle": "Cấu hình thời lượng khám/xử lý cho từng dịch vụ tại mỗi cơ sở"
+    },
+    "bookingConfigs": {
+        "title": "Cấu hình booking theo chi nhánh",
+        "subtitle": "Thiết lập quy tắc đặt lịch riêng cho từng chi nhánh"
+    },
+    "operatingHours": {
+        "title": "Giờ hoạt động & Ngày nghỉ",
+        "subtitle": "Quản lý giờ mở cửa, ngày nghỉ đặc biệt và lịch lễ"
+    },
+    "facilityStatus": {
+        "title": "Trạng thái cơ sở",
+        "subtitle": "Nhìn nhanh hôm nay cơ sở nào mở/đóng và lịch vận hành 14 ngày tới"
+    },
+    "doctorLoad": {
+        "title": "Cân bằng tải bác sĩ",
+        "subtitle": "Phân tích tải và đề xuất điều phối bác sĩ"
+    },
+    "doctorAvailability": {
+        "title": "Độ rảnh & vắng mặt bác sĩ",
+        "subtitle": "Theo dõi độ rảnh của bác sĩ theo ngày và quản lý vắng mặt đột xuất"
+    },
+    "appointmentChanges": {
+        "title": "Lịch sử thay đổi lịch hẹn",
+        "subtitle": "Thống kê & theo dõi tất cả yêu cầu dời/huỷ/đổi bác sĩ/đổi phòng"
+    },
+    "suppliers": {
+        "title": "Nhà cung cấp",
+        "subtitle": "Quản lý thông tin các nhà cung cấp thuốc và vật tư y tế",
+        "addButton": "Thêm NCC"
+    },
+    "warehouses": {
+        "title": "Quản lý kho",
+        "subtitle": "Các kho vật tư, dược phẩm và thiết bị y tế trong cơ sở",
+        "addButton": "Thêm kho"
+    },
+    "pharmacyCategories": {
+        "title": "Nhóm thuốc (Categories)",
+        "subtitle": "Phân loại thuốc theo nhóm (kháng sinh, giảm đau, tim mạch, ...)"
+    },
+    "billingInvoices": {
+        "title": "Hoá đơn",
+        "subtitle": "Quản lý toàn bộ hoá đơn thanh toán viện phí"
+    },
+    "pricingPolicies": {
+        "title": "Chính sách giá dịch vụ",
+        "subtitle": "Cấu hình bảng giá dịch vụ y tế theo cơ sở và thời gian hiệu lực"
+    },
+    "eInvoices": {
+        "title": "Hoá đơn điện tử",
+        "subtitle": "Phát hành và gửi hoá đơn điện tử tới bệnh nhân"
+    },
+    "promotions": {
+        "title": "Khuyến mãi",
+        "subtitle": "Giảm giá, voucher và combo dịch vụ"
+    },
+    "paymentGateway": {
+        "title": "Cổng thanh toán",
+        "subtitle": "Cấu hình SePay + quản lý phân quyền thu ngân"
+    },
+    "reconciliation": {
+        "title": "Đối soát thanh toán",
+        "subtitle": "Phiên đối soát ca thu ngân và thanh toán online"
+    },
+    "refunds": {
+        "title": "Hoàn tiền",
+        "subtitle": "Yêu cầu hoàn tiền và điều chỉnh hóa đơn"
+    },
+    "tele": {
+        "types": {
+            "title": "Loại khám từ xa",
+            "subtitle": "Cấu hình các loại và định giá tư vấn từ xa"
+        },
+        "bookings": {
+            "title": "Booking tư vấn từ xa",
+            "subtitle": "Danh sách lịch tư vấn online"
+        },
+        "rooms": {
+            "title": "Phòng đang hoạt động",
+            "subtitle": "Realtime — các phòng tư vấn đang chạy"
+        },
+        "results": {
+            "title": "Kết quả khám online",
+            "subtitle": "Chẩn đoán, kết luận và đơn kê sau tư vấn"
+        },
+        "prescriptions": {
+            "title": "Đơn thuốc online",
+            "subtitle": "Đơn thuốc được bác sĩ ký trong phiên tư vấn"
+        },
+        "followups": {
+            "title": "Follow-up",
+            "subtitle": "Lịch tái khám/theo dõi sau tư vấn"
+        },
+        "quality": {
+            "title": "Chất lượng tư vấn",
+            "subtitle": "Đánh giá, khiếu nại và cảnh báo chất lượng"
+        }
+    },
+    "permissions": {
+        "title": "Quản lý quyền hệ thống",
+        "subtitle": "Permissions, menus, API permissions và modules"
+    },
+    "masterData": {
+        "title": "Master Data",
+        "subtitle": "Danh mục tham chiếu toàn hệ thống (categories + items)"
+    },
+    "notifications": {
+        "roleConfigs": {
+            "title": "Cấu hình thông báo theo vai trò",
+            "subtitle": "Bật/tắt kênh thông báo theo từng vai trò và loại sự kiện"
+        },
+        "broadcast": {
+            "title": "Gửi thông báo Broadcast",
+            "subtitle": "Gửi thông báo hàng loạt tới nhiều vai trò cùng lúc"
+        }
+    },
+    "role": {
+        "detail": {
+            "title": "Phân quyền vai trò",
+            "subtitle": "Gán permissions, menus, API permissions cho vai trò"
+        }
+    },
+    "cashier": {
+        "offline": {
+            "title": "POS thu ngân offline",
+            "subtitle": "Thanh toán tiền mặt tại quầy"
+        }
+    },
+    "queue": {
+        "batch": {
+            "title": "Thao tác hàng loạt & QR check-in",
+            "subtitle": "Xác nhận lịch hàng loạt, gửi nhắc SMS/email, QR check-in nhanh"
+        }
+    }
+}

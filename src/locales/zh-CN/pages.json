@@ -1,0 +1,233 @@
+{
+    "dashboard": {
+        "title": "仪表盘",
+        "welcome": "欢迎回来",
+        "overview": "概览",
+        "todayReport": "今日报告"
+    },
+    "users": {
+        "title": "员工管理",
+        "subtitle": "系统中的用户账户列表",
+        "addButton": "添加员工",
+        "stats": {
+            "total": "员工总数",
+            "active": "活动",
+            "inactive": "停用",
+            "banned": "已封禁"
+        }
+    },
+    "doctors": {
+        "title": "医生列表",
+        "subtitle": "管理医生档案、执照和值班表",
+        "addButton": "添加医生"
+    },
+    "hospitals": {
+        "title": "机构 / 医院",
+        "subtitle": "管理系统中的医疗机构",
+        "addButton": "添加机构"
+    },
+    "branches": {
+        "title": "分支机构",
+        "subtitle": "管理医疗机构的分支",
+        "addButton": "添加分支"
+    },
+    "departments": {
+        "title": "科室",
+        "subtitle": "管理医院内的科室",
+        "addButton": "添加科室"
+    },
+    "specialties": {
+        "title": "专科",
+        "subtitle": "医学专科目录",
+        "addButton": "添加专科"
+    },
+    "services": {
+        "title": "医疗服务",
+        "subtitle": "管理医疗服务",
+        "tabMaster": "主服务",
+        "tabFacility": "机构服务"
+    },
+    "clinicRooms": {
+        "title": "诊室",
+        "subtitle": "管理诊室及服务分配",
+        "addButton": "添加诊室"
+    },
+    "equipment": {
+        "title": "医疗设备",
+        "subtitle": "管理设备和维护计划",
+        "addButton": "添加设备"
+    },
+    "beds": {
+        "title": "病床",
+        "subtitle": "按房间和使用状态管理病床资源",
+        "addButton": "添加病床"
+    },
+    "shifts": {
+        "title": "班次",
+        "subtitle": "管理早/午/晚班"
+    },
+    "staffSchedule": {
+        "title": "排班表",
+        "subtitle": "为员工分配班次"
+    },
+    "schedules": {
+        "title": "值班表",
+        "subtitle": "医生每日值班表"
+    },
+    "leaves": {
+        "title": "员工请假",
+        "subtitle": "审批/拒绝医生、护士和医务人员的请假申请"
+    },
+    "shiftSwaps": {
+        "title": "换班",
+        "subtitle": "审批员工之间的换班请求"
+    },
+    "slotsConfig": {
+        "title": "预约时段配置",
+        "subtitle": "按医生、日期和时长创建和管理预约时段"
+    },
+    "slotsLocked": {
+        "title": "锁定的时段",
+        "subtitle": "当医生不可用、房间维护或暂停预约时临时锁定时段"
+    },
+    "shiftServices": {
+        "title": "分配服务到班次",
+        "subtitle": "配置每个班次可提供的服务"
+    },
+    "serviceDurations": {
+        "title": "按机构的服务时长",
+        "subtitle": "为每个机构的每项服务配置检查/处理时长"
+    },
+    "bookingConfigs": {
+        "title": "按分支的预约配置",
+        "subtitle": "设置分支特定的预约规则"
+    },
+    "operatingHours": {
+        "title": "营业时间与假日",
+        "subtitle": "管理开放时间、特殊休息日和节假日"
+    },
+    "facilityStatus": {
+        "title": "机构状态",
+        "subtitle": "快速查看今日机构状态和未来14天运营计划"
+    },
+    "doctorLoad": {
+        "title": "医生负载均衡",
+        "subtitle": "负载分析和医生协调建议"
+    },
+    "doctorAvailability": {
+        "title": "医生空闲与请假",
+        "subtitle": "跟踪医生每日空闲并管理临时缺席"
+    },
+    "appointmentChanges": {
+        "title": "预约变更历史",
+        "subtitle": "所有改期/取消/换医生/换房间请求的统计与跟踪"
+    },
+    "suppliers": {
+        "title": "供应商",
+        "subtitle": "管理药品和医疗用品供应商",
+        "addButton": "添加供应商"
+    },
+    "warehouses": {
+        "title": "仓库管理",
+        "subtitle": "物资、药品和设备仓库",
+        "addButton": "添加仓库"
+    },
+    "pharmacyCategories": {
+        "title": "药品分类",
+        "subtitle": "按类别分类药品(抗生素、止痛药、心血管等)"
+    },
+    "billingInvoices": {
+        "title": "发票",
+        "subtitle": "管理所有患者账单发票"
+    },
+    "pricingPolicies": {
+        "title": "服务定价策略",
+        "subtitle": "按机构和生效期配置医疗服务定价"
+    },
+    "eInvoices": {
+        "title": "电子发票",
+        "subtitle": "向患者签发和发送电子发票"
+    },
+    "promotions": {
+        "title": "促销",
+        "subtitle": "折扣、优惠券和套餐服务"
+    },
+    "paymentGateway": {
+        "title": "支付网关",
+        "subtitle": "SePay 配置 + 收银员权限"
+    },
+    "reconciliation": {
+        "title": "支付对账",
+        "subtitle": "收银员班次对账和在线支付"
+    },
+    "refunds": {
+        "title": "退款",
+        "subtitle": "退款请求和发票调整"
+    },
+    "tele": {
+        "types": {
+            "title": "远程医疗类型",
+            "subtitle": "配置远程会诊类型和定价"
+        },
+        "bookings": {
+            "title": "远程会诊预约",
+            "subtitle": "在线会诊预约列表"
+        },
+        "rooms": {
+            "title": "活动会议室",
+            "subtitle": "实时 — 正在进行的会诊房间"
+        },
+        "results": {
+            "title": "在线会诊结果",
+            "subtitle": "诊断、结论和会诊后处方"
+        },
+        "prescriptions": {
+            "title": "在线处方",
+            "subtitle": "医生在会诊期间签署的处方"
+        },
+        "followups": {
+            "title": "随访",
+            "subtitle": "会诊后随访计划"
+        },
+        "quality": {
+            "title": "会诊质量",
+            "subtitle": "评价、投诉和质量警报"
+        }
+    },
+    "permissions": {
+        "title": "系统权限",
+        "subtitle": "权限、菜单、API 权限和模块"
+    },
+    "masterData": {
+        "title": "主数据",
+        "subtitle": "系统范围的参考目录(分类 + 项目)"
+    },
+    "notifications": {
+        "roleConfigs": {
+            "title": "按角色通知配置",
+            "subtitle": "按角色和事件类型启用/禁用通知渠道"
+        },
+        "broadcast": {
+            "title": "广播通知",
+            "subtitle": "同时向多个角色发送通知"
+        }
+    },
+    "role": {
+        "detail": {
+            "title": "角色权限",
+            "subtitle": "为角色分配权限、菜单和 API 权限"
+        }
+    },
+    "cashier": {
+        "offline": {
+            "title": "离线 POS 收银",
+            "subtitle": "柜台现金支付"
+        }
+    },
+    "queue": {
+        "batch": {
+            "title": "批量操作与二维码签到",
+            "subtitle": "批量预约确认、短信/邮件提醒、快速二维码签到"
+        }
+    }
+}

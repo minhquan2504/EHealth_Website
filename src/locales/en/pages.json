@@ -1,0 +1,233 @@
+{
+    "dashboard": {
+        "title": "Dashboard",
+        "welcome": "Welcome back",
+        "overview": "Overview",
+        "todayReport": "Today's report"
+    },
+    "users": {
+        "title": "Staff Management",
+        "subtitle": "List of user accounts in the system",
+        "addButton": "Add staff",
+        "stats": {
+            "total": "Total staff",
+            "active": "Active",
+            "inactive": "Inactive",
+            "banned": "Banned"
+        }
+    },
+    "doctors": {
+        "title": "Doctor List",
+        "subtitle": "Manage doctor profiles, licenses and on-call schedules",
+        "addButton": "Add doctor"
+    },
+    "hospitals": {
+        "title": "Facilities / Hospitals",
+        "subtitle": "Manage medical facilities in the system",
+        "addButton": "Add facility"
+    },
+    "branches": {
+        "title": "Branches",
+        "subtitle": "Manage branches of medical facilities",
+        "addButton": "Add branch"
+    },
+    "departments": {
+        "title": "Departments",
+        "subtitle": "Manage departments within the hospital",
+        "addButton": "Add department"
+    },
+    "specialties": {
+        "title": "Specialties",
+        "subtitle": "Medical specialty catalog",
+        "addButton": "Add specialty"
+    },
+    "services": {
+        "title": "Medical Services",
+        "subtitle": "Manage healthcare services",
+        "tabMaster": "Master Services",
+        "tabFacility": "Facility Services"
+    },
+    "clinicRooms": {
+        "title": "Clinic Rooms",
+        "subtitle": "Manage clinic rooms and service assignments",
+        "addButton": "Add room"
+    },
+    "equipment": {
+        "title": "Medical Equipment",
+        "subtitle": "Manage equipment and maintenance schedules",
+        "addButton": "Add equipment"
+    },
+    "beds": {
+        "title": "Hospital Beds",
+        "subtitle": "Manage bed resources by room and occupancy status",
+        "addButton": "Add bed"
+    },
+    "shifts": {
+        "title": "Work Shifts",
+        "subtitle": "Manage morning/afternoon/evening shifts"
+    },
+    "staffSchedule": {
+        "title": "Shift Roster",
+        "subtitle": "Assign shift schedules for staff"
+    },
+    "schedules": {
+        "title": "On-call Schedules",
+        "subtitle": "Doctor on-call schedule by date"
+    },
+    "leaves": {
+        "title": "Staff Leave Requests",
+        "subtitle": "Approve/reject leave requests from doctors, nurses, and medical staff"
+    },
+    "shiftSwaps": {
+        "title": "Shift Swaps",
+        "subtitle": "Approve shift swap requests between staff"
+    },
+    "slotsConfig": {
+        "title": "Appointment Slot Configuration",
+        "subtitle": "Create & manage examination slots by doctor, date, and duration"
+    },
+    "slotsLocked": {
+        "title": "Locked Slots",
+        "subtitle": "Temporarily lock slots when doctor is unavailable, room under maintenance, or booking closed"
+    },
+    "shiftServices": {
+        "title": "Assign Services to Shifts",
+        "subtitle": "Configure which services are available in each shift"
+    },
+    "serviceDurations": {
+        "title": "Service Durations by Facility",
+        "subtitle": "Configure examination/processing duration for each service at each facility"
+    },
+    "bookingConfigs": {
+        "title": "Booking Configuration by Branch",
+        "subtitle": "Set up branch-specific booking rules"
+    },
+    "operatingHours": {
+        "title": "Operating Hours & Holidays",
+        "subtitle": "Manage opening hours, special closed days, and holidays"
+    },
+    "facilityStatus": {
+        "title": "Facility Status",
+        "subtitle": "Quick view of today's facility status and 14-day operational schedule"
+    },
+    "doctorLoad": {
+        "title": "Doctor Load Balance",
+        "subtitle": "Load analysis and doctor coordination suggestions"
+    },
+    "doctorAvailability": {
+        "title": "Doctor Availability & Absences",
+        "subtitle": "Track daily doctor availability and manage unexpected absences"
+    },
+    "appointmentChanges": {
+        "title": "Appointment Change History",
+        "subtitle": "Statistics & tracking of all reschedule/cancel/doctor-swap/room-change requests"
+    },
+    "suppliers": {
+        "title": "Suppliers",
+        "subtitle": "Manage drug and medical supply suppliers",
+        "addButton": "Add supplier"
+    },
+    "warehouses": {
+        "title": "Warehouse Management",
+        "subtitle": "Supply, drug, and equipment warehouses",
+        "addButton": "Add warehouse"
+    },
+    "pharmacyCategories": {
+        "title": "Drug Categories",
+        "subtitle": "Classify drugs by category (antibiotics, painkillers, cardiovascular, ...)"
+    },
+    "billingInvoices": {
+        "title": "Invoices",
+        "subtitle": "Manage all patient billing invoices"
+    },
+    "pricingPolicies": {
+        "title": "Service Pricing Policy",
+        "subtitle": "Configure medical service pricing by facility and effective period"
+    },
+    "eInvoices": {
+        "title": "E-Invoices",
+        "subtitle": "Issue and send electronic invoices to patients"
+    },
+    "promotions": {
+        "title": "Promotions",
+        "subtitle": "Discounts, vouchers, and service bundles"
+    },
+    "paymentGateway": {
+        "title": "Payment Gateway",
+        "subtitle": "SePay configuration + cashier permissions"
+    },
+    "reconciliation": {
+        "title": "Payment Reconciliation",
+        "subtitle": "Cashier shift reconciliation and online payment sessions"
+    },
+    "refunds": {
+        "title": "Refunds",
+        "subtitle": "Refund requests and invoice adjustments"
+    },
+    "tele": {
+        "types": {
+            "title": "Telemedicine Types",
+            "subtitle": "Configure types and pricing for remote consultations"
+        },
+        "bookings": {
+            "title": "Remote Consultation Bookings",
+            "subtitle": "List of online consultation appointments"
+        },
+        "rooms": {
+            "title": "Active Rooms",
+            "subtitle": "Realtime — currently running consultation rooms"
+        },
+        "results": {
+            "title": "Online Consultation Results",
+            "subtitle": "Diagnosis, conclusions, and prescriptions after consultation"
+        },
+        "prescriptions": {
+            "title": "Online Prescriptions",
+            "subtitle": "Prescriptions signed by doctors during consultations"
+        },
+        "followups": {
+            "title": "Follow-ups",
+            "subtitle": "Post-consultation follow-up schedules"
+        },
+        "quality": {
+            "title": "Consultation Quality",
+            "subtitle": "Reviews, complaints, and quality alerts"
+        }
+    },
+    "permissions": {
+        "title": "System Permissions",
+        "subtitle": "Permissions, menus, API permissions, and modules"
+    },
+    "masterData": {
+        "title": "Master Data",
+        "subtitle": "System-wide reference catalogs (categories + items)"
+    },
+    "notifications": {
+        "roleConfigs": {
+            "title": "Notification Config by Role",
+            "subtitle": "Enable/disable notification channels by role and event type"
+        },
+        "broadcast": {
+            "title": "Broadcast Notification",
+            "subtitle": "Send notifications to multiple roles at once"
+        }
+    },
+    "role": {
+        "detail": {
+            "title": "Role Permissions",
+            "subtitle": "Assign permissions, menus, and API permissions to a role"
+        }
+    },
+    "cashier": {
+        "offline": {
+            "title": "Offline POS Cashier",
+            "subtitle": "Cash payment at the counter"
+        }
+    },
+    "queue": {
+        "batch": {
+            "title": "Batch Operations & QR Check-in",
+            "subtitle": "Batch appointment confirmations, SMS/email reminders, quick QR check-in"
+        }
+    }
+}

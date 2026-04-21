@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import axiosClient from "@/api/axiosClient";
 import { SUPPLIER_ENDPOINTS } from "@/api/endpoints";
 import { unwrapList } from "@/api/response";
@@ -51,6 +52,8 @@ function mapSupplier(r: any): Supplier {
 
 export default function SuppliersPage() {
     const toast = useToast();
+    const t = useTranslations("pages.suppliers");
+    const tc = useTranslations("common");
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -147,23 +150,23 @@ export default function SuppliersPage() {
     return (
         <div className="p-6 space-y-6">
             <PageHeader
-                title="Nhà cung cấp"
-                subtitle="Quản lý thông tin các nhà cung cấp thuốc và vật tư y tế"
+                title={t("title")}
+                subtitle={t("subtitle")}
                 icon="local_shipping"
-                breadcrumbs={[{ label: "Quản trị", href: "/admin" }, { label: "Nhà cung cấp" }]}
+                breadcrumbs={[{ label: tc("role.admin"), href: "/admin" }, { label: t("title") }]}
                 actions={
                     <button onClick={openCreate} className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#3C81C6] to-[#1d4ed8] rounded-xl shadow-sm hover:shadow-md inline-flex items-center gap-1">
                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>add</span>
-                        Thêm NCC
+                        {t("addButton")}
                     </button>
                 }
             />
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard label="Tổng NCC" value={stats.total} icon="local_shipping" color="blue" loading={loading} />
-                <StatCard label="Đang hợp tác" value={stats.active} icon="check_circle" color="emerald" loading={loading} />
-                <StatCard label="Ngưng" value={stats.inactive} icon="cancel" color="red" loading={loading} />
-                <StatCard label="Có liên hệ" value={stats.withContact} icon="contact_phone" color="violet" loading={loading} />
+                <StatCard label={t("title")} value={stats.total} icon="local_shipping" color="blue" loading={loading} />
+                <StatCard label={tc("status.active")} value={stats.active} icon="check_circle" color="emerald" loading={loading} />
+                <StatCard label={tc("status.inactive")} value={stats.inactive} icon="cancel" color="red" loading={loading} />
+                <StatCard label={tc("common.info")} value={stats.withContact} icon="contact_phone" color="violet" loading={loading} />
             </div>
 
             <FilterBar
