@@ -188,6 +188,8 @@
                 "examination": "诊疗",
                 "medicalOrders": "医嘱",
                 "medicalRecords": "病历",
+                "signOff": "签署",
+                "ehr": "EHR",
                 "prescriptions": "处方",
                 "treatmentPlans": "治疗计划",
                 "aiAssistant": "AI 助手",

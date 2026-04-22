@@ -188,6 +188,8 @@
                 "examination": "Examination",
                 "medicalOrders": "Medical orders",
                 "medicalRecords": "Medical records",
+                "signOff": "Sign-off",
+                "ehr": "EHR",
                 "prescriptions": "Prescriptions",
                 "treatmentPlans": "Treatment plans",
                 "aiAssistant": "AI Assistant",

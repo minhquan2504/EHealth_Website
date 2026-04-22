@@ -188,6 +188,8 @@
                 "examination": "Khám bệnh",
                 "medicalOrders": "Chỉ định",
                 "medicalRecords": "Hồ sơ bệnh án",
+                "signOff": "Ký hồ sơ",
+                "ehr": "EHR",
                 "prescriptions": "Kê đơn",
                 "treatmentPlans": "Treatment plans",
                 "aiAssistant": "Trợ lý AI",

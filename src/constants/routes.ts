@@ -104,6 +104,8 @@ export const ROUTES = {
       DIAGNOSIS: "/portal/doctor/diagnosis",
       MEDICAL_ORDERS: "/portal/doctor/medical-orders",
       MEDICAL_RECORDS: "/portal/doctor/medical-records",
+      SIGN_OFF: "/portal/doctor/sign-off",
+      EHR: "/portal/doctor/ehr",
       PRESCRIPTIONS: "/portal/doctor/prescriptions",
       TREATMENT_PLANS: "/portal/doctor/treatment-plans",
       AI_ASSISTANT: "/portal/doctor/ai-assistant",
@@ -220,6 +222,18 @@ export const DOCTOR_MENU_ITEMS = [
     href: ROUTES.PORTAL.DOCTOR.MEDICAL_RECORDS,
     icon: "folder_shared",
     label: "Hồ sơ bệnh án",
+  },
+  {
+    key: "sign-off",
+    href: ROUTES.PORTAL.DOCTOR.SIGN_OFF,
+    icon: "draw",
+    label: "Ký hồ sơ",
+  },
+  {
+    key: "ehr",
+    href: ROUTES.PORTAL.DOCTOR.EHR,
+    icon: "folder_special",
+    label: "EHR",
   },
   {
     key: "prescriptions",
