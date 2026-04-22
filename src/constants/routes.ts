@@ -117,6 +117,13 @@ export const ROUTES = {
       PRESCRIPTIONS: "/portal/pharmacist/prescriptions",
       DISPENSING: "/portal/pharmacist/dispensing",
       INVENTORY: "/portal/pharmacist/inventory",
+      STOCK_IN: "/portal/pharmacist/inventory/import",
+      STOCK_OUT: "/portal/pharmacist/stock-out",
+      ALERTS: "/portal/pharmacist/alerts",
+      MY_HISTORY: "/portal/pharmacist/my-history",
+      MASTER_DATA: "/portal/pharmacist/master-data",
+      PATIENTS: "/portal/pharmacist/patients",
+      MEDICATION_PROFILE: "/portal/pharmacist/medication-profile",
       SETTINGS: "/portal/pharmacist/settings",
     },
     STAFF: {
@@ -450,36 +457,18 @@ export const RECEPTIONIST_MENU_ITEMS = STAFF_MENU_ITEMS;
 
 // Pharmacist sidebar menu items
 export const PHARMACIST_MENU_ITEMS = [
-  {
-    key: "dashboard",
-    href: ROUTES.PORTAL.PHARMACIST.DASHBOARD,
-    icon: "home",
-    label: "Trang chủ",
-  },
-  {
-    key: "prescriptions",
-    href: ROUTES.PORTAL.PHARMACIST.PRESCRIPTIONS,
-    icon: "pill",
-    label: "Đơn thuốc",
-  },
-  {
-    key: "dispensing",
-    href: ROUTES.PORTAL.PHARMACIST.DISPENSING,
-    icon: "local_pharmacy",
-    label: "Cấp phát",
-  },
-  {
-    key: "inventory",
-    href: ROUTES.PORTAL.PHARMACIST.INVENTORY,
-    icon: "inventory_2",
-    label: "Kho thuốc",
-  },
-  {
-    key: "settings",
-    href: ROUTES.PORTAL.PHARMACIST.SETTINGS,
-    icon: "settings",
-    label: "Cài đặt",
-  },
+  { key: "dashboard", href: ROUTES.PORTAL.PHARMACIST.DASHBOARD, icon: "home", label: "Trang chủ" },
+  { key: "prescriptions", href: ROUTES.PORTAL.PHARMACIST.PRESCRIPTIONS, icon: "pill", label: "Đơn thuốc" },
+  { key: "dispensing", href: ROUTES.PORTAL.PHARMACIST.DISPENSING, icon: "local_pharmacy", label: "Cấp phát" },
+  { key: "my-history", href: ROUTES.PORTAL.PHARMACIST.MY_HISTORY, icon: "history", label: "Lịch sử của tôi" },
+  { key: "inventory", href: ROUTES.PORTAL.PHARMACIST.INVENTORY, icon: "inventory_2", label: "Tồn kho" },
+  { key: "stock-in", href: ROUTES.PORTAL.PHARMACIST.STOCK_IN, icon: "input", label: "Nhập kho" },
+  { key: "stock-out", href: ROUTES.PORTAL.PHARMACIST.STOCK_OUT, icon: "output", label: "Xuất kho" },
+  { key: "alerts", href: ROUTES.PORTAL.PHARMACIST.ALERTS, icon: "warning", label: "Cảnh báo" },
+  { key: "master-data", href: ROUTES.PORTAL.PHARMACIST.MASTER_DATA, icon: "database", label: "Master Data" },
+  { key: "patients", href: ROUTES.PORTAL.PHARMACIST.PATIENTS, icon: "groups", label: "Bệnh nhân" },
+  { key: "medication-profile", href: ROUTES.PORTAL.PHARMACIST.MEDICATION_PROFILE, icon: "medication", label: "Hồ sơ thuốc" },
+  { key: "settings", href: ROUTES.PORTAL.PHARMACIST.SETTINGS, icon: "settings", label: "Tài khoản" },
 ] as const;
 
 // Patient sidebar menu items

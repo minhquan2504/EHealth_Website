@@ -200,7 +200,14 @@
                 "dashboard": "首页",
                 "prescriptions": "处方",
                 "dispensing": "发药",
+                "myHistory": "我的历史",
                 "inventory": "库存",
+                "stockIn": "入库",
+                "stockOut": "出库",
+                "alerts": "警报",
+                "masterData": "主数据",
+                "patients": "患者",
+                "medicationProfile": "用药档案",
                 "settings": "设置"
             },
             "staff_extra": {

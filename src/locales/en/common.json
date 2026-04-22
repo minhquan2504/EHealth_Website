@@ -200,7 +200,14 @@
                 "dashboard": "Home",
                 "prescriptions": "Prescriptions",
                 "dispensing": "Dispensing",
+                "myHistory": "My history",
                 "inventory": "Inventory",
+                "stockIn": "Stock-in",
+                "stockOut": "Stock-out",
+                "alerts": "Alerts",
+                "masterData": "Master data",
+                "patients": "Patients",
+                "medicationProfile": "Medication profile",
                 "settings": "Settings"
             },
             "staff_extra": {

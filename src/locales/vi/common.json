@@ -200,7 +200,14 @@
                 "dashboard": "Trang chủ",
                 "prescriptions": "Đơn thuốc",
                 "dispensing": "Cấp phát",
-                "inventory": "Kho thuốc",
+                "myHistory": "Lịch sử của tôi",
+                "inventory": "Tồn kho",
+                "stockIn": "Nhập kho",
+                "stockOut": "Xuất kho",
+                "alerts": "Cảnh báo",
+                "masterData": "Master Data",
+                "patients": "Bệnh nhân",
+                "medicationProfile": "Hồ sơ thuốc",
                 "settings": "Cài đặt"
             },
             "staff": {
