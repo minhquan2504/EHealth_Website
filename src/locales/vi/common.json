@@ -184,9 +184,12 @@
                 "schedule": "Lịch làm việc",
                 "leaves": "Nghỉ phép",
                 "shiftSwaps": "Đổi ca",
+                "patients": "Bệnh nhân",
                 "examination": "Khám bệnh",
+                "medicalOrders": "Chỉ định",
                 "medicalRecords": "Hồ sơ bệnh án",
                 "prescriptions": "Kê đơn",
+                "treatmentPlans": "Treatment plans",
                 "aiAssistant": "Trợ lý AI",
                 "telemedicine": "Khám từ xa",
                 "settings": "Cài đặt"

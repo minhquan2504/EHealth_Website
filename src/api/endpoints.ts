@@ -799,10 +799,15 @@ export const SUPPLIER_ENDPOINTS = {
 // ============================================
 export const TREATMENT_PLAN_ENDPOINTS = {
     LIST: '/api/treatment-plans', // QC_SKIP: backend does not expose an aggregate GET /api/treatment-plans endpoint
+    CREATE: '/api/treatment-plans',
     BY_PATIENT: (patientId: string) => `/api/treatment-plans/by-patient/${patientId}`,
     DETAIL: (planId: string) => `/api/treatment-plans/${planId}`,
     STATUS: (planId: string) => `/api/treatment-plans/${planId}/status`,
     SUMMARY: (planId: string) => `/api/treatment-plans/${planId}/summary`,
+    FOLLOW_UP_CHAIN: (planId: string) => `/api/treatment-plans/${planId}/follow-up-chain`,
+    NOTES: (planId: string) => `/api/treatment-plans/${planId}/notes`,
+    NOTE_DETAIL: (planId: string, noteId: string) => `/api/treatment-plans/${planId}/notes/${noteId}`,
+    FOLLOW_UPS: (planId: string) => `/api/treatment-plans/${planId}/follow-ups`,
 };
 
 // ============================================

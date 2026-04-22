@@ -184,9 +184,12 @@
                 "schedule": "Work schedule",
                 "leaves": "Leaves",
                 "shiftSwaps": "Shift swaps",
+                "patients": "Patients",
                 "examination": "Examination",
+                "medicalOrders": "Medical orders",
                 "medicalRecords": "Medical records",
                 "prescriptions": "Prescriptions",
+                "treatmentPlans": "Treatment plans",
                 "aiAssistant": "AI Assistant",
                 "telemedicine": "Telemedicine",
                 "settings": "Settings"

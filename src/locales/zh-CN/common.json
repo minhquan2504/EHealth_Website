@@ -184,9 +184,12 @@
                 "schedule": "工作排班",
                 "leaves": "请假",
                 "shiftSwaps": "换班",
+                "patients": "患者",
                 "examination": "诊疗",
+                "medicalOrders": "医嘱",
                 "medicalRecords": "病历",
                 "prescriptions": "处方",
+                "treatmentPlans": "治疗计划",
                 "aiAssistant": "AI 助手",
                 "telemedicine": "远程医疗",
                 "settings": "设置"
