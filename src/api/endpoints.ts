@@ -411,6 +411,10 @@ export const APPOINTMENT_ENDPOINTS = {
     AVAILABLE_SLOTS_BY_DEPARTMENT: '/api/appointments/available-slots-by-department',
     BY_DOCTOR: (doctorId: string) => `/api/appointments/doctor/${doctorId}`,
     BY_PATIENT: (patientId: string) => `/api/appointments/patient/${patientId}`,
+    // Doctor operations theo spec Nhóm 2
+    RESCHEDULE: (id: string) => `/api/appointments/${id}/reschedule`,
+    VISIT_REASON: (id: string) => `/api/appointments/${id}/visit-reason`,
+    CHECK_CONFLICT: '/api/appointments/check-conflict',
 };
 
 export const DEPARTMENT_ENDPOINTS = {

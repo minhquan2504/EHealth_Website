@@ -355,6 +355,62 @@ export const getAvailableSlotsByDepartment = async (params: {
 };
 
 // ============================================
+// Dời lịch / Update lý do khám / Check conflict (doctor actions — Nhóm 2)
+// ============================================
+export const rescheduleAppointment = async (
+    id: string,
+    data: { newDate?: string; newSlotId?: string; newShiftId?: string; reason?: string }
+): Promise<any> => {
+    try {
+        const payload: Record<string, any> = {};
+        if (data.newDate) payload.new_date = data.newDate;
+        if (data.newSlotId) payload.new_slot_id = data.newSlotId;
+        if (data.newShiftId) payload.new_shift_id = data.newShiftId;
+        if (data.reason) payload.reason = data.reason;
+        const response = await axiosClient.patch(APPOINTMENT_ENDPOINTS.RESCHEDULE(id), payload);
+        return unwrapOne(response);
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'Dời lịch thất bại');
+    }
+};
+
+export const updateVisitReason = async (id: string, reason: string): Promise<any> => {
+    try {
+        const response = await axiosClient.patch(APPOINTMENT_ENDPOINTS.VISIT_REASON(id), {
+            reason_for_visit: reason,
+        });
+        return unwrapOne(response);
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'Cập nhật lý do khám thất bại');
+    }
+};
+
+export const checkAppointmentConflict = async (data: {
+    doctorId?: string;
+    date: string;
+    slotId?: string;
+    shiftId?: string;
+    excludeAppointmentId?: string;
+}): Promise<{ hasConflict: boolean; conflicts?: any[] }> => {
+    try {
+        const payload: Record<string, any> = { date: data.date };
+        if (data.doctorId) payload.doctor_id = data.doctorId;
+        if (data.slotId) payload.slot_id = data.slotId;
+        if (data.shiftId) payload.shift_id = data.shiftId;
+        if (data.excludeAppointmentId) payload.exclude_appointment_id = data.excludeAppointmentId;
+        const response = await axiosClient.post(APPOINTMENT_ENDPOINTS.CHECK_CONFLICT, payload);
+        const d = response?.data?.data ?? response?.data ?? {};
+        return {
+            hasConflict: d.has_conflict ?? d.hasConflict ?? false,
+            conflicts: d.conflicts ?? [],
+        };
+    } catch (error: any) {
+        // Không throw — trả về false để UI không crash
+        return { hasConflict: false, conflicts: [] };
+    }
+};
+
+// ============================================
 // Doctor Availability (slot trống BS)
 // /api/doctor-availability
 // ============================================
@@ -393,6 +449,20 @@ export const doctorAvailabilityService = {
     /** DELETE /api/doctor-availability/:id */
     delete: (id: string) =>
         axiosClient.delete(`/api/doctor-availability/${id}`).then(r => r?.data ?? r),
+
+    /** GET /api/doctor-availability/:doctorId/conflicts — các xung đột lịch */
+    getConflicts: (doctorId: string, params?: { from?: string; to?: string }) =>
+        axiosClient.get(`/api/doctor-availability/${doctorId}/conflicts`, { params }).then(r => {
+            const d = r?.data?.data ?? r?.data ?? r;
+            return Array.isArray(d) ? d : [];
+        }),
+
+    /** GET /api/doctor-availability/:doctorId/facilities — cơ sở / nơi làm việc */
+    getFacilities: (doctorId: string) =>
+        axiosClient.get(`/api/doctor-availability/${doctorId}/facilities`).then(r => {
+            const d = r?.data?.data ?? r?.data ?? r;
+            return Array.isArray(d) ? d : [];
+        }),
 };
 
 // ============================================
