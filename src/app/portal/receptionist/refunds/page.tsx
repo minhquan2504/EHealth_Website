@@ -31,8 +31,8 @@ export default function ReceptionistRefundsPage() {
     const load = useCallback(async () => {
         setLoading(true);
         const [d, l] = await Promise.allSettled([
-            (billingRefundService as any).getDashboard?.() ?? Promise.resolve(null),
-            (billingRefundService as any).getRequests?.() ?? Promise.resolve({ data: [] }),
+            billingRefundService.getDashboard(),
+            billingRefundService.getRequests(),
         ]);
         if (d.status === "fulfilled") setDashboard(d.value);
         if (l.status === "fulfilled") {
@@ -59,17 +59,18 @@ export default function ReceptionistRefundsPage() {
     const onProcess = async (id: string) => {
         setBusyId(id);
         try {
-            await (billingRefundService as any).processRequest?.(id);
+            await billingRefundService.processRefund(id);
             await load();
         } catch (e: any) { alert(e?.message ?? "Xử lý thất bại"); }
         finally { setBusyId(null); }
     };
 
     const onCancel = async (id: string) => {
-        if (!confirm("Huỷ refund request này?")) return;
+        const reason = prompt("Lý do từ chối:");
+        if (!reason) return;
         setBusyId(id);
         try {
-            await (billingRefundService as any).cancelRequest?.(id);
+            await billingRefundService.reject(id, reason);
             await load();
         } catch (e: any) { alert(e?.message ?? "Huỷ thất bại"); }
         finally { setBusyId(null); }

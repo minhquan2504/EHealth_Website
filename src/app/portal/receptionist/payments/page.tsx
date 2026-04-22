@@ -8,6 +8,7 @@
 import { useState, useCallback } from "react";
 import { PageHeader, EmptyState } from "@/components/shared/layout";
 import { billingService } from "@/services/billingService";
+import axiosClient from "@/api/axiosClient";
 
 export default function ReceptionistPaymentsPage() {
     const [invoiceId, setInvoiceId] = useState("");
@@ -41,9 +42,7 @@ export default function ReceptionistPaymentsPage() {
     const onCancel = async () => {
         if (!orderId) return;
         try {
-            const billing: any = billingService;
-            if (typeof billing.cancelQR === "function") await billing.cancelQR(orderId);
-            else await fetch(`/api/billing/payments/orders/${orderId}/cancel`, { method: "POST" });
+            await axiosClient.post(`/api/billing/payments/orders/${orderId}/cancel`);
             setStatus("CANCELLED");
         } catch (e: any) { alert(e?.message ?? "Huỷ thất bại"); }
     };
