@@ -355,6 +355,97 @@ export const getAvailableSlotsByDepartment = async (params: {
 };
 
 // ============================================
+// Pre-Booking Payment (thanh toán cọc đặt lịch — SePay QR)
+// ============================================
+
+export type PreBookingChannel =
+    | 'WEB_PORTAL'
+    | 'PATIENT_APP'
+    | 'ZALO_MINI_APP'
+    | 'WEB'
+    | 'APP';
+
+export interface PreBookRequest {
+    patientId: string;
+    branchId?: string;
+    facilityId?: string;
+    appointmentDate: string;   // YYYY-MM-DD
+    slotId?: string;
+    shiftId?: string;
+    doctorId?: string;
+    specialtyId?: string;
+    serviceId?: string;
+    notes?: string;
+    reasonForVisit?: string;
+    bookingChannel: PreBookingChannel;
+}
+
+export interface PreBookResponse {
+    appointment?: { appointments_id?: string; id?: string; status?: string;[key: string]: any };
+    invoice?: { invoices_id?: string; id?: string; total_amount?: number; status?: string;[key: string]: any };
+    payment?: { qrTemplateData?: string; qrString?: string; qr_url?: string;[key: string]: any };
+    [key: string]: any;
+}
+
+export const preBookAppointment = async (data: PreBookRequest): Promise<PreBookResponse> => {
+    const payload: Record<string, any> = {
+        appointment_date: data.appointmentDate,
+        booking_channel: data.bookingChannel,
+    };
+    if (data.patientId) payload.patient_id = data.patientId;
+    if (data.branchId) payload.branch_id = data.branchId;
+    if (data.facilityId) payload.facility_id = data.facilityId;
+    if (data.slotId) payload.slot_id = data.slotId;
+    if (data.shiftId) payload.shift_id = data.shiftId;
+    if (data.doctorId) payload.doctor_id = data.doctorId;
+    if (data.specialtyId) payload.specialty_id = data.specialtyId;
+    if (data.serviceId) payload.facility_service_id = data.serviceId;
+    if (data.notes) payload.notes = data.notes;
+    if (data.reasonForVisit) payload.reason_for_visit = data.reasonForVisit;
+
+    try {
+        const res = await axiosClient.post(APPOINTMENT_ENDPOINTS.PRE_BOOK, payload);
+        return unwrapOne(res) as PreBookResponse;
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'Tạo lịch và thanh toán cọc thất bại');
+    }
+};
+
+export const regenerateAppointmentQr = async (
+    id: string,
+): Promise<{ appointment_id: string; invoice_id: string; amount: number; qrTemplateData?: string; qr_url?: string }> => {
+    try {
+        const res = await axiosClient.post(APPOINTMENT_ENDPOINTS.REGENERATE_QR(id), {});
+        return unwrapOne(res);
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'Tạo lại QR thanh toán thất bại');
+    }
+};
+
+export interface PaymentStatus {
+    isPaid: boolean;
+    appointment_status?: string;
+    invoice_status?: string;
+    [key: string]: any;
+}
+
+export const getAppointmentPaymentStatus = async (id: string): Promise<PaymentStatus> => {
+    try {
+        const res = await axiosClient.get(APPOINTMENT_ENDPOINTS.PAYMENT_STATUS(id));
+        const d = unwrapOne(res) as any;
+        return {
+            isPaid: !!(d?.isPaid ?? d?.is_paid),
+            appointment_status: d?.appointment_status ?? d?.appointmentStatus,
+            invoice_status: d?.invoice_status ?? d?.invoiceStatus,
+            ...d,
+        };
+    } catch (error: any) {
+        // Không throw — UI vẫn polling tiếp
+        return { isPaid: false };
+    }
+};
+
+// ============================================
 // Dời lịch / Update lý do khám / Check conflict (doctor actions — Nhóm 2)
 // ============================================
 export const rescheduleAppointment = async (

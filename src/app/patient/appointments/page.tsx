@@ -10,8 +10,10 @@ import {
     appointmentConfirmationService,
     cancelAppointment,
     getMyAppointments,
+    regenerateAppointmentQr,
     type Appointment,
 } from "@/services/appointmentService";
+import { PreBookingPaymentModal } from "@/components/shared/PreBookingPaymentModal";
 import { patientProfileService, type PatientProfileBE } from "@/services/patientProfileService";
 import { usePageAIContext } from "@/hooks/usePageAIContext";
 import { AIAppointmentSuggester } from "@/components/portal/ai";
@@ -50,6 +52,25 @@ export default function AppointmentsPage() {
     const [rescheduleModal, setRescheduleModal] = useState<RescheduleModalState | null>(null);
     const [resendingId, setResendingId] = useState<string | null>(null);
     const [profilesLoaded, setProfilesLoaded] = useState(false);
+    const [payingData, setPayingData] = useState<{ appointmentId: string; invoiceId?: string; qrData: string; amount: number } | null>(null);
+    const [loadingPay, setLoadingPay] = useState<string | null>(null);
+
+    const handleContinuePayment = async (id: string) => {
+        setLoadingPay(id);
+        try {
+            const res = await regenerateAppointmentQr(id);
+            setPayingData({
+                appointmentId: res.appointment_id ?? id,
+                invoiceId: res.invoice_id,
+                qrData: res.qrTemplateData ?? res.qr_url ?? "",
+                amount: Number(res.amount ?? 0),
+            });
+        } catch (e: any) {
+            showToast(e?.response?.data?.message ?? e?.message ?? "Không tạo lại được QR", "error");
+        } finally {
+            setLoadingPay(null);
+        }
+    };
 
     useEffect(() => {
         if (!user?.id) return;
@@ -459,6 +480,16 @@ export default function AppointmentsPage() {
                                     >
                                         Xem chi tiết
                                     </Link>
+                                    {appointment.status === "pending" && (
+                                        <button
+                                            onClick={() => handleContinuePayment(String(appointmentId))}
+                                            disabled={loadingPay === appointmentId}
+                                            className="flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 disabled:opacity-50"
+                                        >
+                                            <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>qr_code_2</span>
+                                            {loadingPay === appointmentId ? "Đang tải QR…" : "Thanh toán cọc"}
+                                        </button>
+                                    )}
                                     {(appointment.status === "pending" || appointment.status === "confirmed") && (
                                         <>
                                             <button
@@ -564,6 +595,21 @@ export default function AppointmentsPage() {
                     currentSlotId={rescheduleModal.currentSlotId}
                     onClose={() => setRescheduleModal(null)}
                     onSuccess={loadAppointments}
+                />
+            )}
+
+            {payingData && (
+                <PreBookingPaymentModal
+                    appointmentId={payingData.appointmentId}
+                    invoiceId={payingData.invoiceId}
+                    qrData={payingData.qrData}
+                    amount={payingData.amount}
+                    onPaid={async () => {
+                        setPayingData(null);
+                        showToast("Thanh toán cọc thành công. Lịch khám đã được xác nhận.", "success");
+                        await loadAppointments();
+                    }}
+                    onClose={() => setPayingData(null)}
                 />
             )}
         </div>

@@ -415,6 +415,10 @@ export const APPOINTMENT_ENDPOINTS = {
     RESCHEDULE: (id: string) => `/api/appointments/${id}/reschedule`,
     VISIT_REASON: (id: string) => `/api/appointments/${id}/visit-reason`,
     CHECK_CONFLICT: '/api/appointments/check-conflict',
+    // Pre-Booking Payment flow (thanh toán cọc đặt lịch + SePay QR)
+    PRE_BOOK: '/api/appointments/pre-book',
+    REGENERATE_QR: (id: string) => `/api/appointments/${id}/regenerate-qr`,
+    PAYMENT_STATUS: (id: string) => `/api/appointments/${id}/payment-status`,
 };
 
 export const DEPARTMENT_ENDPOINTS = {
