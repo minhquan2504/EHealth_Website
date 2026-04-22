@@ -124,8 +124,15 @@ export const ROUTES = {
       RECEPTION: "/portal/receptionist/reception",
       APPOINTMENTS: "/portal/receptionist/appointments",
       QUEUE: "/portal/receptionist/queue",
+      ROOM_STATUS: "/portal/receptionist/room-status",
+      CHECK_IN: "/portal/receptionist/check-in",
+      CHANGE_HISTORY: "/portal/receptionist/change-history",
       PATIENTS: "/portal/receptionist/patients",
+      SUPPORT_DATA: "/portal/receptionist/support-data",
       BILLING: "/portal/receptionist/billing",
+      PAYMENTS: "/portal/receptionist/payments",
+      REFUNDS: "/portal/receptionist/refunds",
+      STAFF_INFO: "/portal/receptionist/staff-info",
       SETTINGS: "/portal/receptionist/settings",
     },
   },
@@ -423,48 +430,19 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
 
 // Staff sidebar menu items (formerly Receptionist)
 export const STAFF_MENU_ITEMS = [
-  {
-    key: "dashboard",
-    href: ROUTES.PORTAL.STAFF.DASHBOARD,
-    icon: "home",
-    label: "Trang chủ",
-  },
-  {
-    key: "reception",
-    href: ROUTES.PORTAL.STAFF.RECEPTION,
-    icon: "how_to_reg",
-    label: "Tiếp nhận BN",
-  },
-  {
-    key: "appointments",
-    href: ROUTES.PORTAL.STAFF.APPOINTMENTS,
-    icon: "calendar_month",
-    label: "Lịch hẹn",
-  },
-  {
-    key: "queue",
-    href: ROUTES.PORTAL.STAFF.QUEUE,
-    icon: "groups",
-    label: "Hàng đợi",
-  },
-  {
-    key: "patients",
-    href: ROUTES.PORTAL.STAFF.PATIENTS,
-    icon: "person_add",
-    label: "Bệnh nhân",
-  },
-  {
-    key: "billing",
-    href: ROUTES.PORTAL.STAFF.BILLING,
-    icon: "receipt_long",
-    label: "Thanh toán",
-  },
-  {
-    key: "settings",
-    href: ROUTES.PORTAL.STAFF.SETTINGS,
-    icon: "settings",
-    label: "Cài đặt",
-  },
+  { key: "dashboard", href: ROUTES.PORTAL.STAFF.DASHBOARD, icon: "home", label: "Trang chủ" },
+  { key: "queue", href: ROUTES.PORTAL.STAFF.QUEUE, icon: "groups", label: "Hàng đợi" },
+  { key: "room-status", href: ROUTES.PORTAL.STAFF.ROOM_STATUS, icon: "meeting_room", label: "Tình trạng phòng" },
+  { key: "patients", href: ROUTES.PORTAL.STAFF.PATIENTS, icon: "person_add", label: "Bệnh nhân" },
+  { key: "appointments", href: ROUTES.PORTAL.STAFF.APPOINTMENTS, icon: "calendar_month", label: "Lịch khám" },
+  { key: "check-in", href: ROUTES.PORTAL.STAFF.CHECK_IN, icon: "qr_code_scanner", label: "Check-in" },
+  { key: "change-history", href: ROUTES.PORTAL.STAFF.CHANGE_HISTORY, icon: "history", label: "Lịch sử thay đổi" },
+  { key: "support-data", href: ROUTES.PORTAL.STAFF.SUPPORT_DATA, icon: "database", label: "Hỗ trợ đặt lịch" },
+  { key: "billing", href: ROUTES.PORTAL.STAFF.BILLING, icon: "receipt_long", label: "Hoá đơn" },
+  { key: "payments", href: ROUTES.PORTAL.STAFF.PAYMENTS, icon: "qr_code", label: "Thanh toán QR" },
+  { key: "refunds", href: ROUTES.PORTAL.STAFF.REFUNDS, icon: "undo", label: "Hoàn tiền" },
+  { key: "staff-info", href: ROUTES.PORTAL.STAFF.STAFF_INFO, icon: "badge", label: "Vận hành nhân sự" },
+  { key: "settings", href: ROUTES.PORTAL.STAFF.SETTINGS, icon: "settings", label: "Tài khoản" },
 ] as const;
 
 // Backward compatibility alias

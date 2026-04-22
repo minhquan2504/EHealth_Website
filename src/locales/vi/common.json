@@ -205,11 +205,18 @@
             },
             "staff": {
                 "dashboard": "Trang chủ",
-                "reception": "Tiếp nhận BN",
-                "appointments": "Lịch hẹn",
                 "queue": "Hàng đợi",
+                "roomStatus": "Tình trạng phòng",
                 "patients": "Bệnh nhân",
-                "billing": "Thanh toán",
+                "appointments": "Lịch khám",
+                "checkIn": "Check-in",
+                "changeHistory": "Lịch sử thay đổi",
+                "supportData": "Hỗ trợ đặt lịch",
+                "billing": "Hoá đơn",
+                "payments": "Thanh toán QR",
+                "refunds": "Hoàn tiền",
+                "staffInfo": "Vận hành nhân sự",
+                "reception": "Tiếp nhận BN",
                 "settings": "Cài đặt"
             },
             "patient": {

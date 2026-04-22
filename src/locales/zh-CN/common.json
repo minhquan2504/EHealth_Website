@@ -203,6 +203,15 @@
                 "inventory": "库存",
                 "settings": "设置"
             },
+            "staff_extra": {
+                "roomStatus": "诊室状态",
+                "checkIn": "签到",
+                "changeHistory": "变更历史",
+                "supportData": "辅助数据",
+                "payments": "二维码支付",
+                "refunds": "退款",
+                "staffInfo": "员工运营"
+            },
             "staff": {
                 "dashboard": "首页",
                 "reception": "接诊",

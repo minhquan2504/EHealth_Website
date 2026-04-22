@@ -203,6 +203,15 @@
                 "inventory": "Inventory",
                 "settings": "Settings"
             },
+            "staff_extra": {
+                "roomStatus": "Room status",
+                "checkIn": "Check-in",
+                "changeHistory": "Change history",
+                "supportData": "Support data",
+                "payments": "QR Payments",
+                "refunds": "Refunds",
+                "staffInfo": "Staff operations"
+            },
             "staff": {
                 "dashboard": "Home",
                 "reception": "Reception",
